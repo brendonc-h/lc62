@@ -1,32 +1,30 @@
 import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-options';
 
-// This is a placeholder. In a real app, you would:
-// 1. Verify admin authentication
-// 2. Connect to your database
-// 3. Fetch real orders
+const ADMIN_EMAILS = ['admin@example.com'];
+
 export async function GET() {
-  // Simulated orders data
-  const orders = [
-    {
-      id: '1',
-      createdAt: new Date().toISOString(),
-      items: [
-        { id: '1', name: 'Carne Asada Tacos', quantity: 2, price: 12.99 },
-        { id: '2', name: 'Guacamole', quantity: 1, price: 5.99 },
-      ],
-      subtotal: 31.97,
-      tax: 2.56,
-      total: 34.53,
-      status: 'preparing',
-      customerInfo: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '(555) 123-4567',
-        orderType: 'pickup',
-      },
-      estimatedTime: 25, // minutes
-    },
-  ];
+  const session = await getServerSession(authOptions);
+  const email = session?.user?.email;
 
-  return NextResponse.json(orders);
+  if (!email || !ADMIN_EMAILS.includes(email)) {
+    return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+  }
+
+  try {
+    const { db } = await connectToDatabase();
+    const orders = await db
+      .collection('orders')
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    const safe = orders.map((o) => ({ id: o._id.toString(), ...o, _id: undefined }));
+    return NextResponse.json(safe);
+  } catch (error) {
+    console.error('Admin orders error:', error);
+    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  }
 }

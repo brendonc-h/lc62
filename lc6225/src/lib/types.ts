@@ -6,12 +6,19 @@ export type CartItem = {
   image: string;
 };
 
+export type OrderStatus = 'preparing' | 'ready' | 'completed' | 'cancelled';
+
 export type OrderDetails = {
+  id?: string;
   items: CartItem[];
   subtotal: number;
   tax: number;
   total: number;
   customerInfo: CustomerInfo;
+  status?: OrderStatus;
+  createdAt?: string | Date;
+  estimatedTime?: number;
+  orderType?: 'pickup' | 'delivery';
 };
 
 export type CustomerInfo = {

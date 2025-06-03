@@ -4,7 +4,7 @@ if (!process.env.MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
 }
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI as string;
 const options: MongoClientOptions = {};
 
 let client: MongoClient;
@@ -29,7 +29,8 @@ if (process.env.NODE_ENV === 'development') {
 
 export async function connectToDatabase() {
   const client = await clientPromise;
-  const db = client.db();
+  const dbName = process.env.MONGO_DB || undefined;
+  const db = client.db(dbName);
   return { client, db };
 }
 

@@ -23,28 +23,33 @@ export default function CheckoutPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate order processing
-    setTimeout(() => {
-      // Save order to local storage for demo
-      const order = {
-        id: Date.now().toString(),
-        items: state.items,
-        customerInfo,
-        subtotal: state.subtotal,
-        tax: state.tax,
-        total: state.total,
-        status: 'preparing',
-        createdAt: new Date().toISOString(),
-        estimatedTime: 25, // minutes
-      };
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: state.items,
+          subtotal: state.subtotal,
+          tax: state.tax,
+          total: state.total,
+          customerInfo,
+          orderType: customerInfo.orderType,
+        }),
+      });
 
-      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-      orders.push(order);
-      localStorage.setItem('orders', JSON.stringify(orders));
+      if (!response.ok) {
+        throw new Error('Failed to place order');
+      }
 
+      const data = await response.json();
       clearCart();
-      router.push(`/order-confirmation?id=${order.id}`);
-    }, 2000);
+      router.push(`/order-confirmation?id=${data.id}`);
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert('Something went wrong placing your order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -214,92 +219,6 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   )}
-                  <div>
-                    <label htmlFor="instructions" className="block text-sm font-medium text-gray-700">
-                      Special Instructions
-                    </label>
-                    <textarea
-                      id="instructions"
-                      name="specialInstructions"
-                      value={customerInfo.specialInstructions}
-                      onChange={handleInputChange}
-                      rows={2}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    />
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* Customer Information */}
-              <div className="py-6">
-                <h2 className="text-lg font-medium text-gray-900">Customer Information</h2>
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="orderType" className="block text-sm font-medium text-gray-700">
-                      Order Type
-                    </label>
-                    <select
-                      id="orderType"
-                      name="orderType"
-                      required
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    >
-                      <option value="pickup">Pickup</option>
-                      <option value="delivery">Delivery</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                      Delivery Address
-                    </label>
-                    <textarea
-                      id="address"
-                      name="address"
-                      value={customerInfo.address}
-                      onChange={handleInputChange}
-                      rows={3}
-                      required={customerInfo.orderType === 'delivery'}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    />
-                  </div>
                   <div>
                     <label htmlFor="instructions" className="block text-sm font-medium text-gray-700">
                       Special Instructions
