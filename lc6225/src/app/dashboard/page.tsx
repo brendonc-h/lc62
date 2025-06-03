@@ -12,33 +12,40 @@ type User = {
 };
 
 export default function Dashboard() {
-  const { data: session, status, update } = useSession();
+  const { data: session, status, update } = useSession(); // Ensure 'update' is available for handleAddPoints
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // Renamed from isLoading
+  const [isUpdatingPoints, setIsUpdatingPoints] = useState(false); // New state for points update
   const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (status === 'unauthenticated') {
-        router.push('/auth/signin?callbackUrl=/dashboard');
-      } else if (status === 'authenticated' && session?.user) {
-        // Update session to ensure we have the latest user data
-        await update();
-        setUser({
-          id: session.user.id,
-          name: session.user.name || 'User',
-          email: session.user.email || '',
-          points: (session.user as any).points || 0
-        });
-      }
-      setIsLoading(false);
-    };
+    // If we are still in the initial loading phase and status is 'loading', 
+    // just wait for the status to change.
+    if (isInitialLoading && status === 'loading') {
+      return;
+    }
 
-    checkAuth();
-  }, [status, session, router, update]);
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/dashboard');
+      setIsInitialLoading(false); // Initial auth determination is complete
+    } else if (status === 'authenticated' && session?.user) {
+      setUser({
+        id: session.user.id,
+        name: session.user.name || 'User',
+        email: session.user.email || '',
+        points: session.user.points || 0, // Corrected points access
+      });
+      setIsInitialLoading(false); // Initial auth determination is complete
+    } else if (status !== 'loading') {
+      // If status is not 'loading' and not covered above (e.g. error, or session is null unexpectedly)
+      // ensure initial loading spinner stops.
+      setIsInitialLoading(false);
+    }
+  }, [status, session, router, isInitialLoading]);
 
   const handleAddPoints = async (amount: number) => {
+    setIsUpdatingPoints(true); // Set loading state for button
     try {
       setError('');
       const response = await fetch('/api/points', {
@@ -59,6 +66,8 @@ export default function Dashboard() {
     } catch (err) {
       console.error('Error updating points:', err);
       setError(err instanceof Error ? err.message : 'Failed to update points');
+    } finally {
+      setIsUpdatingPoints(false); // Reset loading state for button
     }
   };
 
@@ -68,7 +77,8 @@ export default function Dashboard() {
     router.refresh();
   };
 
-  if (isLoading || status === 'loading') {
+  // Show full spinner only during the initial determination of auth state
+  if (isInitialLoading && status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -76,24 +86,33 @@ export default function Dashboard() {
     );
   }
 
-  if (!user) {
+  // After initial load, if user is not set, it means redirection or an issue.
+  if (!user && !isInitialLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <p className="text-gray-600">You need to be signed in to view this page.</p>
-          <button
-            onClick={() => router.push('/auth/signin')}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
-            Sign In
-          </button>
+          <p className="text-gray-600">
+            {status === 'unauthenticated' 
+              ? 'Redirecting to sign-in...'
+              : 'You need to be signed in to view this page, or an error occurred.'}
+          </p>
+          {status !== 'unauthenticated' && (
+            <button
+              onClick={() => router.push('/auth/signin?callbackUrl=/dashboard')}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+  // If user is set, display the dashboard content
+  if (user) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -137,17 +156,17 @@ export default function Dashboard() {
                 <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
                   <button
                     onClick={() => handleAddPoints(10)}
-                    disabled={isLoading}
+                    disabled={isUpdatingPoints}
                     className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? 'Adding...' : '+10 Points'}
+                    {isUpdatingPoints ? 'Adding...' : '+10 Points'}
                   </button>
                   <button
                     onClick={() => handleAddPoints(50)}
-                    disabled={isLoading}
+                    disabled={isUpdatingPoints}
                     className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? 'Adding...' : '+50 Points'}
+                    {isUpdatingPoints ? 'Adding...' : '+50 Points'}
                   </button>
                 </div>
               </div>
@@ -173,6 +192,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+    </div>
+    );
+  }
+
+  // Fallback for any other unhandled state, though ideally covered by the conditions above.
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <p>Loading dashboard...</p>
     </div>
   );
 }

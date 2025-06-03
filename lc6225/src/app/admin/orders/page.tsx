@@ -8,11 +8,24 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would fetch from your API
+    // Fetch orders from API with proper error handling
     const fetchOrders = async () => {
       try {
-        const response = await fetch('/api/admin/orders');
+        const response = await fetch('/api/admin/orders', {
+          // Add cache: no-store to prevent excessive caching
+          cache: 'no-store',
+          // Add proper credentials
+          credentials: 'include'
+        });
+        
+        if (response.status === 403) {
+          console.log('Not authorized to view admin data');
+          setOrders([]);
+          return;
+        }
+        
         if (!response.ok) throw new Error('Failed to fetch orders');
+        
         const data = await response.json();
         setOrders(data);
       } catch (error) {
@@ -71,7 +84,7 @@ export default function AdminOrdersPage() {
                         <tr key={order.id} className="hover:bg-gray-50">
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                             <div className="font-medium text-gray-900">
-                              {new Date(order.createdAt).toLocaleString()}
+                              {order.createdAt ? new Date(order.createdAt).toLocaleString() : 'No date'}
                             </div>
                             <div className="text-gray-500">{order.orderType}</div>
                           </td>

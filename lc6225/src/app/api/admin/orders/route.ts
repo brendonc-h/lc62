@@ -1,9 +1,12 @@
+export const runtime = 'nodejs';
+
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 
-const ADMIN_EMAILS = ['admin@example.com'];
+// Add any admin emails here
+const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'brendon@lacasitamexicanpitt.com'];
 
 export async function GET() {
   const session = await getServerSession(authOptions);
