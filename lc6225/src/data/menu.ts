@@ -16,6 +16,26 @@ export type MenuCategory = {
 };
 
 export const categories: MenuCategory[] = [
+     {
+    id: 'appetizers',
+    name: 'Appetizers',
+    description: 'Start your meal with our delicious appetizers',
+  },
+  {
+    id: 'breakfastburritos',
+    name: 'Breakfast Burritos',
+    description: 'Start your day with our delicious breakfast burritos',
+  },
+     {
+    id: 'breakfastmeals',
+    name: 'Breakfast Meals',
+    description: 'Start your day with our delicious breakfast meals',
+  },
+     {
+    id: 'soups',
+    name: 'Soups',
+    description: 'ADDDDDDDDD',
+  },
   {
     id: 'appetizers',
     name: 'Appetizers',
@@ -26,10 +46,35 @@ export const categories: MenuCategory[] = [
     name: 'Tacos',
     description: 'Traditional Mexican tacos with your choice of meat',
   },
+    {
+    id: 'tastadas',
+    name: 'Tostadas',
+    description: 'Traditional Tostadas with your choice of meat',
+  },
+    {
+    id: 'salads',
+    name: 'Salads',
+    description: 'Fresh salads with a variety of toppings, served with rice,beans,pico de gallo, cheese and sour cream',
+  },
+    {
+    id: 'combos',
+    name: 'Combos',
+    description: 'Traditional Tostadas with your choice of meat',
+  },
   {
     id: 'burritos',
     name: 'Burritos',
     description: 'Large flour tortillas filled with your favorite ingredients',
+  },
+  {
+    id: 'fajitas',
+    name: 'Fajitas',
+    description: 'Grilled meat with peppers and onions, served with tortillas',
+  },
+  {
+    id: 'dinner',
+    name: 'Dinner Specials',
+    description: 'Grilled meat with peppers and onions, served with tortillas',
   },
   {
     id: 'enchiladas',
@@ -37,9 +82,24 @@ export const categories: MenuCategory[] = [
     description: 'Corn tortillas rolled around a filling and covered with sauce',
   },
   {
-    id: 'fajitas',
-    name: 'Fajitas',
+    id: 'chimichangas',
+    name: 'Chimichangas',
+    description: 'Deep-fried burritos filled with your choice of meat',
+  },
+  {
+    id: 'kids',
+    name: 'Kids Menu',
+    description: 'Special meals for our 12 & younger guests',
+  },
+  {
+    id: 'sides',
+    name: 'Sides',
     description: 'Grilled meat with peppers and onions, served with tortillas',
+  },
+  {
+    id: 'Toras y Hamburguesas',
+    name: 'Tortas y Hamburguesas',
+    description: 'Mexican sandwiches and burgers with a twist',
   },
   {
     id: 'drinks',
@@ -55,31 +115,55 @@ export const categories: MenuCategory[] = [
 
 export const menuItems: MenuItem[] = [
   {
-    id: 'guacamole',
-    name: 'Fresh Guacamole',
+    id: 'beef-taco',
+    name: 'Beef Taco',
     description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
-    price: 8.99,
+    price: 3.75,
     image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
-    category: 'appetizers',
+    category: 'tacos',
+    popular: true,
+  },
+   {
+    id: 'chicken-taco',
+    name: 'Chicken Taco',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
+    price: 3.75,
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
+    category: 'tacos',
+  },
+   {
+    id: 'carnitas-taco',
+    name: 'Carnitas Taco',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
+    price: 4.75,
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
+    category: 'tacos',
+  },
+   {
+    id: 'three-asada',
+    name: '3 Tacos de asada',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
+    price: 13.75,
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
+    category: 'tacos',
     popular: true,
   },
   {
-    id: 'queso-fundido',
-    name: 'Queso Fundido',
+    id: 'three-barbacoa',
+    name: '3 Tacos de Barbacoa',
     description: 'Melted cheese with chorizo and peppers',
-    price: 9.99,
+    price: 13.75,
     image: 'https://images.unsplash.com/photo-1600544307527-65371a4d4201',
-    category: 'appetizers',
+    category: 'tacos',
   },
   {
-    id: 'taco-al-pastor',
-    name: 'Tacos Al Pastor',
+    id: 'three-al-pastor',
+    name: '3 Tacos al Pastor',
     description: 'Marinated pork tacos with pineapple, onions, and cilantro',
-    price: 12.99,
+    price: 13.75,
     image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b',
     category: 'tacos',
     spicyLevel: 2,
-    popular: true,
   },
   {
     id: 'burrito-carne-asada',
