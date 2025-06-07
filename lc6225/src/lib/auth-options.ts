@@ -10,6 +10,7 @@ declare module 'next-auth' {
   interface User {
     id: string;
     points: number;
+    role: string;
   }
   
   interface Session {
@@ -18,6 +19,7 @@ declare module 'next-auth' {
       email: string;
       name: string;
       points: number;
+      role: string;
     };
   }
 }
@@ -77,6 +79,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           points: user.points || 0,
+          role: user.role || 'customer', // Default to customer if role not set
         };
       },
     }),
@@ -86,6 +89,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.points = user.points;
+        token.role = user.role;
+        
+        // For backward compatibility - if there's no role set but email is in admin list
+        if (!token.role) {
+          const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'brendon@lacasitamexicanpitt.com'];
+          if (typeof user.email === 'string' && ADMIN_EMAILS.includes(user.email)) {
+            token.role = 'admin';
+          } else {
+            token.role = 'customer';
+          }
+        }
       }
       return token;
     },
@@ -93,6 +107,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.points = token.points as number;
+        session.user.role = (token.role as string) || 'customer';
       }
       return session;
     }

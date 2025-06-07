@@ -9,6 +9,7 @@ type User = {
   name: string;
   email: string;
   points: number;
+  role?: string;
 };
 
 export default function Dashboard() {
@@ -35,6 +36,7 @@ export default function Dashboard() {
         name: session.user.name || 'User',
         email: session.user.email || '',
         points: session.user.points || 0, // Corrected points access
+        role: session.user.role,
       });
       setIsInitialLoading(false); // Initial auth determination is complete
     } else if (status !== 'loading') {
@@ -43,6 +45,12 @@ export default function Dashboard() {
       setIsInitialLoading(false);
     }
   }, [status, session, router, isInitialLoading]);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      router.replace('/admin');
+    }
+  }, [user, router]);
 
   const handleAddPoints = async (amount: number) => {
     setIsUpdatingPoints(true); // Set loading state for button

@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 
 // Add any admin emails here
-const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'brendon@lacasitamexicanpitt.com'];
+const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'info@lacasita.io'];
 
 export async function GET() {
   const session = await getServerSession(authOptions);
