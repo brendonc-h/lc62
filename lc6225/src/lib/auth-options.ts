@@ -93,7 +93,7 @@ export const authOptions: NextAuthOptions = {
         
         // For backward compatibility - if there's no role set but email is in admin list
         if (!token.role) {
-          const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'brendon@lacasitamexicanpitt.com'];
+          const ADMIN_EMAILS = ['admin@example.com', 'brendon1798@gmail.com', 'brendon.curry-hobbs@hhsystems.org'];
           if (typeof user.email === 'string' && ADMIN_EMAILS.includes(user.email)) {
             token.role = 'admin';
           } else {

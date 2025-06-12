@@ -97,7 +97,7 @@ export const categories: MenuCategory[] = [
     description: 'Grilled meat with peppers and onions, served with tortillas',
   },
   {
-    id: 'toras-y-hamburguesas',
+    id: 'Toras y Hamburguesas',
     name: 'Tortas y Hamburguesas',
     description: 'Mexican sandwiches and burgers with a twist',
   },
@@ -428,8 +428,10 @@ export const menuItems: MenuItem[] = [
     image: '/images/hamburguesa-doble-queso.jpg',
     category: 'toras-y-hamburguesas',
     popular: true
+  }
+    popular: true,
   },
-  {
+     {
     id: 'guacamole-tostada',
     name: 'Guacamole Tostada',
     description: 'Crispy tostada topped with refried beans and guacamole',
@@ -867,6 +869,7 @@ export const menuItems: MenuItem[] = [
     category: 'toras-y-hamburguesas',
     popular: true
   },
+ {
   {
     id: 'enchilada',
     name: 'Enchilada Platter',
@@ -874,6 +877,8 @@ export const menuItems: MenuItem[] = [
     price: 15.49,
     image: '/images/enchilada-platter.jpg',
     category: 'dinner-plates',
+    image: 'https://images.unsplash.com/photo-1534352956036-cd81e27dd615',
+    category: 'combos',
     spicyLevel: 1,
   },
   {

@@ -101,13 +101,13 @@ export default function OrderPage() {
                   <h2 className="text-3xl font-bold text-gray-900">{category.name}</h2>
                   <p className="mt-2 text-lg text-gray-600">{category.description}</p>
                 </div>
-                <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-lg overflow-hidden"
+                      className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow duration-200"
                     >
-                      <div className="w-full md:w-1/3 h-64 md:h-auto relative">
+                      <div className="w-full h-40 relative">
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -115,50 +115,48 @@ export default function OrderPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div className="flex-1 p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <h3 className="text-2xl font-bold text-gray-900">{item.name}</h3>
-                            {item.popular && (
-                              <span className="mt-1 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-sm font-medium text-yellow-800">
-                                Popular Choice
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-2xl font-bold text-primary-600">
+                      <div className="p-4 flex flex-col flex-grow">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
+                          <p className="text-lg font-bold text-primary-600">
                             ${item.price.toFixed(2)}
                           </p>
                         </div>
-                        <p className="text-lg text-gray-600 mb-6">{item.description}</p>
+                        {item.popular && (
+                          <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800 mb-2 self-start">
+                            Popular
+                          </span>
+                        )}
+                        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.description}</p>
                         {item.spicyLevel && (
-                          <div className="flex items-center gap-2 mb-6">
-                            <span className="text-sm font-medium text-gray-700">Spice Level:</span>
-                            <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1.5 mt-auto">
+                            <span className="text-xs font-medium text-gray-500">Spice:</span>
+                            <div className="flex items-center gap-0.5">
                               {[...Array(item.spicyLevel)].map((_, i) => (
                                 <FireIcon
                                   key={i}
-                                  className="h-5 w-5 text-red-500"
+                                  className="h-4 w-4 text-red-500"
                                   aria-hidden="true"
                                 />
                               ))}
                             </div>
                           </div>
                         )}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 mt-4">
                           <div className="flex items-center rounded-md border border-gray-300">
                             <button
                               type="button"
-                              className="px-4 py-2 text-gray-600 hover:text-gray-700 text-lg font-medium"
+                              className="px-3 py-1 text-gray-600 hover:text-gray-700 text-base font-medium"
                               onClick={() => handleQuantityChange(item.id, -1)}
                             >
-                              −
+                              -
                             </button>
-                            <span className="px-4 py-2 text-gray-900 text-lg font-medium min-w-[3rem] text-center">
+                            <span className="w-8 text-center text-base font-medium">
                               {quantities[item.id] || 1}
                             </span>
                             <button
                               type="button"
-                              className="px-4 py-2 text-gray-600 hover:text-gray-700 text-lg font-medium"
+                              className="px-3 py-1 text-gray-600 hover:text-gray-700 text-base font-medium"
                               onClick={() => handleQuantityChange(item.id, 1)}
                             >
                               +
@@ -166,10 +164,10 @@ export default function OrderPage() {
                           </div>
                           <button
                             type="button"
-                            className="flex-1 rounded-md bg-primary-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                             onClick={() => handleAddToCart(item)}
+                            className="flex-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-primary-500 whitespace-nowrap"
                           >
-                            Add to Cart - ${(item.price * (quantities[item.id] || 1)).toFixed(2)}
+                            Add to Cart
                           </button>
                         </div>
                       </div>
