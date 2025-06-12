@@ -18,14 +18,30 @@ const createTestAccount = async () => {
   
   // In production, use Zoho SMTP settings
   console.log('Using Zoho SMTP for production');
+  const host = process.env.SMTP_HOST || 'smtp.zoho.com';
+  const port = parseInt(process.env.SMTP_PORT || '587');
+  const secure = process.env.SMTP_SECURE === 'true';
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASSWORD;
+
+  if (!user || !pass) {
+    console.error('Missing SMTP credentials');
+    throw new Error('Missing SMTP credentials');
+  }
+
   return {
-    host: process.env.SMTP_HOST || 'smtp.zoho.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    host,
+    port,
+    secure,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD,
+      user,
+      pass,
     },
+    // Add these options to handle special characters and improve reliability
+    tls: {
+      rejectUnauthorized: false,
+    },
+    requireTLS: true,
   };
 };
 

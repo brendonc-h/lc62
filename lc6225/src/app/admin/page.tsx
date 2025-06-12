@@ -1,13 +1,9 @@
 "use client";
 
-import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-
-const AdminAnalytics = dynamic(() => import('@/components/AdminAnalytics'), {
-  ssr: false,
-});
+import AdminTempPage from './temp-page';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -41,7 +37,7 @@ export default function AdminPage() {
             Sign Out
           </button>
         </div>
-        <AdminAnalytics />
+        <AdminTempPage />
       </div>
     </div>
   );
