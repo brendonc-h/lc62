@@ -46,58 +46,72 @@ const createTestAccount = async () => {
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
+  let transporter;
   try {
-    console.log('Creating transporter...');
-    const transportConfig = await createTestAccount();
-    console.log('Transport config:', JSON.stringify({
-      ...transportConfig,
-      auth: { user: transportConfig.auth.user, pass: '***' } // Don't log actual password
-    }, null, 2));
-    
-    const transporter = nodemailer.createTransport(transportConfig);
-    
-    // Verify connection configuration
-    await new Promise((resolve, reject) => {
-      transporter.verify(function(error, success) {
-        if (error) {
-          console.error('SMTP connection error:', error);
-          reject(error);
-        } else {
-          console.log('SMTP server is ready to take our messages');
-          resolve(success);
-        }
-      });
+    console.log('Creating email transporter with config:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER ? '***' : 'not set',
+      environment: process.env.NODE_ENV
     });
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
-    console.log('Reset URL:', resetUrl);
+    const smtpConfig = await createTestAccount();
+    console.log('SMTP Configuration:', {
+      ...smtpConfig,
+      auth: { user: smtpConfig.auth.user ? '***' : 'not set' }
+    });
+
+    transporter = nodemailer.createTransport(smtpConfig);
     
+    // Verify connection configuration
+    try {
+      await transporter.verify();
+      console.log('Server is ready to take our messages');
+    } catch (verifyError) {
+      console.error('SMTP Connection Error:', verifyError);
+      throw new Error('Failed to connect to email server');
+    }
+
+    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
+    
+    console.log('Sending password reset email to:', email);
+    console.log('Reset URL:', resetUrl);
+
     const mailOptions = {
-      from: 'brendon.curry-hobbs@hhsystems.org',
+      from: `"La Casita" <${process.env.EMAIL_FROM || 'noreply@lacasita.com'}>`,
       to: email,
-      subject: 'Reset Your Password',
+      subject: 'Password Reset Request',
       html: `
-        <p>You requested a password reset. Click the link below to set a new password:</p>
-        <p><a href="${resetUrl}">Reset Password</a></p>
-        <p>This link will expire in 1 hour.</p>
-        <p>If you didn't request this, please ignore this email.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Password Reset</h2>
+          <p>You requested a password reset. Click the button below to set a new password:</p>
+          <a href="${resetUrl}" style="
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ef4444;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 15px 0;
+          ">Reset Password</a>
+          <p>Or copy and paste this link into your browser:</p>
+          <p><a href="${resetUrl}" style="color: #3b82f6; word-break: break-all;">${resetUrl}</a></p>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+        </div>
       `,
     };
 
-    console.log('Sending email with options:', {
-      ...mailOptions,
-      html: mailOptions.html ? '***HTML CONTENT***' : undefined
-    });
-    
     const info = await transporter.sendMail(mailOptions);
-    console.log('Message sent: %s', info.messageId);
     
-    if (process.env.NODE_ENV === 'development') {
+    // If using ethereal for testing, log the preview URL
+    if (process.env.NODE_ENV !== 'production') {
       const previewUrl = nodemailer.getTestMessageUrl(info);
       console.log('Preview URL:', previewUrl);
     }
 
-    return info;
+    console.log('Password reset email sent successfully to:', email);
+    return true;
   } catch (error: unknown) {
     console.error('Error sending email:', error);
     if (error && typeof error === 'object' && 'response' in error) {

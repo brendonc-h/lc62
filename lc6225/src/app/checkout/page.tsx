@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CustomerInfo } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { buttonStyles } from '@/lib/button-styles';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -147,7 +148,7 @@ export default function CheckoutPage() {
                         value={customerInfo.name}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-primary-500 focus:ring-primary-500"
+                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -163,7 +164,7 @@ export default function CheckoutPage() {
                         value={customerInfo.email}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-primary-500 focus:ring-primary-500"
+                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -179,7 +180,7 @@ export default function CheckoutPage() {
                         value={customerInfo.phone}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-primary-500 focus:ring-primary-500"
+                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                       />
                     </div>
                   </div>
@@ -194,7 +195,7 @@ export default function CheckoutPage() {
                         value={customerInfo.orderType}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-primary-500 focus:ring-primary-500"
+                        className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                       >
                         <option value="pickup">Pickup</option>
                         <option value="delivery">Delivery</option>
@@ -214,7 +215,7 @@ export default function CheckoutPage() {
                           onChange={handleInputChange}
                           rows={3}
                           required={customerInfo.orderType === 'delivery'}
-                          className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-primary-500 focus:ring-primary-500"
+                          className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                         />
                       </div>
                     </div>
@@ -251,7 +252,7 @@ export default function CheckoutPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="mt-6 w-full rounded-md bg-primary-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50"
+                    className={`${buttonStyles.primary} ${buttonStyles.fullWidth} ${loading ? buttonStyles.disabled : ''}`}
                   >
                     {loading ? 'Processing...' : 'Place Order'}
                   </button>

@@ -5,6 +5,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 import { Dialog } from '@headlessui/react';
 import { useCart } from '@/lib/cart-context';
+import { buttonStyles } from '@/lib/button-styles';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -40,7 +41,7 @@ export default function Header() {
             ))}
             <Link
               href="/checkout"
-              className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-primary-600"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
             >
               <ShoppingCartIcon className="h-5 w-5" />
               {cartItemCount > 0 && (
@@ -53,7 +54,7 @@ export default function Header() {
           <div className="flex md:hidden">
             <button
               type="button"
-              className="text-gray-700 hover:text-primary-600"
+              className="text-gray-700 hover:text-red-600 transition-colors"
               onClick={() => setMobileMenuOpen(true)}
             >
               <span className="sr-only">Open menu</span>
@@ -71,7 +72,7 @@ export default function Header() {
             </Link>
             <button
               type="button"
-              className="text-gray-700"
+              className="text-gray-700 hover:text-red-600 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               <span className="sr-only">Close menu</span>

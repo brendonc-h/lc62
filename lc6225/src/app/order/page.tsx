@@ -5,14 +5,30 @@ import { useCart } from '@/lib/cart-context';
 import { CartItem } from '@/lib/types';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { FireIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { buttonStyles } from '@/lib/button-styles';
 
 export default function OrderPage() {
   const { state, addItem } = useCart();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
+    // Initialize all categories as collapsed by default
+    const initialExpanded: { [key: string]: boolean } = {};
+    categories.forEach(category => {
+      initialExpanded[category.id] = false;
+    });
+    return initialExpanded;
+  });
+
+  const toggleCategory = useCallback((categoryId: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  }, []);
 
   const handleQuantityChange = (itemId: string, delta: number) => {
     setQuantities((prev: { [key: string]: number }) => ({
@@ -97,11 +113,28 @@ export default function OrderPage() {
 
             return (
               <div key={category.id} className="mb-16">
-                <div className="mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900">{category.name}</h2>
-                  <p className="mt-2 text-lg text-gray-600">{category.description}</p>
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={() => toggleCategory(category.id)}
+                      className={`${buttonStyles.primary} px-4 py-2 whitespace-nowrap flex items-center`}
+                      style={{ minWidth: '120px' }}
+                    >
+                      {category.name}
+                      <span className="ml-2">
+                        {expandedCategories[category.id] ? '−' : '+'}
+                      </span>
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1.5">
+                    {category.description}
+                  </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div 
+                  className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 overflow-hidden mt-2 ${
+                    expandedCategories[category.id] ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+                  }`}
+                >
                   {items.map((item) => (
                     <div
                       key={item.id}
@@ -143,20 +176,20 @@ export default function OrderPage() {
                           </div>
                         )}
                         <div className="flex items-center gap-2 mt-4">
-                          <div className="flex items-center rounded-md border border-gray-300">
+                          <div className="flex items-center rounded-md border border-red-300 bg-white">
                             <button
                               type="button"
-                              className="px-3 py-1 text-gray-600 hover:text-gray-700 text-base font-medium"
+                              className="px-3 py-1 text-red-600 hover:bg-red-50 text-base font-medium transition-colors"
                               onClick={() => handleQuantityChange(item.id, -1)}
                             >
-                              -
+                              −
                             </button>
-                            <span className="w-8 text-center text-base font-medium">
+                            <span className="px-3 py-1 text-gray-900 bg-gray-50 text-base font-medium">
                               {quantities[item.id] || 1}
                             </span>
                             <button
                               type="button"
-                              className="px-3 py-1 text-gray-600 hover:text-gray-700 text-base font-medium"
+                              className="px-3 py-1 text-red-600 hover:bg-red-50 text-base font-medium transition-colors"
                               onClick={() => handleQuantityChange(item.id, 1)}
                             >
                               +
@@ -164,8 +197,8 @@ export default function OrderPage() {
                           </div>
                           <button
                             type="button"
+                            className={`${buttonStyles.primary} flex-1 whitespace-nowrap`}
                             onClick={() => handleAddToCart(item)}
-                            className="flex-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-primary-500 whitespace-nowrap"
                           >
                             Add to Cart
                           </button>
