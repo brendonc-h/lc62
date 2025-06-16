@@ -1,13 +1,28 @@
-export type MenuItem = {
+export type SpiceLevel = 'mild' | 'medium' | 'hot';
+
+export const SPICE_LEVELS: SpiceLevel[] = ['mild', 'medium', 'hot'];
+export const STYLE_TYPES: StyleTypes[] = ['Beef, Chicken, Bean'];
+
+export interface MenuItemVariant {
+  name: string;
+  price: number;
+  description?: string;
+  protein?: 'beef' | 'chicken' | 'bean' | 'cheese';
+  size?: 'small' | 'medium' | 'large';
+}
+
+export interface MenuItem {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price: number; // Base price (for items without variants)
   image: string;
   category: string;
-  spicyLevel?: 1 | 2 | 3;
   popular?: boolean;
-};
+  variants?: MenuItemVariant[]; // For items with variants (like wrap vs deluxe)
+  defaultSpiceLevel?: SpiceLevel; // Default spice level
+  spicyLevel?: number; // Legacy - will be deprecated
+}
 
 export type MenuCategory = {
   id: string;
@@ -16,38 +31,33 @@ export type MenuCategory = {
 };
 
 export const categories: MenuCategory[] = [
-     {
+  {
     id: 'appetizers',
     name: 'Appetizers',
     description: 'Start your meal with our delicious appetizers',
   },
   {
-    id: 'breakfastburritos',
+    id: 'breakfast-burritos',
     name: 'Breakfast Burritos',
     description: 'Start your day with our delicious breakfast burritos',
   },
-     {
-    id: 'breakfastmeals',
+  {
+    id: 'breakfast-meals',
     name: 'Breakfast Meals',
     description: 'Start your day with our delicious breakfast meals',
   },
-     {
+  {
     id: 'soups',
     name: 'Soups',
-    description: 'ADDDDDDDDD',
-  },
-  {
-    id: 'appetizers',
-    name: 'Appetizers',
-    description: 'Start your meal with our delicious appetizers',
+    description: 'Warm and comforting soups made with fresh ingredients',
   },
   {
     id: 'tacos',
     name: 'Tacos',
     description: 'Traditional Mexican tacos with your choice of meat',
   },
-    {
-    id: 'tastadas',
+  {
+    id: 'tostadas',
     name: 'Tostadas',
     description: 'Traditional Tostadas with your choice of meat',
   },
@@ -72,7 +82,7 @@ export const categories: MenuCategory[] = [
     description: 'Grilled meat with peppers and onions, served with tortillas',
   },
   {
-    id: 'dinner',
+    id: 'dinner-specials',
     name: 'Dinner Specials',
     description: 'Grilled meat with peppers and onions, served with tortillas',
   },
@@ -97,7 +107,7 @@ export const categories: MenuCategory[] = [
     description: 'Grilled meat with peppers and onions, served with tortillas',
   },
   {
-    id: 'toras-y-hamburguesas',
+    id: 'tortas-y-hamburguesas',
     name: 'Tortas y Hamburguesas',
     description: 'Mexican sandwiches and burgers with a twist',
   },
@@ -114,322 +124,94 @@ export const categories: MenuCategory[] = [
 ];
 
 export const menuItems: MenuItem[] = [
-  // Tacos
   {
     id: 'beef-taco',
     name: 'Beef Taco',
-    description: 'Tender grilled beef with fresh cilantro, onions, and homemade salsa',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
     price: 3.75,
-    image: '/images/taco-beef.jpg',
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
     category: 'tacos',
     popular: true,
   },
-  {
+   {
     id: 'chicken-taco',
     name: 'Chicken Taco',
-    description: 'Grilled chicken with fresh cilantro, onions, and homemade salsa',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
     price: 3.75,
-    image: '/images/taco-chicken.jpg',
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
     category: 'tacos',
   },
-  {
+   {
     id: 'carnitas-taco',
     name: 'Carnitas Taco',
-    description: 'Slow-cooked pork with onions, cilantro, and lime',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
     price: 4.75,
-    image: '/images/taco-carnitas.jpg',
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
     category: 'tacos',
-    popular: true,
   },
-  {
+   {
     id: 'three-asada',
-    name: '3 Tacos de Asada',
-    description: 'Three grilled steak tacos with onions, cilantro, and salsa',
+    name: '3 Tacos de asada',
+    description: 'Fresh avocados mixed with tomatoes, onions, cilantro, and lime juice',
     price: 13.75,
-    image: '/images/tacos-asada.jpg',
+    image: 'https://images.unsplash.com/photo-1584269600519-112d071b35e9',
     category: 'tacos',
     popular: true,
   },
   {
     id: 'three-barbacoa',
     name: '3 Tacos de Barbacoa',
-    description: 'Three slow-cooked beef tacos with onions, cilantro, and salsa',
+    description: 'Melted cheese with chorizo and peppers',
     price: 13.75,
-    image: '/images/tacos-barbacoa.jpg',
+    image: 'https://images.unsplash.com/photo-1600544307527-65371a4d4201',
     category: 'tacos',
   },
   {
     id: 'three-al-pastor',
     name: '3 Tacos al Pastor',
-    description: 'Three marinated pork tacos with pineapple, onions, and cilantro',
+    description: 'Marinated pork tacos with pineapple, onions, and cilantro',
     price: 13.75,
-    image: '/images/tacos-al-pastor.jpg',
+    image: 'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b',
     category: 'tacos',
     spicyLevel: 2,
   },
-  
-  // Burritos
   {
     id: 'burrito-carne-asada',
     name: 'Carne Asada Burrito',
-    description: 'Grilled steak burrito with rice, beans, cheese, and guacamole',
+    description: 'Grilled steak burrito with rice, beans, and guacamole',
     price: 14.99,
-    image: '/images/burrito-carne-asada.jpg',
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
     category: 'burritos',
     popular: true,
   },
-  {
-    id: 'burrito-chicken',
-    name: 'Chicken Burrito',
-    description: 'Grilled chicken, rice, beans, cheese, and pico de gallo',
-    price: 13.99,
-    image: '/images/burrito-chicken.jpg',
-    category: 'burritos',
-  },
-  {
-    id: 'burrito-bean-cheese',
-    name: 'Bean & Cheese Burrito',
-    description: 'Refried beans, melted cheese, and red sauce',
-    price: 9.99,
-    image: '/images/burrito-bean-cheese.jpg',
-    category: 'burritos',
-  },
-  
-  // Tostadas
-  {
+    {
     id: 'bean-guacamole-tostada',
     name: 'Bean and Guacamole Tostada',
-    description: 'Crispy corn tortilla with refried beans, fresh guacamole, and cheese',
+    description: 'Crispy tostada topped with refried beans and guacamole',
     price: 6.75,
-    image: '/images/tostada-bean-guac.jpg',
-    category: 'tastadas',
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tostadas',
     popular: true,
   },
-  {
+     {
     id: 'chicken-tostada',
-    name: 'Chicken Tostada',
-    description: 'Crispy corn tortilla with shredded chicken, lettuce, and toppings',
+    name: 'ChickenTostada',
+    description: 'Crispy tostada topped with refried beans and guacamole',
     price: 5.95,
-    image: '/images/tostada-chicken.jpg',
-    category: 'tastadas',
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tostadas',
+    popular: true,
   },
-  {
+     {
     id: 'beef-tostada',
     name: 'Beef Tostada',
-    description: 'Crispy corn tortilla with seasoned ground beef and toppings',
+    description: 'Crispy tostada topped with refried beans and guacamole',
     price: 6.25,
-    image: '/images/tostada-beef.jpg',
-    category: 'tastadas',
-  },
-  
-  // Appetizers
-  {
-    id: 'guacamole-chips',
-    name: 'Guacamole & Chips',
-    description: 'Freshly made guacamole with crispy tortilla chips',
-    price: 8.99,
-    image: '/images/guacamole-chips.jpg',
-    category: 'appetizers',
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tostadas',
     popular: true,
   },
-  {
-    id: 'queso-dip',
-    name: 'Queso Dip',
-    description: 'Melted cheese dip with chorizo and tortilla chips',
-    price: 7.99,
-    image: '/images/queso-dip.jpg',
-    category: 'appetizers',
-  },
-  
-  // Breakfast Burritos
-  {
-    id: 'breakfast-burrito-bacon',
-    name: 'Bacon & Egg Burrito',
-    description: 'Scrambled eggs, crispy bacon, cheese, and potatoes',
-    price: 9.99,
-    image: '/images/breakfast-burrito-bacon.jpg',
-    category: 'breakfastburritos',
-    popular: true,
-  },
-  {
-    id: 'breakfast-burrito-chorizo',
-    name: 'Chorizo & Egg Burrito',
-    description: 'Scrambled eggs with Mexican chorizo, cheese, and potatoes',
-    price: 10.99,
-    image: '/images/breakfast-burrito-chorizo.jpg',
-    category: 'breakfastburritos',
-  },
-  
-  // Soups
-  {
-    id: 'tortilla-soup',
-    name: 'Tortilla Soup',
-    description: 'Chicken broth with tomatoes, avocado, cheese, and crispy tortilla strips',
-    price: 8.99,
-    image: '/images/tortilla-soup.jpg',
-    category: 'soups',
-  },
-  
-  // Salads
-  {
-    id: 'taco-salad',
-    name: 'Taco Salad',
-    description: 'Crispy tortilla bowl with your choice of meat, lettuce, cheese, and toppings',
-    price: 12.99,
-    image: '/images/taco-salad.jpg',
-    category: 'salads',
-  },
-  
-  // Dinner Specials
-  {
-    id: 'fajitas-mixed',
-    name: 'Mixed Fajitas',
-    description: 'Sizzling platter with chicken, steak, and shrimp with peppers and onions',
-    price: 22.99,
-    image: '/images/fajitas-mixed.jpg',
-    category: 'dinner',
-    popular: true,
-  },
-  
-  // Enchiladas
-  {
-    id: 'enchiladas-supreme',
-    name: 'Enchiladas Supreme',
-    description: 'Two cheese, two chicken enchiladas with red and green sauce',
-    price: 16.99,
-    image: '/images/enchiladas-supreme.jpg',
-    category: 'enchiladas',
-  },
-  
-  // Drinks
-  {
-    id: 'horchata',
-    name: 'Horchata',
-    description: 'Traditional Mexican rice drink with cinnamon',
-    price: 3.99,
-    image: '/images/horchata.jpg',
-    category: 'drinks',
-  },
-  
-  // Desserts
-  {
-    id: 'churros',
-    name: 'Churros',
-    description: 'Fried dough pastries dusted with cinnamon sugar, served with chocolate sauce',
-    price: 6.99,
-    image: '/images/churros.jpg',
-    category: 'desserts',
-    popular: true,
-  },
-  
-  // Kids Menu
-  {
-    id: 'kids-cheese-quesadilla',
-    name: 'Cheese Quesadilla (Kids)',
-    description: 'Flour tortilla with melted cheese, served with rice and beans',
-    price: 5.99,
-    image: '/images/kids-quesadilla.jpg',
-    category: 'kids',
-  },
-  
-  // Sides
-  {
-    id: 'mexican-rice',
-    name: 'Mexican Rice',
-    description: 'Flavorful tomato-based rice with vegetables',
-    price: 3.99,
-    image: '/images/mexican-rice.jpg',
-    category: 'sides',
-  },
-  
-  // Tortas y Hamburguesas
-  {
-    id: 'torta-milanesa',
-    name: 'Torta Milanesa',
-    description: 'Breaded steak sandwich with beans, avocado, and cheese',
-    price: 12.99,
-    image: '/images/torta-milanesa.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
-  },
-  {
-    id: 'hamburguesa-mexicana',
-    name: 'Hamburguesa Mexicana',
-    description: 'Beef patty with avocado, cheese, and chipotle sauce',
-    price: 14.99,
-    image: '/images/hamburguesa-mexicana.jpg',
-    category: 'toras-y-hamburguesas'
-  },
-  {
-    id: 'torta-cubana',
-    name: 'Torta Cubana',
-    description: 'Mexican-style torta with ham, pork, cheese, and avocado',
-    price: 13.99,
-    image: '/images/torta-cubana.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
-  },
-  {
-    id: 'hamburguesa-queso',
-    name: 'Hamburguesa con Queso',
-    description: 'Classic cheeseburger with all the fixings',
-    price: 12.99,
-    image: '/images/hamburguesa-queso.jpg',
-    category: 'toras-y-hamburguesas'
-  },
-  {
-    id: 'torta-ahogada',
-    name: 'Torta Ahogada',
-    description: 'Drowned sandwich with spicy sauce, pork, and beans',
-    price: 13.99,
-    image: '/images/torta-ahogada.jpg',
-    category: 'toras-y-hamburguesas',
-    spicyLevel: 3
-  },
-  {
-    id: 'hamburguesa-pollo',
-    name: 'Hamburguesa de Pollo',
-    description: 'Chicken burger with chipotle mayo and fresh vegetables',
-    price: 13.99,
-    image: '/images/hamburguesa-pollo.jpg',
-    category: 'toras-y-hamburguesas'
-  },
-  {
-    id: 'torta-jamon-queso',
-    name: 'Torta de Jamón y Queso',
-    description: 'Classic ham and cheese sandwich with refried beans',
-    price: 10.99,
-    image: '/images/torta-jamon-queso.jpg',
-    category: 'toras-y-hamburguesas'
-  },
-  {
-    id: 'hamburguesa-vegetariana',
-    name: 'Hamburguesa Vegetariana',
-    description: 'Vegetarian burger with avocado, cheese, and chipotle sauce',
-    price: 12.99,
-    image: '/images/hamburguesa-vegetariana.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
-  },
-  {
-    id: 'torta-chorizo',
-    name: 'Torta de Chorizo',
-    description: 'Mexican chorizo sandwich with beans and avocado',
-    price: 11.99,
-    image: '/images/torta-chorizo.jpg',
-    category: 'toras-y-hamburguesas',
-    spicyLevel: 2
-  },
-  {
-    id: 'hamburguesa-doble-queso',
-    name: 'Hamburguesa Doble Queso',
-    description: 'Double cheeseburger with all the fixings',
-    price: 15.99,
-    image: '/images/hamburguesa-doble-queso.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
-  },
-  {
+     {
     id: 'guacamole-tostada',
     name: 'Guacamole Tostada',
     description: 'Crispy tostada topped with refried beans and guacamole',
@@ -601,15 +383,6 @@ export const menuItems: MenuItem[] = [
     popular: true,
   },
       {
-    id: 'flan',
-    name: 'Flan',
-    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
-    price: 4.75,
-    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
-    category: 'desserts',
-    popular: true,
-  },
-        {
     id: 'sopapillas',
     name: 'Sopapillas',
     description: 'Traditional Mexican fried dough pastries, served with honey',
@@ -796,86 +569,401 @@ export const menuItems: MenuItem[] = [
     price: 4.00,
     image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
     category: 'sides',
-    popular: true
+    popular: true,
   },
-  {
+          {
     id: 'smothered-tamal',
     name: 'Smothered Tamal',
-    description: 'Steamed corn masa filled with meat and smothered in sauce',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 5.49,
-    image: '/images/smothered-tamal.jpg',
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
     category: 'sides',
-    popular: true
+    popular: true,
   },
-  {
+          {
     id: 'torta-steak',
     name: 'Torta Steak',
-    description: 'Grilled steak sandwich with beans, avocado, and cheese',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 15.49,
-    image: '/images/torta-steak.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'torta-carnitas',
     name: 'Torta Carnitas',
-    description: 'Slow-cooked pork sandwich with refried beans and pickled vegetables',
-    price: 14.99,
-    image: '/images/torta-carnitas.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'torta-barbacoa',
     name: 'Torta Barbacoa',
-    description: 'Shredded beef sandwich with chipotle sauce and avocado',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 15.49,
-    image: '/images/torta-barbacoa.jpg',
-    category: 'toras-y-hamburguesas'
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'torta-pastor',
     name: 'Torta Pastor',
-    description: 'Marinated pork sandwich with pineapple and onions',
-    price: 14.99,
-    image: '/images/torta-pastor.jpg',
-    category: 'toras-y-hamburguesas',
-    spicyLevel: 2
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'cheese-burger',
     name: 'Cheese Burger',
-    description: 'Classic cheeseburger with lettuce, tomato, and special sauce',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 10.49,
-    image: '/images/cheeseburger.jpg',
-    category: 'toras-y-hamburguesas'
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'hamburger',
     name: 'Hamburger',
-    description: 'Classic hamburger with lettuce, tomato, and onion',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 8.45,
-    image: '/images/hamburger.jpg',
-    category: 'toras-y-hamburguesas'
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
   },
-  {
+            {
     id: 'mexican-hamburger',
     name: 'Mexican Hamburger',
-    description: 'Beef patty with ham, cheese, avocado, and chipotle mayo',
+    description: 'Chicken or Beef, served with sour cream, jalapenos Add steak for $2.00',
     price: 13.49,
-    image: '/images/mexican-hamburger.jpg',
-    category: 'toras-y-hamburguesas',
-    popular: true
+    image: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85',
+    category: 'tortas-y-hamburguesas',
+    popular: true,
+  },
+  // Combos
+  {
+    id: 'combo-enchilada',
+    name: 'Enchilada Combo',
+    description: 'Cheese enchilada with your choice of protein',
+    price: 15.49, // Base price for Medium Beef
+    image: 'https://images.unsplash.com/photo-1534352956036-cd81e27dd615',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Beef', 
+        price: 15.49, 
+        description: '2 beef enchiladas with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 15.49, 
+        description: '2 chicken enchiladas with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Bean', 
+        price: 14.49, 
+        description: '2 bean enchiladas with rice and beans',
+        protein: 'bean',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 18.49, 
+        description: '3 beef enchiladas with rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 18.49, 
+        description: '3 chicken enchiladas with rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Bean', 
+        price: 17.49, 
+        description: '3 bean enchiladas with rice and beans',
+        protein: 'bean',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
   },
   {
-    id: 'enchilada',
-    name: 'Enchilada Platter',
-    description: 'Three chicken enchiladas covered in red sauce and melted cheese',
-    price: 15.49,
-    image: '/images/enchilada-platter.jpg',
-    category: 'dinner-plates',
-    spicyLevel: 1,
+    id: 'combo-taco',
+    name: 'Taco Combo',
+    description: 'Crispy taco with your choice of protein',
+    price: 14.99, // Base price for Medium Beef
+    image: 'https://images.unsplash.com/photo-1551504734-9d6c0dfb5a1b',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Beef', 
+        price: 14.99, 
+        description: '2 beef tacos with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 14.99, 
+        description: '2 chicken tacos with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Bean', 
+        price: 13.99, 
+        description: '2 bean tacos with rice and beans',
+        protein: 'bean',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 17.99, 
+        description: '3 beef tacos with rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 17.99, 
+        description: '3 chicken tacos with rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Bean', 
+        price: 16.99, 
+        description: '3 bean tacos with rice and beans',
+        protein: 'bean',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
   },
+  {
+    id: 'combo-burrito',
+    name: 'Burrito Combo',
+    description: 'Hearty burrito with your choice of protein',
+    price: 14.99, // Base price for Medium Beef
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Beef', 
+        price: 14.99, 
+        description: '1 beef burrito with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 14.99, 
+        description: '1 chicken burrito with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Bean', 
+        price: 13.99, 
+        description: '1 bean burrito with rice and beans',
+        protein: 'bean',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 17.99, 
+        description: '1 large beef burrito with extra filling, rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 17.99, 
+        description: '1 large chicken burrito with extra filling, rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Bean', 
+        price: 16.99, 
+        description: '1 large bean burrito with extra filling, rice and beans',
+        protein: 'bean',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
+  },
+  {
+    id: 'combo-tamale',
+    name: 'Tamale Combo',
+    description: 'Homemade tamale with your choice of protein',
+    price: 14.99, // Base price for Medium Beef
+    image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Beef', 
+        price: 14.99, 
+        description: '2 beef tamales with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 14.99, 
+        description: '2 chicken tamales with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Bean', 
+        price: 13.99, 
+        description: '2 bean tamales with rice and beans',
+        protein: 'bean',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 17.99, 
+        description: '3 beef tamales with rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 17.99, 
+        description: '3 chicken tamales with rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Bean', 
+        price: 16.99, 
+        description: '3 bean tamales with rice and beans',
+        protein: 'bean',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
+  },
+  {
+    id: 'combo-chile-relleno',
+    name: 'Chile Relleno Combo',
+    description: 'Stuffed chile relleno with cheese, add meat for $1.50',
+    price: 14.99, // Base price for Medium Cheese
+    image: 'https://images.unsplash.com/photo-1639666824523-8f7f7c7a8f3d',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Cheese', 
+        price: 14.99, 
+        description: '1 cheese chile relleno with rice and beans',
+        protein: 'cheese',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Beef', 
+        price: 16.49, 
+        description: '1 beef chile relleno with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 16.49, 
+        description: '1 chicken chile relleno with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Cheese', 
+        price: 17.99, 
+        description: '2 cheese chile rellenos with rice and beans',
+        protein: 'cheese',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 18.99, 
+        description: '2 beef chile rellenos with rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 18.99, 
+        description: '2 chicken chile rellenos with rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
+  },
+  {
+    id: 'combo-tostada',
+    name: 'Tostada Combo',
+    description: 'Crispy tostada with your choice of protein',
+    price: 14.99, // Base price for Medium Beef
+    image: 'https://images.unsplash.com/photo-1572457283-9a7c8d8f8e8d7',
+    category: 'combos',
+    variants: [
+      { 
+        name: 'Medium - Beef', 
+        price: 14.99, 
+        description: '1 beef tostada with rice and beans',
+        protein: 'beef',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Chicken', 
+        price: 14.99, 
+        description: '1 chicken tostada with rice and beans',
+        protein: 'chicken',
+        size: 'medium'
+      },
+      { 
+        name: 'Medium - Bean', 
+        price: 13.99, 
+        description: '1 bean tostada with rice and beans',
+        protein: 'bean',
+        size: 'medium'
+      },
+      { 
+        name: 'Large - Beef', 
+        price: 17.99, 
+        description: '2 beef tostadas with rice and beans',
+        protein: 'beef',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Chicken', 
+        price: 17.99, 
+        description: '2 chicken tostadas with rice and beans',
+        protein: 'chicken',
+        size: 'large'
+      },
+      { 
+        name: 'Large - Bean', 
+        price: 16.99, 
+        description: '2 bean tostadas with rice and beans',
+        protein: 'bean',
+        size: 'large'
+      }
+    ],
+    defaultSpiceLevel: 'medium'
+  },
+
+  // Burritos
   {
     id: 'deluxe-bean-cheese-burrito',
     name: 'Deluxe Bean and Cheese Burrito',
@@ -949,29 +1037,20 @@ export const menuItems: MenuItem[] = [
     popular: true,
   },
    {
-    id: 'shrimp-fajitas',
-    name: 'Shrimp Fajitas',
-    description: 'Grilled shrimp with peppers and onions, served with lettuce wraps',
-    price: 22.49,
-    image: '/images/shrimp-fajitas.jpg',
-    category: 'fajitas',
-    popular: true,
-  },
-  {
-    id: 'skinny-fajitas',
+    id: 'shrimp-fajitas,',
     name: 'Skinny Fajitas',
     description: 'Grilled chicken or steak with peppers and onions, served with lettuce wraps',
     price: 20.49,
-    image: '/images/skinny-fajitas.jpg',
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
     category: 'fajitas',
-    popular: true
+    popular: true,
   },
   {
     id: 'margarita',
     name: 'House Margarita',
     description: 'Our signature margarita with fresh lime juice',
     price: 8.99,
-    image: '/images/margarita.jpg',
+    image: 'https://images.unsplash.com/photo-1556855810-ac404aa91e85',
     category: 'drinks',
   },
   {
@@ -979,7 +1058,548 @@ export const menuItems: MenuItem[] = [
     name: 'Flan',
     description: 'Traditional Mexican caramel custard',
     price: 6.99,
-    image: '/images/flan.jpg',
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
     category: 'desserts',
   },
+  
+  //dinner specials
+  {
+    id: 'sopapilla',
+    name: 'Sopapilla (House Special)',
+    description: 'Beef, Chicken or Carnitas',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'michis-special',
+    name: 'Michis Special',
+    description: 'Two stuffed chiles garnished with rice and CRISPY beans accompanied by tortillas',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'pork-chops',
+    name: 'Pork Chops',
+    description: 'Smothered in green chile with side of rice and beans',
+    price: 18.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'carne-asada',
+    name: 'Carne Asada                   ',
+    description: 'Smothered in green chile with side of rice and beans',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'carnitas-plate',
+    name: 'Carnitas Plate',
+    description: '',
+    price: 17.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'los-tamales-plate',
+    name: 'Los Tamales Plate',
+    description: '2 Tamales, Rice, Beans, and green chile',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'jalisco-plate',
+    name: 'Jalisco Plate',
+    description: 'Comes with carne asada choice of chile relleno tamal or enchilada rice and beans',
+    price: 20.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'spinach-quesadilla',
+    name: 'Spinach Quesadilla',
+    description: 'Comes with sour cream, rice and beans',
+    price: 13.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'los-amigos',
+    name: 'Los Amigos',
+    description: '2 Soft Chile Rellenos with a side of rice and beans accompanied b tortillas',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'fish-tacos',
+    name: 'Fish Tacos',
+    description: 'Beef, Chicken or Carnitas',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'la-tampiquena',
+    name: 'La Tampiquena',
+    description: 'Carne asada served with a side of beans along with enchilada smothered in mole sauce',
+    price: 20.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'sopitos',
+    name: 'Sopitos',
+    description: 'Beef or Chicken',
+    price: 14.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'costillas',
+    name: 'Costillas (Pork)',
+    description: 'Rice, Beans, Tortillas, and green chile',
+    price: 20.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'tacos-al-pastor',
+    name: 'Tacos Al Pastor',
+    description: '',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'pollo-plancha',
+    name: 'Pollo a la Plancha',
+    description: 'Corn or Flour Tortillas',
+    price: 18.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'tacos-carbon',
+    name: 'Tacos al Carbon',
+    description: '',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'chicken-mole',
+    name: 'Chicken Mole',
+    description: 'Flour or Corn Tortillas',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'flauta-plate',
+    name: 'Flauta Plate',
+    description: '3 Flautas with rice, beans, lettuce, tomatoes, sour cream, beef, chicken, carnitas ',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  {
+    id: 'pork-chile-verde',
+    name: 'Pork Chile Verde',
+    description: '',
+    price: 18.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'dinner-specials',
+  },
+  
+  //enchiladas
+  {
+    id: 'cheese-dip-enchiladas',
+    name: 'Cheese Dip Enchiladas',
+    description: '2 Enchiladas side of rice and beans and your choice of Beef, Chicken, or Cheese',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'enchiladas',
+  },
+  {
+    id: 'spinach-enchiladas',
+    name: 'Spinach Enchiladas',
+    description: '2 Enchiladas with a side of rice and beans',
+    price: 11.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'enchiladas',
+  },
+  {
+    id: 'las-comadres',
+    name: 'Los Comadres',
+    description: '3 Enchiladas bathed in sauce, one red, one with green chile and the other with tomatillo, accompanied by rice and beans with sour cream. Beef, Chicke, or Cheese.',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'enchiladas',
+  },
+  {
+    id: 'enchiladas-suizas',
+    name: 'Enchiladas Suizas',
+    description: '2 Enchiladas somthered in green sause, sour cream, rice and beans. Beef, Chicken, Or Cheese',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'enchiladas',
+  },
+  {
+    id: 'mole-enchiladas',
+    name: 'Mole Enchiladas',
+    description: ' Beef, Chicken, or Cheese',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'enchiladas',
+  },
+  
+  //chimichangas
+  {
+    id: 'chimichanga',
+    name: 'Chimichanga',
+    description: 'Comes with Rice and Beans. Choice of Beef, Chicken, or Carnitas',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'chimichangas',
+  },
+  {
+    id: 'cheesedip-chimichanga',
+    name: 'Cheese Dip Chimichanga',
+    description: 'Comes with Rice and Beans. Choice of Beef, Chicken, or Carnitas',
+    price: 16.49,
+    image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
+    category: 'chimichangas',
+  },
+
+  //breakfast meals
+  {
+    id: 'berthoud-plate',
+    name: 'Berthoud Plate',
+    description: 'Traditional Mexican caramel custard',
+    price: 19.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'breakfast-quesadilla',
+    name: 'Breakfast Quesadilla',
+    description: 'Traditional Mexican caramel custard',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'casita-enchiladas',
+    name: 'Casita Enchiladas',
+    description: 'Traditional Mexican caramel custard',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'breakfast-chimichanga',
+    name: 'Breakfast Chimichanga',
+    description: 'Traditional Mexican caramel custard',
+    price: 14.75,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'chilaquiles',
+    name: 'Chilaquiles',
+    description: 'Traditional Mexican caramel custard',
+    price: 14.75,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'huevos-racheros',
+    name: 'Huevos Racheros',
+    description: 'Traditional Mexican caramel custard',
+    price: 13.00,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'huevos-conchroizo',
+    name: 'Huevos Con Chroizo',
+    description: 'Traditional Mexican caramel custard',
+    price: 13.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'machaca-con-huevo',
+    name: 'Machaca Con Huevo',
+    description: 'Traditional Mexican caramel custard',
+    price: 15.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'vickeys-special',
+    name: 'Vickeys Special',
+    description: 'Two pork chops, two eggs, beans smothered in green chile. With a side of tortillas',
+    price: 20.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+  {
+    id: 'colorado-special',
+    name: 'Colorado Special',
+    description: 'Chilaquiles, eggs and steak',
+    price: 20.49,
+    image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+    category: 'breakfast-meals',
+  },
+//soups
+{
+  id: 'menudo',
+  name: 'Menudo',
+  description: 'Homemade recipe alongside your choise of 4 Flour or Corn Tortillas',
+  price: 15.49,
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'soups',
+},
+{
+  id: 'pozole',
+  name: 'Pozole',
+  description: 'Homemade recipe alongside your choise of 4 Flour or Corn Tortillas',
+  price: 15.49,
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'soups',
+},
+{
+  id: 'ramen-birria',
+  name: 'Ramen Birria',
+  description: 'Ramen Noodle soup with birria',
+  price: 19.49,
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'soups',
+},
+{
+  id: 'sopa-de-papa',
+  name: 'Sopa de Papa',
+  description: 'Comes with Potatoes, Bacon, and Cheese',
+  price: 14.49,
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'soups',
+},
+
+//breakfast burritos
+{
+  id: 'potato-egg-cheese-burrito',
+  name: 'Potato Egg and Cheese Burrito',
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'egg-cheese-meat-burrito',
+  name: 'Egg and Cheese Meat Burrito',
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'egg-cheese-burrito',
+  name: `Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 5.45,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.45,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'potato-bacon-egg-cheese-burrito',
+  name: `Potato Bacon Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'chorizo-potato-egg-cheese-burrito',
+  name: `Chorizo Potato Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'sausage-potato-egg-cheese-burrito',
+  name: `Sausage Potato Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'ham-potato-egg-cheese-burrito',
+  name: `Ham Potato Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 4.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.00,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'steak-potato-egg-cheese-burrito',
+  name: `Steak Potato Egg and Cheese Burrito`,
+  description: 'Choose your style and spice level',
+  price: 8.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 8.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 10.49,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'machaca-burrito',
+  name: `Machaca Burrito`,
+  description: 'Choose your style and spice level',
+  price: 4.75, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 7.75,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 9.50,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
+{
+  id: 'breakfast-cripsy',
+  name: `Breakfast Crispy`,
+  description: 'Choose your style and spice level',
+  price: 9.49, // Base price (will be overridden by variants)
+  image: 'https://images.unsplash.com/photo-1552689486-f6773047d19f',
+  category: 'breakfast-burritos',
+  variants: [
+    {
+      name: 'Wrap',
+      price: 9.49,
+      description: 'Standard size burrito'
+    },
+    {
+      name: 'Deluxe',
+      price: 11.49,
+      description: 'Larger size with extra fillings'
+    }
+  ],
+  defaultSpiceLevel: 'medium'
+},
 ];

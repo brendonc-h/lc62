@@ -1,9 +1,13 @@
+import { SpiceLevel } from '@/data/menu';
+
 export type CartItem = {
   id: string;
   name: string;
   price: number;
   quantity: number;
   image: string;
+  variant?: string;
+  spiceLevel?: SpiceLevel;
 };
 
 export type OrderStatus = 'preparing' | 'ready' | 'completed' | 'cancelled';
@@ -19,6 +23,8 @@ export type OrderDetails = {
   createdAt?: string | Date;
   estimatedTime?: number;
   orderType?: 'pickup' | 'delivery';
+  variant?: string;
+  spiceLevel?: SpiceLevel;
 };
 
 export type CustomerInfo = {
