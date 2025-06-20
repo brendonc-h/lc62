@@ -1,20 +1,34 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'images.unsplash.com',
-      'localhost',
-      'la-casita-uploads.s3.amazonaws.com',
-      's3.amazonaws.com',
-      'via.placeholder.com'
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: 'la-casita-uploads.s3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      }
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
-  // Enable React's new streaming and server components
+  // External packages for server components
   experimental: {
     serverComponentsExternalPackages: ['@aws-sdk/client-s3'],
-    serverActions: true,
   },
   // Security headers
   async headers() {
