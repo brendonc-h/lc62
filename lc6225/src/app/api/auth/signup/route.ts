@@ -2,7 +2,7 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import { connectToDatabase } from '@/lib/mongodb';
+import { supabase } from '@/lib/supabaseClient';
 
 type User = {
   email: string;
@@ -32,10 +32,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { db } = await connectToDatabase();
-
-    // Check if user exists
-    const existingUser = await db.collection('users').findOne({ email });
+    // Check if user exists in Supabase
+    const { data: existingUser, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
     if (existingUser) {
       return NextResponse.json(
         { error: 'User already exists' },
@@ -43,18 +45,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create user
+    // Create user in Supabase
     const hashedPassword = await hash(password, 12);
-    const now = new Date();
-    
-    await db.collection<User>('users').insertOne({
-      email: email.toLowerCase(),
-      name,
-      password: hashedPassword,
-      points: 0,
-      createdAt: now,
-      updatedAt: now
-    });
+    const now = new Date().toISOString();
+
+    const { error: insertError } = await supabase
+      .from('users')
+      .insert([
+        {
+          email: email.toLowerCase(),
+          name,
+          password: hashedPassword,
+          points: 0,
+          createdAt: now,
+          updatedAt: now,
+        },
+      ]);
+
+    if (insertError) {
+      console.error('Signup error:', insertError);
+      return NextResponse.json(
+        { error: 'Failed to create user' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: 'User created successfully' },

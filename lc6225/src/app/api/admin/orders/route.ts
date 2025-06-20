@@ -1,9 +1,9 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
+import { supabase } from '@/lib/supabaseClient';
 
 // Add any admin emails here
 const ADMIN_EMAILS = ['brendon1798@gmail.com', 'info@lacasita.io'];
@@ -17,14 +17,17 @@ export async function GET() {
   }
 
   try {
-    const { db } = await connectToDatabase();
-    const orders = await db
-      .collection('orders')
-      .find({})
-      .sort({ createdAt: -1 })
-      .toArray();
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    const safe = orders.map((o) => ({ id: o._id.toString(), ...o, _id: undefined }));
+    if (error) {
+      console.error('Admin orders error:', error);
+      return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+    }
+
+    const safe = orders.map((o) => ({ id: o.id, ...o }));
     return NextResponse.json(safe);
   } catch (error) {
     console.error('Admin orders error:', error);

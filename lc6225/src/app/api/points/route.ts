@@ -3,8 +3,7 @@ export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import { ObjectId } from 'mongodb';
-import { connectToDatabase } from '@/lib/mongodb';
+import { supabase } from '@/lib/supabaseClient';
 
 // Extend the session type to include our custom fields
 declare module 'next-auth' {
@@ -14,16 +13,11 @@ declare module 'next-auth' {
       email: string;
       name: string;
       points: number;
+      role?: string;
     };
   }
 }
 
-interface UserDocument {
-  _id: ObjectId;
-  email: string;
-  points: number;
-  updatedAt: Date;
-}
 
 export async function POST(request: Request) {
   try {
@@ -46,33 +40,41 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get database connection
-    const { db } = await connectToDatabase();
-    
-    // Update user's points
-    const result = await db.collection<UserDocument>('users').findOneAndUpdate(
-      { email: session.user.email },
-      { 
-        $inc: { points: amount },
-        $set: { updatedAt: new Date() }
-      },
-      { 
-        returnDocument: 'after',
-        projection: { points: 1, _id: 0 }
-      }
-    );
+    // Update user's points in Supabase
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('points')
+      .eq('email', session.user.email)
+      .single();
 
-    if (!result.value) {
+    if (userError || !user) {
       return NextResponse.json(
         { message: 'User not found' },
         { status: 404 }
       );
     }
 
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('users')
+      .update({
+        points: (user.points || 0) + amount,
+        updatedAt: new Date().toISOString(),
+      })
+      .eq('email', session.user.email)
+      .select('points')
+      .single();
+
+    if (updateError || !updatedUser) {
+      return NextResponse.json(
+        { message: 'Failed to update points' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { 
+      {
         message: 'Points updated successfully',
-        newPoints: result.value.points 
+        newPoints: updatedUser.points,
       },
       { status: 200 }
     );

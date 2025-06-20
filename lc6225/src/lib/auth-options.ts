@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { compare } from 'bcryptjs';
-import { connectToDatabase } from './mongodb';
+
 
 // Extend the built-in session and user types
 declare module 'next-auth' {

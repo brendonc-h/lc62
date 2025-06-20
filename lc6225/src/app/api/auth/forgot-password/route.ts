@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { supabase } from '@/lib/supabaseClient';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { v4 as uuidv4 } from 'uuid';
-import type { WithId, Document } from 'mongodb';
+
 
 // Helper function to mask sensitive information in logs
 const maskEmail = (email: string) => {
@@ -32,14 +32,14 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Connecting to database...');
-    const { db } = await connectToDatabase();
-    const users = db.collection<WithId<Document>>('users');
-    
-    console.log('Looking up user...');
-    const user = await users.findOne({ email: email.toLowerCase() });
+    // Look up user in Supabase
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    if (!user) {
+    if (userError || !user) {
       console.log('No user found with email:', maskEmail(email));
       // Don't reveal that the email doesn't exist
       return NextResponse.json(
@@ -54,17 +54,28 @@ export async function POST(request: Request) {
     const expires = new Date();
     expires.setHours(expires.getHours() + 1); // Token expires in 1 hour
 
-    // Store the token in the database
-    console.log('Storing reset token in database...');
-    const tokens = db.collection('passwordResetTokens');
-    await tokens.insertOne({
-      token,
-      userId: user._id,
-      email: user.email,
-      expires,
-      used: false,
-      createdAt: new Date()
-    });
+    // Store the token in Supabase
+    console.log('Storing reset token in Supabase...');
+    const { error: tokenError } = await supabase
+      .from('passwordResetTokens')
+      .insert([
+        {
+          token,
+          userId: user.id ?? user.userId ?? user._id,
+          email: user.email,
+          expires: expires.toISOString(),
+          used: false,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+
+    if (tokenError) {
+      console.error('Failed to store reset token:', tokenError);
+      return NextResponse.json(
+        { error: 'Failed to process password reset request' },
+        { status: 500 }
+      );
+    }
 
     console.log('Sending password reset email...');
     // Send the email

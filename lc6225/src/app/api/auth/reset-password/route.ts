@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUsersCollection, getPasswordResetTokensCollection } from '@/lib/db';
+import { supabase } from '@/lib/supabaseClient';
 import { hash } from 'bcryptjs';
 
 export const runtime = 'nodejs';
@@ -15,31 +15,48 @@ export async function POST(request: Request) {
       );
     }
 
-    // Find the token
-    const tokens = await getPasswordResetTokensCollection();
-    const resetToken = await tokens.findOne({
-      token,
-      expires: { $gt: new Date() },
-    });
+    // Find the token in Supabase
+    const { data: resetToken, error: tokenError } = await supabase
+      .from('passwordResetTokens')
+      .select('*')
+      .eq('token', token)
+      .gt('expires', new Date().toISOString())
+      .eq('used', false)
+      .single();
 
-    if (!resetToken) {
+    if (tokenError || !resetToken) {
       return NextResponse.json(
         { error: 'Invalid or expired token' },
         { status: 400 }
       );
     }
 
-    // Update the user's password
-    const users = await getUsersCollection();
+    // Update the user's password in Supabase
     const hashedPassword = await hash(password, 12);
-    
-    await users.updateOne(
-      { _id: resetToken.userId },
-      { $set: { password: hashedPassword } }
-    );
+    const { error: userUpdateError } = await supabase
+      .from('users')
+      .update({ password: hashedPassword, updatedAt: new Date().toISOString() })
+      .eq('id', resetToken.userId);
 
-    // Delete the used token
-    await tokens.deleteOne({ token });
+    if (userUpdateError) {
+      return NextResponse.json(
+        { error: 'Failed to update password' },
+        { status: 500 }
+      );
+    }
+
+    // Mark the token as used in Supabase
+    const { error: tokenUpdateError } = await supabase
+      .from('passwordResetTokens')
+      .update({ used: true })
+      .eq('token', token);
+
+    if (tokenUpdateError) {
+      return NextResponse.json(
+        { error: 'Failed to update token' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: 'Password has been reset successfully' },

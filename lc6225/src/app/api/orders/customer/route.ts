@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import { connectToDatabase } from '@/lib/mongodb';
+import { supabase } from '@/lib/supabaseClient';
 
 // Returns the current user's orders, newest first
 export async function GET() {
@@ -13,16 +13,23 @@ export async function GET() {
   }
 
   try {
-    const { db } = await connectToDatabase();
-    const orders = await db
-      .collection('orders')
-      .find({ customerEmail: session.user.email })
-      .sort({ createdAt: -1 })
-      .toArray();
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('customerEmail', session.user.email)
+      .order('created_at', { ascending: false });
 
-    // Strip _id & convert to string id
+    if (error) {
+      console.error('Customer orders error:', error);
+      return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+    }
+
+    type Order = {
+      id: string;
+      [key: string]: any;
+    };
     return NextResponse.json(
-      orders.map((o) => ({ id: o._id.toString(), ...o, _id: undefined }))
+      (orders as Order[]).map((o) => ({ id: o.id, ...o }))
     );
   } catch (err) {
     console.error('Customer orders error:', err);
