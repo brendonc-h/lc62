@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { supabase } from '@/lib/supabaseClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -20,21 +20,43 @@ export default function SignIn() {
     setIsLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-        callbackUrl,
+      // Validate input
+      if (!email || !password) {
+        throw new Error('Please enter both email and password');
+      }
+
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password.trim(),
       });
 
-      if (result?.error) {
-        throw new Error('Invalid email or password');
+      if (signInError) {
+        // Handle specific error cases
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password');
+        } else if (signInError.message.includes('Email not confirmed')) {
+          throw new Error('Please check your email to confirm your account before signing in.');
+        } else {
+          throw new Error(signInError.message || 'Failed to sign in');
+        }
+      }
+
+      if (!data?.user) {
+        throw new Error('No user data returned');
+      }
+
+      // Check if email is confirmed
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        throw new Error(userError.message || 'Failed to verify user session');
       }
 
       // Redirect to the callback URL or dashboard on successful login
       router.push(callbackUrl);
       router.refresh();
     } catch (err) {
+      console.error('Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');
       setIsLoading(false);
     }
@@ -47,6 +69,9 @@ export default function SignIn() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Demo account: test@example.com / password123
+          </p>
           <p className="mt-2 text-center text-sm text-gray-600">
             Don't have an account?{' '}
             <Link href="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500">

@@ -1,9 +1,4 @@
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth-options";
+// This file is intentionally left empty as we're using Supabase Auth instead of NextAuth
+// You can safely delete this file if you're not using it for anything else
 
-// Force this route to run in the Node.js runtime (Edge runtime blocks "eval" used by next-auth/mongodb)
-export const runtime = 'nodejs';
-
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export const dynamic = 'force-dynamic';

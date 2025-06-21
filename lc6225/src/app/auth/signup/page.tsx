@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -18,36 +19,69 @@ export default function SignUp() {
     setError('');
     setIsLoading(true);
 
+    // Validate input
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      // 1. Register the user
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+      // 1. Register the user with Supabase Auth
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password.trim(),
+        options: {
+          data: {
+            name: name.trim(),
+            role: 'customer',
+            points: 0
+          },
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create account');
+      if (signUpError) {
+        throw new Error(signUpError.message || 'Failed to create account');
       }
 
-      // 2. Automatically sign in the user after successful registration
-      const result = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
-      });
+      if (!signUpData.user) {
+        throw new Error('Failed to create user account');
+      }
 
-      if (result?.error) {
-        // If sign in fails after registration, redirect to sign in page
-        router.push('/auth/signin');
+      // 2. Insert into profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: signUpData.user.id,
+          name: name.trim(),
+          email: email.trim(),
+          role: 'customer',
+          points: 0,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+        throw new Error('Account created, but there was an error setting up your profile. Please contact support.');
+      }
+
+      // 3. Check if user needs to confirm email
+      if (signUpData.user.identities && signUpData.user.identities.length === 0) {
+        // User already exists
+        setError('An account with this email already exists. Please sign in.');
+        setIsLoading(false);
         return;
       }
 
-      // Redirect to dashboard on successful sign in
+      // 4. If email confirmation is required, show message
+      if (signUpData.user.identities && signUpData.user.identities.length > 0) {
+        setMessage('Check your email for a confirmation link to complete your registration.');
+        return;
+      }
+
+      // 5. If no email confirmation required, redirect to dashboard
       router.push('/dashboard');
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
       setIsLoading(false);
@@ -61,6 +95,20 @@ export default function SignUp() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
+          {message && (
+            <div className="mt-4 bg-green-50 border-l-4 border-green-500 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">{message}</p>
+                </div>
+              </div>
+            </div>
+          )}
           <p className="mt-2 text-center text-sm text-gray-600">
             Already have an account?{' '}
             <Link href="/auth/signin" className="font-medium text-indigo-600 hover:text-indigo-500">

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 type User = {
   id: string;
@@ -20,34 +20,75 @@ type Order = {
 };
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    if (isInitialLoading && status === 'loading') {
-      return;
-    }
+    const getUser = async () => {
+      try {
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError || !authUser) {
+          router.push('/auth/signin?callbackUrl=/dashboard');
+          return;
+        }
 
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/dashboard');
-      setIsInitialLoading(false);
-    } else if (status === 'authenticated' && session?.user) {
-      setUser({
-        id: session.user.id,
-        name: session.user.name || 'User',
-        email: session.user.email || '',
-        points: session.user.points || 0,
-        role: session.user.role,
-      });
-      setIsInitialLoading(false);
-    } else if (status !== 'loading') {
-      setIsInitialLoading(false);
-    }
-  }, [status, session, router, isInitialLoading]);
+        // Fetch user profile
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', authUser.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        setUser({
+          id: authUser.id,
+          name: profile.name || authUser.email?.split('@')[0] || 'User',
+          email: authUser.email || '',
+          points: profile.points || 0,
+          role: profile.role || 'customer',
+        });
+
+        // Fetch user orders
+        const { data: ordersData, error: ordersError } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('user_id', authUser.id)
+          .order('created_at', { ascending: false });
+
+        if (ordersError) throw ordersError;
+
+        setOrders(ordersData.map(order => ({
+          id: order.id,
+          date: new Date(order.created_at).toLocaleDateString(),
+          total: order.total,
+          status: order.status,
+        })));
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+        setError('Failed to load user data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getUser();
+
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        router.push('/auth/signin');
+      }
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, [router]);
 
   useEffect(() => {
     if (user?.role === 'admin') {
@@ -55,63 +96,36 @@ export default function Dashboard() {
     }
   }, [user, router]);
 
-  useEffect(() => {
-    if (user) {
-      // Fetch past orders
-      const fetchOrders = async () => {
-        try {
-          setError('');
-          const response = await fetch('/api/orders', {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || 'Failed to fetch orders');
-          }
-
-          setOrders(data.orders || []);
-        } catch (err) {
-          console.error('Error fetching orders:', err);
-          setError(err instanceof Error ? err.message : 'Failed to fetch orders');
-        }
-      };
-
-      fetchOrders();
-    }
-  }, [user]);
-
   const handleSignOut = async () => {
-    await signOut({ redirect: false });
+    await supabase.auth.signOut();
     router.push('/auth/signin');
-    router.refresh();
   };
 
-  if (isInitialLoading && status === 'loading') {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
 
-  if (!user && !isInitialLoading) {
+  if (error || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-gray-600">
-            {status === 'unauthenticated' ? 'Redirecting to sign-in...' : 'You need to be signed in to view this page, or an error occurred.'}
-          </p>
-          {status !== 'unauthenticated' && (
-            <button
-              onClick={() => router.push('/auth/signin?callbackUrl=/dashboard')}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-            >
-              Sign In
-            </button>
-          )}
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <p className="text-red-500">{error || 'User not found'}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            Retry
+          </button>
+          <button
+            onClick={handleSignOut}
+            className="mt-4 ml-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+          >
+            Sign Out
+          </button>
         </div>
       </div>
     );
@@ -127,7 +141,7 @@ export default function Dashboard() {
               onClick={handleSignOut}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Sign Out
+              Sign out
             </button>
           </div>
 

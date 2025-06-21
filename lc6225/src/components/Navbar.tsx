@@ -1,12 +1,34 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function Navbar() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      setUser(data?.user || null);
+      setLoading(false);
+    };
+    getUser();
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      getUser();
+    });
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   // Don't show navbar on auth pages
   if (pathname.startsWith('/auth')) {
@@ -37,14 +59,17 @@ export default function Navbar() {
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            {status === 'authenticated' ? (
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 mr-4">
-                  Welcome, {session.user?.name}
+            {!loading && user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700 font-medium">
+                  {user.name || user.email}
                 </span>
                 <button
-                  onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                  className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/auth/signin';
+                  }}
+                  className="text-sm font-medium text-white bg-red-500 px-4 py-2 rounded-md hover:bg-red-600"
                 >
                   Sign out
                 </button>

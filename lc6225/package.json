@@ -9,14 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.7",
     "@aws-sdk/client-s3": "^3.828.0",
     "@aws-sdk/s3-request-presigner": "^3.828.0",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.1.1",
-
     "@prisma/client": "^6.8.2",
     "@stripe/stripe-js": "^2.4.0",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.39.7",
     "@types/node": "^20.11.5",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.48",
@@ -25,9 +26,7 @@
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.9",
     "clsx": "^2.1.0",
-
     "next": "^14.1.0",
-    "next-auth": "^4.24.7",
     "nodemailer": "^6.10.1",
     "postcss": "^8.4.33",
     "react": "^18.2.0",

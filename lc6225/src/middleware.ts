@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { createMiddlewareClient } from '@supabase/ssr';
 
-// List of admin paths that require authentication
+// List of admin paths that require admin role
 const adminPaths = [
   '/admin',
   '/admin/dashboard',
@@ -15,55 +15,116 @@ const adminPaths = [
 const publicPaths = [
   '/',
   '/auth/signin',
+  '/auth/signup',
   '/auth/forgot-password',
+  '/auth/update-password',
   '/auth/reset-password',
   '/api/auth/signin',
+  '/api/auth/signup',
   '/api/auth/forgot-password',
-  '/api/auth/reset-password'
+  '/api/auth/update-password',
+  '/api/auth/reset-password',
+  '/_next',
+  '/favicon.ico',
+  '/logo.png'
+];
+
+// Paths that require authentication but not admin role
+const protectedPaths = [
+  '/dashboard',
+  '/profile',
+  '/orders'
 ];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  console.log(`Middleware processing: ${pathname}`);
-
-  // Skip middleware for public paths and API routes (except admin API routes)
-  if (
-    publicPaths.some(path => pathname.startsWith(path)) ||
-    (pathname.startsWith('/api/') && !pathname.startsWith('/api/admin/'))
+  const res = NextResponse.next();
+  
+  // Skip middleware for public paths
+  if (publicPaths.some(path => pathname.startsWith(path)) ||
+      pathname.startsWith('/_next/') ||
+      pathname.endsWith('.ico') ||
+      pathname.endsWith('.png') ||
+      pathname.endsWith('.jpg') ||
+      pathname.endsWith('.jpeg') ||
+      pathname.endsWith('.svg') ||
+      pathname.endsWith('.css') ||
+      pathname.endsWith('.js')
   ) {
-    return NextResponse.next();
+    return res;
   }
 
-  // Check for admin routes
+  // Create a Supabase client configured to use cookies
+  const supabase = createMiddlewareClient({ req, res });
+  
+  // Refresh session if expired - required for Server Components
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  // Check if the path is an admin path
   const isAdminPath = adminPaths.some(path => pathname.startsWith(path)) || 
                      pathname.startsWith('/api/admin/');
+  
+  // Check if the path is a protected path
+  const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
 
-  if (isAdminPath) {
-    try {
-      console.log('Admin route detected, checking authentication...');
-      const token = await getToken({ req });
+  // Handle API routes
+  if (pathname.startsWith('/api/')) {
+    // For API routes, we can return JSON responses
+    if (isAdminPath) {
+      if (!session) {
+        return NextResponse.json(
+          { error: 'Not authenticated' },
+          { status: 401 }
+        );
+      }
       
-      if (!token) {
-        console.log('No token found, redirecting to signin');
-        const signInUrl = new URL('/auth/signin', req.url);
-        signInUrl.searchParams.set('callbackUrl', pathname);
-        return NextResponse.redirect(signInUrl);
-      }
-
       // Check if user has admin role
-      if (token.role !== 'admin') {
-        console.log('User does not have admin role, redirecting to dashboard');
-        return NextResponse.redirect(new URL('/dashboard', req.url));
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile?.role !== 'admin') {
+        return NextResponse.json(
+          { error: 'Not authorized' },
+          { status: 403 }
+        );
       }
-
-      console.log('Admin access granted');
-    } catch (error) {
-      console.error('Error in admin route middleware:', error);
-      return NextResponse.redirect(new URL('/auth/error?error=AccessDenied', req.url));
     }
+    
+    return res;
   }
 
-  return NextResponse.next();
+  // Handle page routes
+  if (isAdminPath || isProtectedPath) {
+    // Redirect to sign-in if not authenticated
+    if (!session) {
+      const signInUrl = new URL('/auth/signin', req.url);
+      signInUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    // For admin paths, check if user has admin role
+    if (isAdminPath) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile?.role !== 'admin') {
+        // Redirect to dashboard if not admin
+        const dashboardUrl = new URL('/dashboard', req.url);
+        return NextResponse.redirect(dashboardUrl);
+      }
+    }
+    
+    // User is authenticated and authorized, proceed
+    return res;
+  }
+
+  return res;
 }
 
 export const config = {

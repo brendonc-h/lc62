@@ -1,23 +1,51 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function PointsCard() {
-  const { data: session, status } = useSession();
+  const [user, setUser] = useState<any>(null);
+  const [points, setPoints] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
-  const points = (session?.user as any)?.points ?? 0;
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+      if (data.user) {
+        // Fetch user profile to get points
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('points')
+          .eq('id', data.user.id)
+          .single();
+        setPoints(profile?.points || 0);
+      }
+      setLoading(false);
+    };
+
+    getUser();
+    
+    // Listen for auth changes
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      getUser();
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
       {open && (
         <div className="bg-white shadow-lg rounded-lg p-4 mb-2 w-64 border">
           <h2 className="text-lg font-semibold mb-2">Points</h2>
-          {status === "loading" ? (
+          {loading ? (
             <p className="text-sm text-gray-500">Loading...</p>
-          ) : session ? (
+          ) : user ? (
             <p className="text-sm">
               You have <span className="font-bold">{points}</span> points.
             </p>
