@@ -1,7 +1,8 @@
 export type SpiceLevel = 'mild' | 'medium' | 'hot';
 
 export const SPICE_LEVELS: SpiceLevel[] = ['mild', 'medium', 'hot'];
-export const STYLE_TYPES: StyleTypes[] = ['Beef, Chicken, Bean'];
+export const STYLE_TYPES = ['Beef', 'Chicken', 'Bean'] as const;
+export type StyleType = typeof STYLE_TYPES[number];
 
 export interface MenuItemVariant {
   name: string;
@@ -9,6 +10,7 @@ export interface MenuItemVariant {
   description?: string;
   protein?: 'beef' | 'chicken' | 'bean' | 'cheese';
   size?: 'small' | 'medium' | 'large';
+  spiceLevel?: SpiceLevel;
 }
 
 export interface MenuItem {
