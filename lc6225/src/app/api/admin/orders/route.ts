@@ -1,20 +1,13 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth-options';
 import { supabase } from '@/lib/supabaseClient';
+import { error } from 'console';
 
 // Add any admin emails here
 const ADMIN_EMAILS = ['brendon1798@gmail.com', 'info@lacasita.io'];
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  const email = session?.user?.email;
-
-  if (!email || !ADMIN_EMAILS.includes(email)) {
-    return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
-  }
 
   try {
     const { data: orders, error } = await supabase
@@ -27,8 +20,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
     }
 
-    const safe = orders.map((o) => ({ id: o.id, ...o }));
-    return NextResponse.json(safe);
+    return NextResponse.json(orders);
   } catch (error) {
     console.error('Admin orders error:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });

@@ -34,8 +34,7 @@ export default function Home() {
   
   // Background images array
   const backgrounds = [
-    '/images/lacasitafoco.webp',
-    '/images/lacasitabuilding.jpg'
+    '/images/lacasitalogo.jpg'
   ];
 
   // Change background image every 8 seconds
@@ -60,9 +59,12 @@ export default function Home() {
                 className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${index === currentBgIndex ? 'opacity-100' : 'opacity-0'}`}
                 style={{
                   backgroundImage: `url(${bg})`,
-                  backgroundSize: 'cover',
+                  backgroundSize: 'contain',
                   backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
+                  backgroundRepeat: 'no-repeat',
+                  backgroundColor: 'white',
+                  backgroundOrigin: 'center',
+                  backgroundClip: 'padding-box'
                 }}
               >
                 {/* Overlay */}
