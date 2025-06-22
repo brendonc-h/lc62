@@ -63,13 +63,15 @@ export default function Navbar() {
     return null;
   }
 
+  const isHomePage = pathname === '/';
+
   return (
-    <nav className="bg-white shadow">
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${isHomePage ? 'bg-transparent' : 'bg-white shadow'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Link href="/" className="text-xl font-bold text-red-600">
+              <Link href="/" className={`text-xl font-bold ${isHomePage ? 'text-white' : 'text-red-600'}`}>
                 La&nbsp;Casita
               </Link>
             </div>
@@ -81,9 +83,9 @@ export default function Navbar() {
                   href={item.href}
                   className={`${
                     pathname === item.href
-                      ? 'bg-gray-100 text-red-600'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
-                  } px-3 py-2 rounded-md text-sm font-medium flex items-center`}
+                      ? isHomePage ? 'bg-white/20 text-white' : 'bg-gray-100 text-red-600'
+                      : isHomePage ? 'text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600'
+                  } px-3 py-2 rounded-md text-sm font-medium flex items-center transition-colors`}
                 >
                   <item.icon className="h-5 w-5 mr-1.5" />
                   {item.name}
