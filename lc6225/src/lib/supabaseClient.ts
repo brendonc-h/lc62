@@ -12,7 +12,26 @@ export function createClient() {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true,
+        detectSessionInUrl: false, // Disable URL session detection to prevent issues
+        flowType: 'pkce',
+        storageKey: 'sb-auth-token',
+        storage: {
+          getItem: (key) => {
+            if (typeof document === 'undefined') return null;
+            const cookies = document.cookie.split('; ');
+            const cookie = cookies.find(row => row.startsWith(`${key}=`));
+            if (!cookie) return null;
+            return cookie.split('=')[1];
+          },
+          setItem: (key, value) => {
+            if (typeof document === 'undefined') return;
+            document.cookie = `${key}=${value}; path=/; samesite=lax; secure`;
+          },
+          removeItem: (key) => {
+            if (typeof document === 'undefined') return;
+            document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+          },
+        },
       },
     }
   );
