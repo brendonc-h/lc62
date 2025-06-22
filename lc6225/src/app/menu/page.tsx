@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { categories, menuItems, type MenuItem } from '@/data/menu';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FireIcon, ChevronDownIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
 
@@ -155,17 +154,9 @@ export default function MenuPage() {
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-lg overflow-hidden"
+                      className="bg-white rounded-lg shadow-lg overflow-hidden"
                     >
-                      <div className="w-full md:w-1/3 h-64 md:h-auto relative">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 p-6">
+                      <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <div className="flex items-center justify-between">

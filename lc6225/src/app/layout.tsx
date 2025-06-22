@@ -6,7 +6,7 @@ import { Providers } from './providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Points App',
+  title: 'La Casita',
   description: 'Track and manage your points',
 };
 

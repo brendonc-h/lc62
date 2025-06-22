@@ -12,44 +12,92 @@ export default function ContactPage() {
         <div className="mt-16 grid grid-cols-1 gap-16 lg:grid-cols-2">
           {/* Contact Information */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Visit Us</h2>
-            <div className="mt-8">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Address</h3>
-                  <p className="mt-2 text-gray-500">
-                    123 Main Street<br />
-                    Berthoud, CO 80513
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Hours</h3>
-                  <ul className="mt-2 text-gray-500 space-y-1">
-                    <li>Monday - Thursday: 11am - 9pm</li>
-                    <li>Friday - Saturday: 11am - 10pm</li>
-                    <li>Sunday: 11am - 8pm</li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">Contact</h3>
-                  <p className="mt-2 text-gray-500">
-                    Phone: (970) 555-0123<br />
-                    Email: info@lacasitaberthoud.com
-                  </p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Our Locations</h2>
+            <div className="space-y-12">
+              {/* Fort Collins Location */}
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">FORT COLLINS</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Address</h4>
+                    <p className="mt-1 text-gray-600">
+                      1720 W Mulberry St<br />
+                      Fort Collins, CO 80521
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Hours</h4>
+                    <ul className="mt-1 text-gray-600 space-y-1">
+                      <li>Monday - Friday: 7:00 AM - 8:00 PM</li>
+                      <li>Saturday: 7:00 AM - 2:00 PM</li>
+                      <li>Sunday: Closed</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Contact</h4>
+                    <p className="mt-1 text-gray-600">
+                      Phone: <a href="tel:9705128593" className="text-red-600 hover:underline">(970) 512-8593</a>
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Google Maps Embed */}
-              <div className="mt-8 aspect-video">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24037.096746541028!2d-105.08791!3d40.308375!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876ea9b1b58da219%3A0x1ef3218e2e92ef8c!2sBerthoud%2C%20CO%2080513!5e0!3m2!1sen!2sus!4v1684901234567!5m2!1sen!2sus"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
+              {/* Berthoud Location */}
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">BERTHOUD</h3>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Address</h4>
+                    <p className="mt-1 text-gray-600">
+                      405 5th St<br />
+                      Berthoud, CO 80513
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Hours</h4>
+                    <ul className="mt-1 text-gray-600 space-y-1">
+                      <li>Monday - Friday: 7:30 AM - 2:00 PM</li>
+                      <li>Saturday: 7:30 AM - 2:00 PM</li>
+                      <li>Sunday: Closed</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Contact</h4>
+                    <p className="mt-1 text-gray-600">
+                      Phone: <a href="tel:9705174132" className="text-red-600 hover:underline">(970) 517-4132</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Google Maps Embeds */}
+              <div className="mt-8 space-y-8">
+                <div className="aspect-video">
+                  <h4 className="font-medium text-gray-900 mb-2">Fort Collins Location</h4>
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3028.041630272083!2d-105.09975872416293!3d40.5900929714479!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694eb5a8f7f6b9%3A0x1c1a6f3e1b3e3b1f!2s1720%20W%20Mulberry%20St%2C%20Fort%20Collins%2C%20CO%2080521!5e0!3m2!1sen!2sus!4v1623345678901!5m2!1sen!2sus"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="rounded-lg"
+                  ></iframe>
+                </div>
+                <div className="aspect-video">
+                  <h4 className="font-medium text-gray-900 mb-2">Berthoud Location</h4>
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3028.041630272083!2d-105.09975872416293!3d40.5900929714479!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694eb5a8f7f6b9%3A0x1c1a6f3e1b3e3b1f!2s1720%20W%20Mulberry%20St%2C%20Fort%20Collins%2C%20CO%2080521!5e0!3m2!1sen!2sus!4v1623345678901!5m2!1sen!2sus"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="rounded-lg"
+                  ></iframe>
+                </div>
               </div>
             </div>
           </div>

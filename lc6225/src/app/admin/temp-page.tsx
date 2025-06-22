@@ -13,6 +13,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar, Line } from 'react-chartjs-2';
+import 'chart.js/auto'; // This will automatically register all chart components
 
 interface Order {
   id: string;
@@ -22,6 +23,7 @@ interface Order {
   createdAt: string;
 }
 
+// Register ChartJS components once
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -33,16 +35,16 @@ ChartJS.register(
   Legend
 );
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// ChartJS default settings
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
+};
 
 export default function AdminTempPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -104,6 +106,18 @@ export default function AdminTempPage() {
   const totalOrders = orders.length;
   const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
 
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      // This will help catch any chart initialization errors
+      setChartError(null);
+    } catch (error) {
+      console.error('Chart initialization error:', error);
+      setChartError('Failed to initialize charts. Please refresh the page.');
+    }
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 p-6 lg:p-10">
@@ -146,11 +160,27 @@ export default function AdminTempPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4">Orders by Date</h2>
-            <Bar data={orderData} />
+            {chartError ? (
+              <div className="text-red-500 p-4 bg-red-50 rounded">
+                {chartError}
+              </div>
+            ) : (
+              <div className="h-64">
+                <Bar data={orderData} options={chartOptions} />
+              </div>
+            )}
           </div>
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4">Sales by Date</h2>
-            <Line data={salesData} />
+            {chartError ? (
+              <div className="text-red-500 p-4 bg-red-50 rounded">
+                {chartError}
+              </div>
+            ) : (
+              <div className="h-64">
+                <Line data={salesData} options={chartOptions} />
+              </div>
+            )}
           </div>
         </div>
 
