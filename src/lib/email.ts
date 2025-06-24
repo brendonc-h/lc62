@@ -72,7 +72,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
       throw new Error('Failed to connect to email server');
     }
 
-    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/reset-password?token=${token}`;
     
     console.log('Sending password reset email to:', email);
     console.log('Reset URL:', resetUrl);

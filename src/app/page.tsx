@@ -8,41 +8,37 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-    };
-    
-    getUser();
-    
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
+      if (session?.user) {
+        setUser(session.user);
+        setIsLoggedIn(true);
+      } else {
+        setUser(null);
+        setIsLoggedIn(false);
+      }
     });
-    
+
     return () => {
       subscription?.unsubscribe();
     };
   }, [supabase.auth]);
   
-  // Background images array
-  const backgrounds = [
-    '/images/lacasitalogo.jpg'
-  ];
+  // Background image
+  const backgroundImage = '/lcbuilding1.jpg'; // Direct path from public directory
+  const backgrounds = [backgroundImage]; // For the background cycling functionality
 
   // Change background image every 8 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgrounds.length);
     }, 8000);
-    
     return () => clearInterval(interval);
   }, [backgrounds.length]);
 
@@ -51,41 +47,32 @@ export default function Home() {
       <main>
         {/* Hero Section with Gradient Background */}
         <div className="relative h-screen flex items-center justify-center pt-16 overflow-hidden">
-          {/* Background Images */}
-          <div className="absolute inset-0 w-full h-full overflow-hidden">
-            {backgrounds.map((bg, index) => (
-              <div 
-                key={bg}
-                className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${index === currentBgIndex ? 'opacity-100' : 'opacity-0'}`}
-                style={{
-                  backgroundImage: `url(${bg})`,
-                  backgroundSize: 'contain',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundColor: 'white',
-                  backgroundOrigin: 'center',
-                  backgroundClip: 'padding-box'
-                }}
-              >
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-red-900/70 via-orange-800/60 to-yellow-600/50"></div>
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 w-full h-full overflow-hidden"
+            style={{
+              backgroundImage: `url(${backgroundImage})`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: 'white',
+              backgroundOrigin: 'center',
+              backgroundClip: 'padding-box'
+            }}
+          >
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-900/70 via-orange-800/60 to-yellow-600/50"></div>
+            
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0 w-full h-full" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }}></div>
+            </div>
                 
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute inset-0 w-full h-full" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  }}></div>
-                </div>
-                
-                {/* Decorative Elements */}
-                {index === 0 && (
-                  <>
-                    <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 right-10 w-48 h-48 bg-red-500/20 rounded-full blur-3xl"></div>
-                  </>
-                )}
-              </div>
-            ))}
+            {/* Decorative Elements */}
+            <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-48 h-48 bg-red-500/20 rounded-full blur-3xl"></div>
           </div>
 
           {/* Hero Content */}
