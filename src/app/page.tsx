@@ -1,18 +1,19 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChefHat, Users, Smartphone, Star, Clock, MapPin, Phone } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '../lib/supabaseClient';
+import { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -31,7 +32,7 @@ export default function Home() {
   }, [supabase.auth]);
   
   // Background image
-  const backgroundImage = '/lcbuilding1.jpg'; // Direct path from public directory
+  const backgroundImage = '/Lc33.jpeg'; // Updated to use your new image
   const backgrounds = [backgroundImage]; // For the background cycling functionality
 
   // Change background image every 8 seconds
@@ -49,79 +50,34 @@ export default function Home() {
         <div className="relative h-screen flex items-center justify-center pt-16 overflow-hidden">
           {/* Background Image */}
           <div 
-            className="absolute inset-0 w-full h-full overflow-hidden"
-            style={{
-              backgroundImage: `url(${backgroundImage})`,
-              backgroundSize: 'contain',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              backgroundColor: 'white',
-              backgroundOrigin: 'center',
-              backgroundClip: 'padding-box'
-            }}
-          >
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-red-900/70 via-orange-800/60 to-yellow-600/50"></div>
-            
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0 w-full h-full" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }}></div>
-            </div>
-                
-            {/* Decorative Elements */}
-            <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-10 w-48 h-48 bg-red-500/20 rounded-full blur-3xl"></div>
-          </div>
-
-          {/* Hero Content */}
-          <div className="relative z-10 text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-white/5 backdrop-blur-md p-8 sm:p-12 rounded-3xl shadow-2xl border border-white/20">
-              <div className="flex justify-center mb-6">
-                <div className="flex items-center space-x-1 text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-6 w-6 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6">
-                Welcome to <span className="text-yellow-400">La Casita</span>
-              </h1>
-              <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Authentic Mexican cuisine made with love and traditional recipes
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/menu"
-                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white text-lg font-semibold rounded-full shadow-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 hover:shadow-xl"
-                >
-                  <span className="relative z-10">View Our Menu</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </Link>
-                <Link
-                  href="/auth/signup"
-                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 text-lg font-semibold rounded-full shadow-lg hover:bg-white/20 hover:border-white/50 transition-all duration-300 transform hover:scale-105"
-                >
-                  <span className="relative z-10">Join Our Rewards</span>
-                </Link>
-              </div>
-
-              {/* Quick Info */}
-              <div className="mt-8 pt-8 border-t border-white/20 flex flex-col sm:flex-row gap-6 justify-center items-center text-white/80">
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-yellow-400" />
-                  <span className="text-sm">Open Daily 11am - 9pm</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Phone className="h-5 w-5 text-yellow-400" />
-                  <span className="text-sm">(970) 532-4223</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5 text-yellow-400" />
-                  <span className="text-sm">Berthoud, Colorado</span>
-                </div>
-              </div>
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${backgrounds[currentBgIndex]})` }}
+          />
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black bg-opacity-50" />
+          
+          {/* Content */}
+          <div className="relative z-10 text-center text-white px-4 max-w-4xl">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              Welcome to{' '}
+              <span className="text-yellow-400">La Casita</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-8 leading-relaxed">
+              Authentic Mexican flavors crafted with love and tradition
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/menu"
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+              >
+                Order Now
+              </Link>
+              <Link
+                href="/menu"
+                className="border-2 border-white hover:bg-white hover:text-black text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300"
+              >
+                View Menu
+              </Link>
             </div>
           </div>
         </div>

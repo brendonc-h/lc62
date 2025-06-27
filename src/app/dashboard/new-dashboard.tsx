@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '../../lib/supabaseClient';
 
 type AuthUser = {
   id: string;
@@ -195,8 +195,42 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const supabase = createClient();
+
+  const fetchOrders = async (customerId: string) => {
+    try {
+      console.log('Fetching orders for customer:', customerId);
+      const response = await fetch('/api/orders/customer');
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API response error:', response.status, errorText);
+        throw new Error(`Failed to fetch orders: ${response.status} ${errorText}`);
+      }
+      
+      const ordersData = await response.json();
+      console.log('Orders data received:', ordersData);
+      
+      // Transform orders to match our type
+      const transformedOrders = (ordersData || []).map((order: any) => ({
+        ...order,
+        total: order.total_price,
+        status: order.status || 'pending',
+        items: (order.order_items || []).map((item: any) => ({
+          name: item.menu_item?.name || 'Unknown Item',
+          quantity: item.quantity,
+          price: item.price_each
+        }))
+      }));
+      
+      setOrders(transformedOrders);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Failed to load orders. Please try again later.');
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -208,7 +242,6 @@ export default function Dashboard() {
           router.push('/auth/signin?callbackUrl=/dashboard');
           return;
         }
-        
         const authUser = session.user as AuthUser;
         
         // Fetch customer data
@@ -218,13 +251,13 @@ export default function Dashboard() {
           .eq('auth_id', authUser.id)
           .single();
 
-        // If customer doesn't exist, create one
         if (!customer || customerError) {
+          // Create customer if doesn't exist
           const userName = authUser.user_metadata?.full_name || 
-                        authUser.user_metadata?.name || 
-                        authUser.email?.split('@')[0] || 
-                        'Customer';
-                        
+                          authUser.user_metadata?.name || 
+                          authUser.email?.split('@')[0] || 
+                          'Customer';
+                          
           const { data: newCustomer, error: createError } = await supabase
             .from('customers')
             .upsert({
@@ -237,72 +270,39 @@ export default function Dashboard() {
             .select()
             .single();
 
-          if (createError) throw createError;
-          
           if (newCustomer) {
-            const userData = {
+            setUser({
               id: newCustomer.id,
-              name: newCustomer.name || '',
-              email: newCustomer.email || '',
-              points: newCustomer.points || 0,
+              name: newCustomer.name,
+              email: newCustomer.email,
+              points: newCustomer.points,
               role: 'customer'
-            };
-            setUser(userData);
-            
-            // Fetch orders for the new customer
+            });
             await fetchOrders(newCustomer.id);
+          } else {
+            console.error('Failed to create customer:', createError);
+            setError('Failed to create customer account. Please try again later.');
           }
         } else {
-          // Customer exists, fetch their data and orders
-          const userData = {
+          setUser({
             id: customer.id,
-            name: customer.name || '',
-            email: customer.email || '',
-            points: customer.points || 0,
-            role: 'customer'
-          };
-          setUser(userData);
-          
-          // Fetch orders for existing customer
+            name: customer.name,
+            email: customer.email,
+            points: customer.points,
+            role: customer.role || 'customer'
+          });
           await fetchOrders(customer.id);
         }
       } catch (err) {
-        console.error('Error in dashboard:', err);
+        console.error('Error in fetchData:', err);
         setError('Failed to load user data. Please try again later.');
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchOrders = async (customerId: string) => {
-      try {
-        const response = await fetch('/api/orders/customer');
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders');
-        }
-        const ordersData = await response.json();
-        
-        // Transform orders to match our type
-        const transformedOrders = (ordersData || []).map((order: any) => ({
-          ...order,
-          total: order.total_price,
-          status: order.status || 'pending',
-          items: (order.order_items || []).map((item: any) => ({
-            name: item.menu_item?.name || 'Unknown Item',
-            quantity: item.quantity,
-            price: item.price_each
-          }))
-        }));
-        
-        setOrders(transformedOrders);
-      } catch (err) {
-        console.error('Error fetching orders:', err);
-        setError('Failed to load order history.');
-      }
-    };
-
     fetchData();
-  }, [router]);
+  }, [router, supabase]);
 
   // Calculate stats for admin dashboard
   const stats = {

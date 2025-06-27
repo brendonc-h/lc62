@@ -69,7 +69,7 @@ export default function OrderPage() {
       name: item.name,
       price: item.price,
       quantity: quantity,
-      image: item.image
+      image: item.image || '/lacasitalogo.jpg'
     };
     addItem(cartItem);
     

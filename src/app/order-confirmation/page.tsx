@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '../../lib/supabaseClient';
 
 interface OrderDetails {
   id: string;
@@ -24,7 +24,7 @@ export default function OrderConfirmation() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   useEffect(() => {
     const fetchOrder = async () => {

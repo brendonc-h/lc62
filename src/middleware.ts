@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createMiddlewareClient } from '@supabase/ssr';
+import { createServerClient } from '@supabase/ssr';
 
 // List of admin paths that require admin role
 const adminPaths = [
@@ -55,7 +55,25 @@ export async function middleware(req: NextRequest) {
   }
 
   // Create a Supabase client configured to use cookies
-  const supabase = createMiddlewareClient({ req, res });
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          req.cookies.set({ name, value, ...options });
+          res.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options: any) {
+          req.cookies.set({ name, value: '', ...options });
+          res.cookies.set({ name, value: '', ...options });
+        },
+      },
+    }
+  );
   
   // Refresh session if expired - required for Server Components
   const { data: { session } } = await supabase.auth.getSession();
