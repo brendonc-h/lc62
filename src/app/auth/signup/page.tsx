@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseClient';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -27,6 +27,8 @@ export default function SignUp() {
     }
 
     try {
+      const supabase = createClient();
+      
       // 1. Register the user with Supabase Auth
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
@@ -49,20 +51,19 @@ export default function SignUp() {
         throw new Error('Failed to create user account');
       }
 
-      // 2. Insert into profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
+      // 2. Insert into customers table
+      const { error: customerError } = await supabase
+        .from('customers')
         .upsert({
-          id: signUpData.user.id,
+          auth_id: signUpData.user.id,
           name: name.trim(),
           email: email.trim(),
           role: 'customer',
-          points: 0,
-          updated_at: new Date().toISOString()
+          points: 0
         });
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
+      if (customerError) {
+        console.error('Customer creation error:', customerError);
         throw new Error('Account created, but there was an error setting up your profile. Please contact support.');
       }
 

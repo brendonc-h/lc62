@@ -101,7 +101,7 @@ export default function Home() {
             <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="aspect-w-16 aspect-h-12 relative h-64">
                 <Image
-                  src="/images/image9.jpeg"
+                  src="/image9.jpeg"
                   alt="Delicious Mexican dessert with chocolate drizzle"
                   width={500}
                   height={300}
@@ -118,7 +118,7 @@ export default function Home() {
             <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="aspect-w-16 aspect-h-12 relative h-64">
                 <Image
-                  src="/images/image0.jpeg"
+                  src="/image0.jpeg"
                   alt="Grilled Mexican steak with peppers and sides"
                   width={500}
                   height={300}
@@ -135,7 +135,7 @@ export default function Home() {
             <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="aspect-w-16 aspect-h-12 relative h-64">
                 <Image
-                  src="/images/image10.jpeg"
+                  src="/image10.jpeg"
                   alt="Mexican combination plate with enchiladas and sides"
                   width={500}
                   height={300}
@@ -152,7 +152,7 @@ export default function Home() {
             <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="aspect-w-16 aspect-h-12 relative h-64">
                 <Image
-                  src="/images/image1.jpeg"
+                  src="/image1.jpeg"
                   alt="Cheese enchiladas with rice and beans"
                   width={500}
                   height={300}
@@ -169,7 +169,7 @@ export default function Home() {
             <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
               <div className="aspect-w-16 aspect-h-12 relative h-64">
                 <Image
-                  src="/images/image11.jpeg"
+                  src="/image11.jpeg"
                   alt="Grilled steak with potatoes and peppers"
                   width={500}
                   height={300}
