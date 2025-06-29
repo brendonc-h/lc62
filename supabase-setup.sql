@@ -12,6 +12,8 @@ CREATE TABLE customers (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   auth_id UUID UNIQUE,
   name TEXT NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
   email TEXT NOT NULL,
   points INTEGER DEFAULT 0,
   role TEXT DEFAULT 'customer',

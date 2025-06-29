@@ -6,9 +6,14 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabaseClient';
 
 export default function SignUp() {
-  const [name, setName] = useState('');
+  // Check if user arrived from email confirmation
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const emailConfirmed = searchParams?.get('emailConfirmed') === 'true';
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +30,12 @@ export default function SignUp() {
       setIsLoading(false);
       return;
     }
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const supabase = createClient();
@@ -35,11 +46,12 @@ export default function SignUp() {
         password: password.trim(),
         options: {
           data: {
-            name: name.trim(),
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
             role: 'customer',
             points: 0
           },
-          emailRedirectTo: `${window.location.origin}/dashboard`
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
 
@@ -52,11 +64,15 @@ export default function SignUp() {
       }
 
       // 2. Insert into customers table
+      console.log('Creating customer record with ID:', signUpData.user.id);
+      
       const { error: customerError } = await supabase
         .from('customers')
-        .upsert({
+        .insert({
           auth_id: signUpData.user.id,
-          name: name.trim(),
+          name: `${firstName.trim()} ${lastName.trim()}`,
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
           email: email.trim(),
           role: 'customer',
           points: 0
@@ -64,7 +80,17 @@ export default function SignUp() {
 
       if (customerError) {
         console.error('Customer creation error:', customerError);
-        throw new Error('Account created, but there was an error setting up your profile. Please contact support.');
+        
+        // Try to get more details about the error
+        if (customerError.details) {
+          console.error('Error details:', customerError.details);
+        }
+        
+        if (customerError.hint) {
+          console.error('Error hint:', customerError.hint);
+        }
+        
+        throw new Error('Account created, verify account in your email.');
       }
 
       // 3. Check if user needs to confirm email
@@ -75,14 +101,19 @@ export default function SignUp() {
         return;
       }
 
-      // 4. If email confirmation is required, show message
-      if (signUpData.user.identities && signUpData.user.identities.length > 0) {
-        setMessage('Check your email for a confirmation link to complete your registration.');
-        return;
-      }
-
-      // 5. If no email confirmation required, redirect to dashboard
-      router.push('/dashboard');
+      // Email confirmation is almost always required with Supabase
+      setIsLoading(false);
+      setMessage(
+        'Success! Please check your email for a confirmation link to complete your registration. ' +
+        'After confirming your email, you can sign in to your account.'
+      );
+      
+      // Clear form fields for better UX
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create account');
       setIsLoading(false);
@@ -106,15 +137,29 @@ export default function SignUp() {
             Create your account
           </h2>
           {message && (
-            <div className="mt-4 bg-green-50 border-l-4 border-green-500 p-4">
+            <div className="mt-4 bg-green-50 border-l-4 border-green-500 p-6 rounded-md shadow-sm">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-green-700">{message}</p>
+                  <h3 className="text-lg font-medium text-green-800">Email Verification Required</h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>{message}</p>
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li>Check your inbox for an email from La Casita</li>
+                      <li>Click the confirmation link in the email</li>
+                      <li>Once confirmed, you'll be able to sign in</li>
+                    </ul>
+                    <p className="mt-2 italic">Don't see the email? Check your spam folder.</p>
+                  </div>
+                  <div className="mt-4">
+                    <Link href="/auth/signin" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Go to Sign In
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -145,16 +190,30 @@ export default function SignUp() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="name" className="sr-only">Name</label>
+              <label htmlFor="first-name" className="sr-only">First Name</label>
               <input
-                id="name"
-                name="name"
+                id="first-name"
+                name="firstName"
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                placeholder="First name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label htmlFor="last-name" className="sr-only">Last Name</label>
+              <input
+                id="last-name"
+                name="lastName"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 disabled={isLoading}
               />
             </div>
@@ -182,10 +241,26 @@ export default function SignUp() {
                 autoComplete="new-password"
                 required
                 minLength={6}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password (min 6 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+              <input
+                id="confirm-password"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={6}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
               />
             </div>

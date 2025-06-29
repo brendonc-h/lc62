@@ -92,7 +92,7 @@ export default function OrderPage() {
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">Online Ordering</h1>
             <p className="mt-4 text-lg text-gray-500">
-              Order your favorite Mexican dishes for pickup or delivery
+              Order your favorite Mexican dishes for pickup
             </p>
           </div>
           <Link

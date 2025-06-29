@@ -22,7 +22,7 @@ export type OrderDetails = {
   status?: OrderStatus;
   createdAt?: string | Date;
   estimatedTime?: number;
-  orderType?: 'pickup' | 'delivery';
+  orderType?: 'pickup';
   variant?: string;
   spiceLevel?: SpiceLevel;
 };
@@ -31,7 +31,6 @@ export type CustomerInfo = {
   name: string;
   email: string;
   phone: string;
-  orderType: 'pickup' | 'delivery';
-  address?: string;
+  orderType: 'pickup';
   specialInstructions?: string;
 };

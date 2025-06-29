@@ -15,7 +15,6 @@ export default function CheckoutPage() {
     email: '',
     phone: '',
     orderType: 'pickup',
-    address: '',
     specialInstructions: '',
   });
   const [loading, setLoading] = useState(false);
@@ -192,34 +191,14 @@ export default function CheckoutPage() {
                       <select
                         id="orderType"
                         name="orderType"
-                        value={customerInfo.orderType}
-                        onChange={handleInputChange}
-                        required
+                        value="pickup"
+                        disabled
                         className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
                       >
                         <option value="pickup">Pickup</option>
-                        <option value="delivery">Delivery</option>
                       </select>
                     </div>
                   </div>
-                  {customerInfo.orderType === 'delivery' && (
-                    <div>
-                      <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                        Delivery Address
-                      </label>
-                      <div className="relative mt-1 rounded-md shadow-sm">
-                        <textarea
-                          id="address"
-                          name="address"
-                          value={customerInfo.address}
-                          onChange={handleInputChange}
-                          rows={3}
-                          required={customerInfo.orderType === 'delivery'}
-                          className="block w-full rounded-md border-gray-300 pl-3 pr-10 py-2 focus:border-red-500 focus:ring-red-500"
-                        />
-                      </div>
-                    </div>
-                  )}
                   <div>
                     <label htmlFor="instructions" className="block text-sm font-medium text-gray-700">
                       Special Instructions

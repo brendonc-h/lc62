@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseClient';
 import {
   UserCircleIcon,
   ShoppingBagIcon,
@@ -11,6 +11,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   ArrowLeftOnRectangleIcon,
+  MapPinIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Navbar() {
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,6 +42,7 @@ export default function Navbar() {
     { name: 'Home', href: '/', icon: HomeIcon },
     { name: 'Menu', href: '/menu', icon: ShoppingBagIcon },
     { name: 'My Orders', href: '/orders', icon: ShoppingBagIcon },
+    { name: 'About Us', href: '/about', icon: MapPinIcon },
   ] as const;
 
   useEffect(() => {
