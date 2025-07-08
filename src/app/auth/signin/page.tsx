@@ -54,12 +54,8 @@ function SignInContent() {
         throw new Error('No user data returned');
       }
 
-      // Check if email is confirmed
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      
-      if (userError) {
-        throw new Error(userError.message || 'Failed to verify user session');
-      }
+      // Check if user has a customer record and create one if not
+      await ensureCustomerRecord(supabase, data.user);
 
       // Redirect to the callback URL or dashboard on successful login
       router.push(callbackUrl);
@@ -68,6 +64,81 @@ function SignInContent() {
       console.error('Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');
       setIsLoading(false);
+    }
+  };
+
+  // Handle Google sign in
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setIsLoading(true);
+    
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?provider=google`
+        }
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Failed to sign in with Google');
+      }
+      
+      // The redirect happens automatically so we don't need to do anything else here
+    } catch (err) {
+      console.error('Google sign in error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+      setIsLoading(false);
+    }
+  };
+  
+  // Helper function to ensure customer record exists
+  const ensureCustomerRecord = async (supabase: any, user: any) => {
+    try {
+      // Check if customer record already exists
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id, email')
+        .eq('auth_id', user.id)
+        .single();
+        
+      if (existingCustomer) {
+        console.log('Customer record already exists:', existingCustomer);
+        return;
+      }
+      
+      // If no customer record exists, create one
+      console.log('Creating customer record for user:', user.id);
+      
+      // Extract name parts from email if not available
+      let firstName = user.user_metadata?.firstName || user.user_metadata?.given_name || '';
+      let lastName = user.user_metadata?.lastName || user.user_metadata?.family_name || '';
+      
+      // If no name data is available, use the part before @ in email
+      if (!firstName && !lastName && user.email) {
+        const emailName = user.email.split('@')[0];
+        firstName = emailName;
+      }
+      
+      const { error: customerError } = await supabase
+        .from('customers')
+        .insert({
+          auth_id: user.id,
+          name: firstName && lastName ? `${firstName} ${lastName}` : firstName || 'User',
+          first_name: firstName || 'User',
+          last_name: lastName || '',
+          email: user.email,
+          role: 'customer',
+          points: 0
+        });
+
+      if (customerError) {
+        console.error('Failed to create customer record:', customerError);
+      }
+    } catch (error) {
+      console.error('Error ensuring customer record:', error);
+      // Non-fatal error, continue with sign-in process
     }
   };
 
@@ -188,6 +259,34 @@ function SignInContent() {
                 'Sign in'
               )}
             </button>
+          </div>
+          
+          <div className="mt-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className={`w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" 
+                    fill="#4285F4"/>
+                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"
+                    fill="#4285F4"/>
+                </svg>
+                Sign in with Google
+              </button>
+            </div>
           </div>
         </form>
       </div>

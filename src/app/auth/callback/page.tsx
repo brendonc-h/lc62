@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabaseClient';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -10,19 +11,109 @@ function AuthCallbackContent() {
   const [message, setMessage] = useState('Verifying your account...');
   const [error, setError] = useState('');
 
+  // Helper function to ensure customer record exists for OAuth users
+  const ensureCustomerRecord = async (supabase: SupabaseClient, user: User) => {
+    try {
+      if (!user || !user.id) return;
+      
+      // Check if customer record already exists
+      const { data: existingCustomer, error: queryError } = await supabase
+        .from('customers')
+        .select('id, email')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (queryError && !queryError.message.includes('No rows found')) {
+        console.error('Error checking for existing customer:', queryError);
+        return;
+      }
+        
+      if (existingCustomer) {
+        console.log('Customer record already exists:', existingCustomer);
+        return;
+      }
+      
+      // If no customer record exists, create one
+      console.log('Creating customer record for user:', user.id);
+      
+      // Extract name parts from user metadata
+      let firstName = user.user_metadata?.firstName || 
+                     user.user_metadata?.given_name || 
+                     user.user_metadata?.name?.split(' ')[0] || '';
+                     
+      let lastName = user.user_metadata?.lastName || 
+                    user.user_metadata?.family_name || 
+                    (user.user_metadata?.name?.split(' ').length > 1 ? 
+                      user.user_metadata?.name?.split(' ').slice(1).join(' ') : '') || '';
+      
+      // If no name data is available, use the part before @ in email
+      if (!firstName && !lastName && user.email) {
+        const emailName = user.email.split('@')[0];
+        firstName = emailName;
+      }
+      
+      const { error: insertError } = await supabase
+        .from('customers')
+        .insert({
+          auth_id: user.id,
+          name: firstName && lastName ? `${firstName} ${lastName}`.trim() : firstName || 'User',
+          first_name: firstName || 'User',
+          last_name: lastName || '',
+          email: user.email,
+          role: 'customer',
+          points: 0
+        });
+
+      if (insertError) {
+        console.error('Failed to create customer record:', insertError);
+      } else {
+        console.log('Successfully created customer record for:', user.email);
+      }
+    } catch (error) {
+      console.error('Error ensuring customer record:', error);
+    }
+  };
+
   useEffect(() => {
-    const handleEmailConfirmation = async () => {
+    const handleAuthCallback = async () => {
       try {
         const supabase = createClient();
         
         // Get URL params from Supabase auth redirect
         const code = searchParams?.get('code') || '';
+        const token = searchParams?.get('token') || ''; // Our custom token
         const type = searchParams?.get('type') || '';
+        const provider = searchParams?.get('provider') || '';
         
-        // For successful email confirmation
-        if (type === 'signup' && code) {
+        // For OAuth providers (like Google)
+        if (code && (provider || type === 'oauth')) {
+          setMessage(`${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'OAuth'} sign-in processing...`);
+          
           // Exchange the code for a session
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          
+          if (error) {
+            throw new Error(error.message);
+          }
+          
+          if (data.session && data.user) {
+            // Ensure the user has a customer record
+            await ensureCustomerRecord(supabase, data.user);
+            
+            setMessage('Sign in successful! Redirecting you...');
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+              router.push('/dashboard');
+            }, 1500);
+          } else {
+            throw new Error('Failed to get user session');
+          }
+        }
+        // For successful email confirmation with Supabase code
+        else if (type === 'signup' && code) {
+          // Exchange the code for a session
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
           
           if (error) {
             throw new Error(error.message);
@@ -32,22 +123,43 @@ function AuthCallbackContent() {
           setMessage('Email verified successfully! Redirecting you...');
           
           // Check if user is signed in after exchange
-          const { data: { session } } = await supabase.auth.getSession();
-          
-          // Redirect based on session status
-          setTimeout(() => {
-            if (session) {
-              router.push('/dashboard');
-            } else {
-              router.push('/auth/signin?verified=true');
-            }
-          }, 1500);
+          if (data.session && data.user) {
+            // Ensure customer record exists
+            await ensureCustomerRecord(supabase, data.user);
+            router.push('/dashboard');
+          } else {
+            router.push('/auth/signin?verified=true');
+          }
         } 
+        // For our custom verification token
+        else if (token) {
+          // Verify the token - in this case, the token is the user ID
+          // We're using it to verify the user's email
+          const { data: user, error: userError } = await supabase
+            .from('customers')
+            .select('*')
+            .eq('auth_id', token)
+            .single();
+            
+          if (userError || !user) {
+            throw new Error('Invalid verification token');
+          }
+          
+          // Update user verification status if needed
+          // This would be a good place to update a verified field if you have one
+          
+          setMessage('Email verified successfully! Redirecting you...');
+          
+          // Redirect to sign in page
+          setTimeout(() => {
+            router.push('/auth/signin?verified=true');
+          }, 1500);
+        }
         // For password reset flow
         else if (type === 'recovery' && code) {
           router.push(`/auth/update-password?code=${code}`);
         }
-        // For other types or missing code
+        // For other types or missing code/token
         else {
           throw new Error('Invalid or missing parameters');
         }
@@ -61,7 +173,7 @@ function AuthCallbackContent() {
       }
     };
 
-    handleEmailConfirmation();
+    handleAuthCallback();
   }, [router, searchParams]);
 
   return (

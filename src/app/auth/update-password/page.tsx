@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseClient';
 
 function UpdatePasswordContent() {
   const [password, setPassword] = useState('');
@@ -19,6 +19,7 @@ function UpdatePasswordContent() {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        const supabase = createClient();
         const { data: { session } } = await supabase.auth.getSession();
         // If there's no session, redirect to sign in
         if (!session) {
@@ -54,6 +55,7 @@ function UpdatePasswordContent() {
     setIsLoading(true);
 
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.updateUser({
         password: password,
       });

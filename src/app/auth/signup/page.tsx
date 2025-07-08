@@ -17,7 +17,38 @@ export default function SignUp() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
+
+  // Handle Google sign up
+  const handleGoogleSignUp = async () => {
+    setError('');
+    setGoogleLoading(true);
+    
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?provider=google`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Failed to sign in with Google');
+      }
+      
+      // The redirect happens automatically so we don't need to do anything else here
+    } catch (err) {
+      console.error('Google sign in error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +71,49 @@ export default function SignUp() {
     try {
       const supabase = createClient();
       
-      // 1. Register the user with Supabase Auth
+      // Use our API route for signup which handles both user creation and sending verification email
+      try {
+        setMessage('Creating your account...');
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            firstName: firstName.trim(),
+            lastName: lastName.trim(),
+            password: password.trim(),
+            confirmPassword: confirmPassword.trim()
+          }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create account');
+        } else {
+          console.log('API signup successful');
+          // API signup was successful, no need to continue with client-side Supabase signup
+          setMessage(
+            'Success! Please check your email for a confirmation link to complete your registration. ' +
+            'After confirming your email, you can sign in to your account.'
+          );
+          
+          // Clear form fields for better UX
+          setFirstName('');
+          setLastName('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setIsLoading(false);
+          return; // Exit early since we've handled everything
+        }
+      } catch (apiError) {
+        console.error('Failed to call signup API:', apiError);
+        // If the API route fails, fall back to client-side Supabase signup
+      }
+      
+      // Fallback: Register the user with Supabase Auth directly
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password: password.trim(),
@@ -51,7 +124,8 @@ export default function SignUp() {
             role: 'customer',
             points: 0
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          // Get the site URL from environment or use window.location.origin as fallback
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`
         }
       });
 
@@ -63,34 +137,47 @@ export default function SignUp() {
         throw new Error('Failed to create user account');
       }
 
-      // 2. Insert into customers table
+      // The API route already creates the customer record, but if we're using the fallback
+      // Supabase signup, we need to create the customer record here
       console.log('Creating customer record with ID:', signUpData.user.id);
       
-      const { error: customerError } = await supabase
+      // Check if a customer record already exists for this user
+      const { data: existingCustomer } = await supabase
         .from('customers')
-        .insert({
-          auth_id: signUpData.user.id,
-          name: `${firstName.trim()} ${lastName.trim()}`,
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          email: email.trim(),
-          role: 'customer',
-          points: 0
-        });
+        .select('*')
+        .eq('auth_id', signUpData.user.id)
+        .single();
+        
+      if (!existingCustomer) {
+        // Only insert if no customer record exists
+        const { error: customerError } = await supabase
+          .from('customers')
+          .insert({
+            auth_id: signUpData.user.id,
+            name: `${firstName.trim()} ${lastName.trim()}`,
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            email: email.trim(),
+            role: 'customer',
+            points: 0
+          });
 
-      if (customerError) {
-        console.error('Customer creation error:', customerError);
-        
-        // Try to get more details about the error
-        if (customerError.details) {
-          console.error('Error details:', customerError.details);
+        if (customerError) {
+          console.error('Customer creation error:', customerError);
+          
+          // Try to get more details about the error
+          if (customerError.details) {
+            console.error('Error details:', customerError.details);
+          }
+          
+          if (customerError.hint) {
+            console.error('Error hint:', customerError.hint);
+          }
+          
+          throw new Error('Account created, verify account in your email.');
         }
-        
-        if (customerError.hint) {
-          console.error('Error hint:', customerError.hint);
-        }
-        
-        throw new Error('Account created, verify account in your email.');
+      } else {
+        console.log('Customer record already exists, skipping creation');
       }
 
       // 3. Check if user needs to confirm email
@@ -115,7 +202,15 @@ export default function SignUp() {
       setPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create account';
+      
+      // Check for rate limit error
+      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        setError('Too many signup attempts. Please try again later or use a different email address.');
+      } else {
+        setError(errorMessage);
+      }
+      
       setIsLoading(false);
     }
   };
@@ -269,7 +364,7 @@ export default function SignUp() {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || googleLoading}
               className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
                 isLoading
                   ? 'bg-indigo-400 cursor-not-allowed'
@@ -288,6 +383,44 @@ export default function SignUp() {
                 'Sign up'
               )}
             </button>
+          </div>
+          
+          <div className="mt-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handleGoogleSignUp}
+                disabled={isLoading || googleLoading}
+                className={`w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${googleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {googleLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" 
+                        fill="#4285F4"/>
+                    </svg>
+                    Sign up with Google
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
       </div>

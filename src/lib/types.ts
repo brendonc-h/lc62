@@ -1,4 +1,4 @@
-import { SpiceLevel } from '@/data/menu';
+// Updated types for La Casita restaurant app
 
 export type CartItem = {
   id: string;
@@ -7,7 +7,7 @@ export type CartItem = {
   quantity: number;
   image: string;
   variant?: string;
-  spiceLevel?: SpiceLevel;
+  specialRequest?: string;
 };
 
 export type OrderStatus = 'preparing' | 'ready' | 'completed' | 'cancelled';
@@ -24,7 +24,7 @@ export type OrderDetails = {
   estimatedTime?: number;
   orderType?: 'pickup';
   variant?: string;
-  spiceLevel?: SpiceLevel;
+  specialRequest?: string;
 };
 
 export type CustomerInfo = {

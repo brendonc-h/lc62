@@ -1,6 +1,4 @@
-export type SpiceLevel = 'mild' | 'medium' | 'hot';
-
-export const SPICE_LEVELS: SpiceLevel[] = ['mild', 'medium', 'hot'];
+// Removed spice levels as requested
 export const STYLE_TYPES = ['Beef', 'Chicken', 'Bean'] as const;
 export type StyleType = typeof STYLE_TYPES[number];
 
@@ -10,7 +8,6 @@ export interface MenuItemVariant {
   description?: string;
   protein?: 'beef' | 'chicken' | 'bean' | 'cheese';
   size?: 'small' | 'medium' | 'large';
-  spiceLevel?: SpiceLevel;
 }
 
 export interface MenuItem {
@@ -22,8 +19,7 @@ export interface MenuItem {
   category: string;
   popular?: boolean;
   variants?: MenuItemVariant[]; // For items with variants (like wrap vs deluxe)
-  defaultSpiceLevel?: SpiceLevel; // Default spice level
-  spicyLevel?: number; // Legacy - will be deprecated
+  specialRequest?: string; // Added special request field
 }
 
 export type MenuCategory = {
@@ -69,9 +65,14 @@ export const categories: MenuCategory[] = [
     description: 'Fresh salads with a variety of toppings, served with rice,beans,pico de gallo, cheese and sour cream',
   },
     {
-    id: 'combos',
-    name: 'Combos',
-    description: 'Traditional Tostadas with your choice of meat',
+    id: 'medium-combos',
+    name: 'Medium Combos',
+    description: 'Medium combo meals with your choice of items - no repeats allowed',
+  },
+  {
+    id: 'large-combos',
+    name: 'Large Combos',
+    description: 'Large combo meals with your choice of items - no repeats allowed',
   },
   {
     id: 'burritos',
@@ -169,7 +170,6 @@ export const menuItems: MenuItem[] = [
     description: 'Three marinated pork tacos with pineapple, onions, and cilantro',
     price: 13.75,
     category: 'tacos',
-    spicyLevel: 2,
   },
   {
     id: 'burrito-carne-asada',
@@ -593,7 +593,7 @@ export const menuItems: MenuItem[] = [
     name: 'Enchilada Combo',
     description: 'Cheese enchiladas smothered in your choice of red or green chile, served with Spanish rice and refried beans',
     price: 15.49, // Base price for Medium Beef
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Beef', 
@@ -638,14 +638,14 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
   {
     id: 'combo-taco',
     name: 'Taco Combo',
     description: 'Crispy corn or soft flour tacos with your choice of protein, served with Spanish rice and refried beans',
     price: 14.99, // Base price for Medium Beef
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Beef', 
@@ -690,14 +690,14 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
   {
     id: 'combo-burrito',
     name: 'Burrito Combo',
     description: 'Hearty flour tortilla burrito filled with your choice of protein, rice, beans, cheese, and toppings, served with Spanish rice and refried beans',
     price: 14.99, // Base price for Medium Beef
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Beef', 
@@ -742,14 +742,14 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
   {
     id: 'combo-tamale',
     name: 'Tamale Combo',
     description: 'Homemade corn masa tamales steamed in corn husks, served with Spanish rice and refried beans',
     price: 14.99, // Base price for Medium Beef
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Beef', 
@@ -794,14 +794,14 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
   {
     id: 'combo-chile-relleno',
     name: 'Chile Relleno Combo',
     description: 'Poblano pepper stuffed with melted cheese, dipped in egg batter and fried, served with Spanish rice and refried beans',
     price: 14.99, // Base price for Medium Cheese
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Cheese', 
@@ -846,14 +846,14 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
   {
     id: 'combo-tostada',
     name: 'Tostada Combo',
     description: 'Crispy corn tortilla topped with refried beans, lettuce, tomatoes, cheese, and your choice of protein',
     price: 14.99, // Base price for Medium Beef
-    category: 'combos',
+    category: 'medium-combos',
     variants: [
       { 
         name: 'Medium - Beef', 
@@ -898,7 +898,7 @@ export const menuItems: MenuItem[] = [
         size: 'large'
       }
     ],
-    defaultSpiceLevel: 'medium'
+    // Special request field already added to MenuItem interface
   },
 
   // Burritos
@@ -908,7 +908,7 @@ export const menuItems: MenuItem[] = [
     description: 'Large flour tortilla stuffed with refried beans, melted cheese, and our special sauce, topped with enchilada sauce and more cheese, then baked to perfection',
     price: 9.49,
     category: 'burritos',
-    spicyLevel: 1,
+    // Special request field handles customizations
   },
   {
     id: 'enchiladas-rojas',
@@ -916,7 +916,7 @@ export const menuItems: MenuItem[] = [
     description: 'Three corn tortillas filled with your choice of protein, rolled and smothered in our homemade red chile sauce and melted cheese',
     price: 13.99,
     category: 'enchiladas',
-    spicyLevel: 2,
+    // Special request field handles customizations
   },
   {
     id: 'skinny-fajitas',
@@ -1301,7 +1301,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the filling, including extra cheese, potatoes, and eggs, served with a side of sour cream and salsa'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: true
 },
 {
@@ -1322,7 +1322,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the filling, including extra meat, cheese, eggs, and potatoes, served with sour cream and salsa'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: true
 },
 {
@@ -1343,7 +1343,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the eggs and cheese, served with sour cream, guacamole, and a side of refried beans'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: true
 },
 {
@@ -1364,7 +1364,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the bacon, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: true
 },
 {
@@ -1385,8 +1385,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with extra chorizo, eggs, potatoes, and cheese, topped with sour cream and guacamole'
     }
   ],
-  defaultSpiceLevel: 'medium',
-  spicyLevel: 2,
+  // Special request field handles customizations
   popular: true
 },
 {
@@ -1407,7 +1406,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the sausage, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: true
 },
 {
@@ -1428,7 +1427,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with extra ham, eggs, potatoes, and cheese, served with sour cream and guacamole'
     }
   ],
-  defaultSpiceLevel: 'medium',
+  // Special request field handles customizations,
   popular: false
 },
 {
@@ -1449,9 +1448,8 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the steak, eggs, potatoes, and cheese, served with sour cream, guacamole, and pico de gallo'
     }
   ],
-  defaultSpiceLevel: 'medium',
-  popular: true,
-  spicyLevel: 1
+  // Special request field handles customizations,
+  popular: true
 },
 {
   id: 'machaca-burrito',
@@ -1471,9 +1469,8 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with extra machaca, eggs, and cheese, served with sour cream, guacamole, and pico de gallo'
     }
   ],
-  defaultSpiceLevel: 'medium',
-  popular: true,
-  spicyLevel: 2
+  // Special request field handles customizations,
+  popular: true
 },
 {
   id: 'breakfast-crispy',
@@ -1493,6 +1490,6 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large crispy burrito with double the fillings, served with sour cream, guacamole, and pico de gallo'
     }
   ],
-  defaultSpiceLevel: 'medium'
+  // Special request field handles customizations
 },
 ];

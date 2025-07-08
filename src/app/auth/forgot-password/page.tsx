@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/lib/supabaseClient';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -19,8 +19,13 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
+      const supabase = createClient();
+      
+      // Get the site URL from environment or use window.location.origin as fallback
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+      
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
+        redirectTo: `${siteUrl}/auth/update-password`,
       });
 
       if (error) throw error;
@@ -28,7 +33,15 @@ export default function ForgotPassword() {
       setMessage('If an account with that email exists, you will receive a password reset link');
     } catch (err) {
       console.error('Password reset error:', err);
-      setError('Failed to send password reset email. Please try again.');
+      
+      // Check if this is a rate limit error
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      
+      if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
+        setError('Too many password reset attempts. Please try again later.');
+      } else {
+        setError('Failed to send password reset email. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }

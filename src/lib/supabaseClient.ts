@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
+import { createClient as createServerClient } from '@supabase/supabase-js';
 
 // For build-time safety, use default values if environment variables are missing
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
@@ -14,6 +15,22 @@ export function createClient() {
     console.error('Missing Supabase environment variables in production');
   }
   
+  // Detect server-side or client-side environment
+  const isServer = typeof window === 'undefined';
+  
+  if (isServer) {
+    // For server-side (API routes and server components)
+    console.log('Creating server-side Supabase client');
+    return createServerClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: false
+      }
+    });
+  }
+  
+  // For client-side (browser)
+  console.log('Creating browser-side Supabase client');
   return createBrowserClient(
     supabaseUrl,
     supabaseAnonKey,
@@ -26,7 +43,6 @@ export function createClient() {
         storageKey: 'sb-auth-token',
         storage: {
           getItem: (key) => {
-            if (typeof document === 'undefined') return null;
             try {
               const cookies = document.cookie.split('; ');
               const cookie = cookies.find(row => row.startsWith(`${key}=`));
@@ -47,11 +63,9 @@ export function createClient() {
             }
           },
           setItem: (key, value) => {
-            if (typeof document === 'undefined') return;
             document.cookie = `${key}=${value}; path=/; samesite=lax; secure`;
           },
           removeItem: (key) => {
-            if (typeof document === 'undefined') return;
             document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
           },
         },

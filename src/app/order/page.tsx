@@ -1,6 +1,6 @@
 'use client';
 
-import { categories, menuItems, MenuItem, SpiceLevel } from '@/data/menu';
+import { categories, menuItems, MenuItem } from '@/data/menu';
 import { useCart } from '@/lib/cart-context';
 import { CartItem } from '@/lib/types';
 import Link from 'next/link';
@@ -23,16 +23,7 @@ export default function OrderPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [selectedVariants, setSelectedVariants] = useState<{[key: string]: string}>({});
-  const [spiceLevels, setSpiceLevels] = useState<{[key: string]: SpiceLevel}>(() => {
-    // Initialize with default spice levels for items that have them
-    const initialLevels: {[key: string]: SpiceLevel} = {};
-    menuItems.forEach(item => {
-      if (item.defaultSpiceLevel) {
-        initialLevels[item.id] = item.defaultSpiceLevel;
-      }
-    });
-    return initialLevels;
-  });
+  const [specialRequests, setSpecialRequests] = useState<{[key: string]: string}>({});
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
     // Initialize all categories as collapsed by default
     const initialExpanded: { [key: string]: boolean } = {};
@@ -64,12 +55,14 @@ export default function OrderPage() {
 
   const handleAddToCart = (item: MenuItem) => {
     const quantity = quantities[item.id] || 1;
+    const specialRequest = specialRequests[item.id] || '';
     const cartItem: CartItem = {
       id: item.id,
       name: item.name,
       price: item.price,
       quantity: quantity,
-      image: item.image || '/lacasitalogo.jpg'
+      image: item.image || '/lacasitalogo.jpg',
+      specialRequest: specialRequest
     };
     addItem(cartItem);
     
@@ -195,18 +188,6 @@ export default function OrderPage() {
                           <p className="text-sm text-gray-600 mt-2">{item.description}</p>
                         )}
                         
-                        {typeof item.spicyLevel === 'number' && item.spicyLevel > 0 && (
-                          <div className="flex items-center gap-1.5 mt-2 mb-3">
-                            <span className="text-xs text-gray-500">Spice Level:</span>
-                            {[...Array(3)].map((_, i) => (
-                              <FireIcon
-                                key={i}
-                                className={`h-4 w-4 ${i < item.spicyLevel! ? 'text-red-500' : 'text-gray-200'}`}
-                                aria-hidden="true"
-                              />
-                            ))}
-                          </div>
-                        )}
                         
                         <div className="mt-4 space-y-3">
                           {item.variants && item.variants.length > 0 && (
@@ -239,24 +220,20 @@ export default function OrderPage() {
 
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Spice Level
+                              Special Request
                             </label>
                             <div className="flex space-x-4">
-                              {(['mild', 'medium', 'hot'] as SpiceLevel[]).map((level) => (
-                                <label key={level} className="inline-flex items-center">
-                                  <input
-                                    type="radio"
-                                    name={`spice-${item.id}`}
-                                    checked={spiceLevels[item.id] === level || (!spiceLevels[item.id] && item.defaultSpiceLevel === level)}
-                                    onChange={() => setSpiceLevels(prev => ({
-                                      ...prev,
-                                      [item.id]: level
-                                    }))}
-                                    className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                                  />
-                                  <span className="ml-2 text-sm text-gray-700 capitalize">{level}</span>
-                                </label>
-                              ))}
+                              <textarea
+                                name={`special-request-${item.id}`}
+                                value={specialRequests[item.id] || ''}
+                                onChange={(e) => setSpecialRequests(prev => ({
+                                  ...prev,
+                                  [item.id]: e.target.value
+                                }))}
+                                className="w-full px-3 py-2 text-sm text-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                                placeholder="Any special requests?"
+                                rows={2}
+                              />
                             </div>
                           </div>
 
