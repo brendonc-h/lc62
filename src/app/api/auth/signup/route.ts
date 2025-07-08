@@ -69,8 +69,8 @@ export async function POST(request: Request) {
             role: 'customer',
             points: 0
           },
-          // Get the site URL from environment or use a default
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`
+          // Use process.env.NEXT_PUBLIC_SITE_URL without hardcoded fallback
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
         }
       });
       

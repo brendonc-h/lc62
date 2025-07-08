@@ -126,7 +126,7 @@ function AuthCallbackContent() {
           if (data.session && data.user) {
             // Ensure customer record exists
             await ensureCustomerRecord(supabase, data.user);
-            router.push('/dashboard');
+            router.push('/');
           } else {
             router.push('/auth/signin?verified=true');
           }
