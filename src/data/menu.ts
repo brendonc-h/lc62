@@ -8,6 +8,7 @@ export interface MenuItemVariant {
   description?: string;
   protein?: 'beef' | 'chicken' | 'bean' | 'cheese';
   size?: 'small' | 'medium' | 'large';
+  spiceLevel?: 'mild' | 'medium' | 'hot' | 'extra hot';
 }
 
 export interface MenuItem {
@@ -20,6 +21,7 @@ export interface MenuItem {
   popular?: boolean;
   variants?: MenuItemVariant[]; // For items with variants (like wrap vs deluxe)
   specialRequest?: string; // Added special request field
+  spicyLevel?: number; // Spice level indicator (1-5)
 }
 
 export type MenuCategory = {
