@@ -102,9 +102,9 @@ function AuthCallbackContent() {
             
             setMessage('Sign in successful! Redirecting you...');
             
-            // Redirect to dashboard
+            // Redirect to home page
             setTimeout(() => {
-              router.push('/dashboard');
+              router.push('/');
             }, 1500);
           } else {
             throw new Error('Failed to get user session');
