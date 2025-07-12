@@ -22,6 +22,7 @@ export interface MenuItem {
   variants?: MenuItemVariant[]; // For items with variants (like wrap vs deluxe)
   specialRequest?: string; // Added special request field
   spicyLevel?: number; // Spice level indicator (1-5)
+  locations?: string[]; // Array of locations where this item is available
 }
 
 export type MenuCategory = {
@@ -126,6 +127,22 @@ export const categories: MenuCategory[] = [
     name: 'Desserts',
     description: 'Sweet treats to end your meal',
   },
+];
+
+export const comboOptions = [
+  { id: 'taco', name: 'Taco' },
+  { id: 'enchilada', name: 'Enchilada' },
+  { id: 'tamal', name: 'Tamal' },
+  { id: 'tostada', name: 'Tostada' },
+  { id: 'chile_relleno', name: 'Chile Relleno' },
+  { id: 'burrito', name: 'Burrito' }
+];
+
+export const meatOptions = [
+  { id: 'beef', name: 'Beef' },
+  { id: 'chicken', name: 'Chicken' },
+  { id: 'bean', name: 'Bean' },
+  { id: 'cheese', name: 'Cheese' }
 ];
 
 export const menuItems: MenuItem[] = [
@@ -590,318 +607,8 @@ export const menuItems: MenuItem[] = [
     popular: true,
   },
   // Combos
-  {
-    id: 'combo-enchilada',
-    name: 'Enchilada Combo',
-    description: 'Cheese enchiladas smothered in your choice of red or green chile, served with Spanish rice and refried beans',
-    price: 15.49, // Base price for Medium Beef
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Beef', 
-        price: 15.49, 
-        description: 'Two beef enchiladas with rice and beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 15.49, 
-        description: 'Two chicken enchiladas with rice and beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Bean & Cheese', 
-        price: 14.49, 
-        description: 'Two bean and cheese enchiladas with rice and beans',
-        protein: 'bean',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 18.49, 
-        description: 'Three beef enchiladas with rice and beans',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 18.49, 
-        description: 'Three chicken enchiladas with rice and beans',
-        protein: 'chicken',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Bean & Cheese', 
-        price: 17.49, 
-        description: 'Three bean and cheese enchiladas with rice and beans',
-        protein: 'bean',
-        size: 'large'
-      }
-    ],
+ 
     // Special request field already added to MenuItem interface
-  },
-  {
-    id: 'combo-taco',
-    name: 'Taco Combo',
-    description: 'Crispy corn or soft flour tacos with your choice of protein, served with Spanish rice and refried beans',
-    price: 14.99, // Base price for Medium Beef
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Beef', 
-        price: 14.99, 
-        description: 'Two crispy beef tacos with rice and beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 14.99, 
-        description: 'Two grilled chicken tacos with rice and beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Bean & Cheese', 
-        price: 13.99, 
-        description: 'Two bean and cheese tacos with rice and beans',
-        protein: 'bean',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 17.99, 
-        description: 'Three crispy beef tacos with rice and beans',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 17.99, 
-        description: 'Three grilled chicken tacos with rice and beans',
-        protein: 'chicken',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Bean & Cheese', 
-        price: 16.99, 
-        description: 'Three bean and cheese tacos with rice and beans',
-        protein: 'bean',
-        size: 'large'
-      }
-    ],
-    // Special request field already added to MenuItem interface
-  },
-  {
-    id: 'combo-burrito',
-    name: 'Burrito Combo',
-    description: 'Hearty flour tortilla burrito filled with your choice of protein, rice, beans, cheese, and toppings, served with Spanish rice and refried beans',
-    price: 14.99, // Base price for Medium Beef
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Beef', 
-        price: 14.99, 
-        description: 'One beef burrito with rice and beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 14.99, 
-        description: 'One grilled chicken burrito with rice and beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Bean & Cheese', 
-        price: 13.99, 
-        description: 'One bean and cheese burrito with rice and beans',
-        protein: 'bean',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 17.99, 
-        description: 'One large beef burrito with extra meat, rice, beans, and cheese',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 17.99, 
-        description: 'One large chicken burrito with extra meat, rice, beans, and cheese',
-        protein: 'chicken',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Bean & Cheese', 
-        price: 16.99, 
-        description: 'One large bean and cheese burrito with extra fillings',
-        protein: 'bean',
-        size: 'large'
-      }
-    ],
-    // Special request field already added to MenuItem interface
-  },
-  {
-    id: 'combo-tamale',
-    name: 'Tamale Combo',
-    description: 'Homemade corn masa tamales steamed in corn husks, served with Spanish rice and refried beans',
-    price: 14.99, // Base price for Medium Beef
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Beef', 
-        price: 14.99, 
-        description: 'Two beef tamales with rice and beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 14.99, 
-        description: 'Two chicken tamales with rice and beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Bean & Cheese', 
-        price: 13.99, 
-        description: 'Two bean and cheese tamales with rice and beans',
-        protein: 'bean',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 17.99, 
-        description: 'Three beef tamales with rice and beans',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 17.99, 
-        description: 'Three chicken tamales with rice and beans',
-        protein: 'chicken',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Bean & Cheese', 
-        price: 16.99, 
-        description: 'Three bean and cheese tamales with rice and beans',
-        protein: 'bean',
-        size: 'large'
-      }
-    ],
-    // Special request field already added to MenuItem interface
-  },
-  {
-    id: 'combo-chile-relleno',
-    name: 'Chile Relleno Combo',
-    description: 'Poblano pepper stuffed with melted cheese, dipped in egg batter and fried, served with Spanish rice and refried beans',
-    price: 14.99, // Base price for Medium Cheese
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Cheese', 
-        price: 14.99, 
-        description: 'One cheese-stuffed chile relleno with rice and beans',
-        protein: 'cheese',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Beef', 
-        price: 16.49, 
-        description: 'One chile relleno stuffed with beef and cheese, served with rice and beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 16.49, 
-        description: 'One chile relleno stuffed with chicken and cheese, served with rice and beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Cheese', 
-        price: 17.99, 
-        description: 'Two cheese-stuffed chile rellenos with rice and beans',
-        protein: 'cheese',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 18.99, 
-        description: 'Two chile rellenos stuffed with beef and cheese, served with rice and beans',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 18.99, 
-        description: 'Two chile rellenos stuffed with chicken and cheese, served with rice and beans',
-        protein: 'chicken',
-        size: 'large'
-      }
-    ],
-    // Special request field already added to MenuItem interface
-  },
-  {
-    id: 'combo-tostada',
-    name: 'Tostada Combo',
-    description: 'Crispy corn tortilla topped with refried beans, lettuce, tomatoes, cheese, and your choice of protein',
-    price: 14.99, // Base price for Medium Beef
-    category: 'medium-combos',
-    variants: [
-      { 
-        name: 'Medium - Beef', 
-        price: 14.99, 
-        description: 'One beef tostada with Spanish rice and refried beans',
-        protein: 'beef',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Chicken', 
-        price: 14.99, 
-        description: 'One chicken tostada with Spanish rice and refried beans',
-        protein: 'chicken',
-        size: 'medium'
-      },
-      { 
-        name: 'Medium - Bean & Cheese', 
-        price: 13.99, 
-        description: 'One bean and cheese tostada with Spanish rice and refried beans',
-        protein: 'bean',
-        size: 'medium'
-      },
-      { 
-        name: 'Large - Beef', 
-        price: 17.99, 
-        description: 'Two beef tostadas with Spanish rice and refried beans',
-        protein: 'beef',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Chicken', 
-        price: 17.99, 
-        description: 'Two chicken tostadas with Spanish rice and refried beans',
-        protein: 'chicken',
-        size: 'large'
-      },
-      { 
-        name: 'Large - Bean & Cheese', 
-        price: 16.99, 
-        description: 'Two bean and cheese tostadas with Spanish rice and refried beans',
-        protein: 'bean',
-        size: 'large'
-      }
-    ],
-    // Special request field already added to MenuItem interface
-  },
 
   // Burritos
   {
@@ -1494,4 +1201,24 @@ export const menuItems: MenuItem[] = [
   ],
   // Special request field handles customizations
 },
+
+  // Medium Combo - Choose 3 different items with meat choices
+  {
+    id: 'medium-combo',
+    name: 'Medium Combo',
+    description: 'Choose 3 different items with your choice of meat. Served with rice and beans.',
+    price: 11.99,
+    category: 'medium-combos',
+    popular: true
+  },
+
+  // Large Combo - Choose 3 different items with meat choices  
+  {
+    id: 'large-combo',
+    name: 'Large Combo',
+    description: 'Choose 3 different items with your choice of meat. Served with rice and beans.',
+    price: 14.99,
+    category: 'large-combos',
+    popular: true
+  }
 ];

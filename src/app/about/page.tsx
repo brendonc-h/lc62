@@ -25,19 +25,30 @@ export default function About() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-            <p className="text-lg text-gray-600 mb-6">
-              La Casita has been serving authentic Mexican cuisine to the Berthoud community since 2015. 
-              Our family recipes have been passed down through generations, bringing the true flavors of 
-              Mexico to Colorado.
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Family Story</h2>
+            <p className="text-lg text-gray-600 mb-4">
+              I, David, and my wife Maricruz have been here for a little over 20 years! We have had a roller coaster of emotions and not so fun adventure while we have been here.
             </p>
-            <p className="text-lg text-gray-600 mb-6">
-              We pride ourselves on using only the freshest ingredients, preparing our dishes from scratch 
-              daily, and providing a warm, welcoming atmosphere for our guests.
+            <p className="text-lg text-gray-600 mb-4">
+              My wife and I migrated from Mexico to Fort Collins Colorado on a December night with a freezing cold not knowing what was waiting for us this winter. The cold was horrible - freezing for the next couple months we had to walk 5 miles to work in the cold, not being able to find an affordable place near work or an affordable car.
             </p>
-            <p className="text-lg text-gray-600">
-              Whether you're joining us for a family dinner, picking up takeout, or catering your next event, 
-              La Casita is committed to providing exceptional food and service with every visit.
+            <p className="text-lg text-gray-600 mb-4">
+              We started to work at a Mexican restaurant working 14+ hours nonstop to make a living. There would be times where I wouldn't get home until 2:30am because we would have to deep clean everything before closing on top of waiting until everyone left.
+            </p>
+            <p className="text-lg text-gray-600 mb-4">
+              These experiences made my wife and I consider saving up money to open our own business. We realized that we would love to be our own boss and not let anyone boss us around.
+            </p>
+            <p className="text-lg text-gray-600 mb-4">
+              When 2005 came around, our first baby was born, reassuring us that we needed our own business to spend quality time with our family. From 2005 forward, we've been saving money to open our own Mexican restaurant! When we found out we had a baby boy on the way in 2011, we kept working harder for our dreams to come true.
+            </p>
+            <p className="text-lg text-gray-600 mb-4">
+              Finally in 2020, we got the huge opportunity to open our own Mexican restaurant! This was like a dream come true. From then on, we've been working hard to make our customers feel like family.
+            </p>
+            <p className="text-lg text-gray-600 mb-4">
+              After 4 years, we had the privilege to open a second location in Fort Collins! Our dreams finally came true and we are a happy family-owned business!
+            </p>
+            <p className="text-lg text-gray-600 font-medium">
+              We thank each and every one of our customers for the opportunity they have given us - we would not be here if it wasn't for you!
             </p>
           </div>
           <div className="rounded-lg overflow-hidden shadow-xl">
@@ -52,7 +63,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Location Section with Map */}
+      {/* Location Section with Maps */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -60,109 +71,172 @@ export default function About() {
             <p className="text-xl text-gray-600">Find us in beautiful Northern Colorado</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Berthoud Location */}
-            <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
-              <div className="p-4 bg-red-500 rounded-full mb-4">
-                <MapPin className="h-8 w-8 text-white" />
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+              <div className="p-8">
+                <div className="flex items-center mb-6">
+                  <div className="p-3 bg-red-500 rounded-full mr-4">
+                    <MapPin className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">Berthoud Location</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <p className="text-gray-700 mb-4">
+                      <span className="block font-medium text-lg mb-2">Address:</span>
+                      950 Mountain Ave<br />
+                      Berthoud, CO 80513
+                    </p>
+                    <Link 
+                      href="https://maps.google.com/?q=950+Mountain+Ave+Berthoud+CO+80513" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Get Directions
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-700 mb-4">
+                      <span className="block font-medium text-lg mb-2">Hours:</span>
+                      <span className="block"><span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM</span>
+                      <span className="block"><span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM</span>
+                      <span className="block"><span className="font-medium">Sunday:</span> 12:00 PM - 8:00 PM</span>
+                    </p>
+                    <div className="space-y-2">
+                      <Link 
+                        href="tel:+19705551234" 
+                        className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                      >
+                        <Phone className="h-4 w-4 mr-1" />
+                        (970) 555-1234
+                      </Link>
+                      <div className="block">
+                        <Link 
+                          href="mailto:berthoud@lacasita.io" 
+                          className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                        >
+                          <Mail className="h-4 w-4 mr-1" />
+                          berthoud@lacasita.io
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Berthoud Location</h3>
-              <p className="text-gray-600 text-center mb-4">
-                950 Mountain Ave<br />
-                Berthoud, CO 80513
-              </p>
-              <Link 
-                href="https://maps.google.com/?q=950+Mountain+Ave+Berthoud+CO+80513" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-red-500 hover:text-red-700 font-medium"
-              >
-                Get Directions
-              </Link>
+              
+              {/* Berthoud Map */}
+              <div className="h-80 w-full">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3041.356833950407!2d-105.08272992336351!3d40.30844067153222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876eadbb4c0e7ea1%3A0x8c2b4be564267d53!2s950%20Mountain%20Ave%2C%20Berthoud%2C%20CO%2080513!5e0!3m2!1sen!2sus!4v1687966875305!5m2!1sen!2sus" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen={true} 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="La Casita Berthoud Location Map"
+                />
+              </div>
             </div>
             
             {/* Fort Collins Location */}
-            <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
-              <div className="p-4 bg-red-500 rounded-full mb-4">
-                <MapPin className="h-8 w-8 text-white" />
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+              <div className="p-8">
+                <div className="flex items-center mb-6">
+                  <div className="p-3 bg-red-500 rounded-full mr-4">
+                    <MapPin className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">Fort Collins Location</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <p className="text-gray-700 mb-4">
+                      <span className="block font-medium text-lg mb-2">Address:</span>
+                      2909 E Harmony Rd<br />
+                      Fort Collins, CO 80528
+                    </p>
+                    <Link 
+                      href="https://maps.google.com/?q=2909+E+Harmony+Rd+Fort+Collins+CO+80528" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                    >
+                      Get Directions
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-700 mb-4">
+                      <span className="block font-medium text-lg mb-2">Hours:</span>
+                      <span className="block"><span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM</span>
+                      <span className="block"><span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM</span>
+                      <span className="block"><span className="font-medium">Sunday:</span> 12:00 PM - 8:00 PM</span>
+                    </p>
+                    <div className="space-y-2">
+                      <Link 
+                        href="tel:+19705552345" 
+                        className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                      >
+                        <Phone className="h-4 w-4 mr-1" />
+                        (970) 555-2345
+                      </Link>
+                      <div className="block">
+                        <Link 
+                          href="mailto:fortcollins@lacasita.io" 
+                          className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
+                        >
+                          <Mail className="h-4 w-4 mr-1" />
+                          fortcollins@lacasita.io
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Fort Collins Location</h3>
-              <p className="text-gray-600 text-center mb-4">
-                2909 E Harmony Rd<br />
-                Fort Collins, CO 80528
-              </p>
-              <Link 
-                href="https://maps.google.com/?q=2909+E+Harmony+Rd+Fort+Collins+CO+80528" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-red-500 hover:text-red-700 font-medium"
-              >
-                Get Directions
-              </Link>
+              
+              {/* Fort Collins Map */}
+              <div className="h-80 w-full">
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.990356438717!2d-105.00561792336071!3d40.38899697143048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694a98795eb76d%3A0xc9a618f4c4fd8f79!2s2909%20E%20Harmony%20Rd%2C%20Fort%20Collins%2C%20CO%2080528!5e0!3m2!1sen!2sus!4v1687966990305!5m2!1sen!2sus" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen={true} 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="La Casita Fort Collins Location Map"
+                />
+              </div>
             </div>
-
-            {/* Hours Card */}
-            <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
+          </div>
+          
+          {/* Contact Card */}
+          <div className="mt-12">
+            <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center max-w-md mx-auto">
               <div className="p-4 bg-red-500 rounded-full mb-4">
-                <Clock className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Hours</h3>
-              <div className="text-gray-600 text-center">
-                <p className="mb-2"><span className="font-medium">Monday - Thursday:</span><br />11:00 AM - 9:00 PM</p>
-                <p className="mb-2"><span className="font-medium">Friday - Saturday:</span><br />11:00 AM - 10:00 PM</p>
-                <p><span className="font-medium">Sunday:</span><br />12:00 PM - 8:00 PM</p>
-              </div>
-            </div>
-
-            {/* Contact Card */}
-            <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
-              <div className="p-4 bg-red-500 rounded-full mb-4">
-                <Phone className="h-8 w-8 text-white" />
+                <Mail className="h-8 w-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Contact Us</h3>
               <p className="text-gray-600 text-center mb-4">
-                <span className="block mb-2">(970) 555-1234</span>
-                <span className="block">info@lacasitarestaurant.com</span>
+                <span className="block mb-2">info@lacasita.io</span>
               </p>
               <Link 
-                href="tel:+19705551234" 
+                href="mailto:info@lacasita.io" 
                 className="text-red-500 hover:text-red-700 font-medium"
               >
-                Call Now
+                Email Us
               </Link>
-            </div>
-          </div>
-
-          {/* Maps */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Berthoud Map */}
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 p-4 bg-white">Berthoud Location</h3>
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3041.356833950407!2d-105.08272992336351!3d40.30844067153222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876eadbb4c0e7ea1%3A0x8c2b4be564267d53!2s950%20Mountain%20Ave%2C%20Berthoud%2C%20CO%2080513!5e0!3m2!1sen!2sus!4v1687966875305!5m2!1sen!2sus" 
-                width="100%" 
-                height="400" 
-                style={{ border: 0 }} 
-                allowFullScreen={true} 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-                title="La Casita Berthoud Location Map"
-              />
-            </div>
-            
-            {/* Fort Collins Map */}
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 p-4 bg-white">Fort Collins Location</h3>
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.990356438717!2d-105.00561792336071!3d40.38899697143048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694a98795eb76d%3A0xc9a618f4c4fd8f79!2s2909%20E%20Harmony%20Rd%2C%20Fort%20Collins%2C%20CO%2080528!5e0!3m2!1sen!2sus!4v1687966990305!5m2!1sen!2sus" 
-                width="100%" 
-                height="400" 
-                style={{ border: 0 }} 
-                allowFullScreen={true} 
-                loading="lazy" 
-                referrerPolicy="no-referrer-when-downgrade"
-                title="La Casita Fort Collins Location Map"
-              />
             </div>
           </div>
         </div>
@@ -190,6 +264,32 @@ export default function About() {
                 Order Online
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Legal Links Footer */}
+      <section className="py-12 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-900 mb-6">Legal Information</h3>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link 
+                href="/privacy" 
+                className="text-gray-600 hover:text-red-600 transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <Link 
+                href="/terms" 
+                className="text-gray-600 hover:text-red-600 transition-colors"
+              >
+                Terms of Use
+              </Link>
+            </div>
+            <p className="mt-6 text-sm text-gray-500">
+              © {new Date().getFullYear()} La Casita Restaurant. All rights reserved.
+            </p>
           </div>
         </div>
       </section>

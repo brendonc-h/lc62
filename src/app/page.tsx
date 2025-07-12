@@ -31,9 +31,11 @@ export default function Home() {
     };
   }, [supabase.auth]);
   
-  // Background image
-  const backgroundImage = '/Lc33.jpeg'; // Updated to use your new image
-  const backgrounds = [backgroundImage]; // For the background cycling functionality
+  // Background images for each location
+  const backgrounds = [
+    { image: '/Lc33.jpeg', location: 'Berthoud' },
+    { image: '/focostore.jpg', location: 'Fort Collins' }
+  ]; // Cycle between locations
 
   // Change background image every 8 seconds
   useEffect(() => {
@@ -51,10 +53,15 @@ export default function Home() {
           {/* Background Image */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${backgrounds[currentBgIndex]})` }}
+            style={{ backgroundImage: `url(${backgrounds[currentBgIndex].image})` }}
           />
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black bg-opacity-50" />
+          
+          {/* Location Badge */}
+          <div className="absolute top-5 right-5 bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold shadow-lg">
+            {backgrounds[currentBgIndex].location} Location
+          </div>
           
           {/* Content */}
           <div className="relative z-10 text-center text-white px-4 max-w-4xl">
@@ -290,10 +297,10 @@ export default function Home() {
               Order Online Now
             </Link>
             <Link
-              href="/contact"
+              href="/about"
               className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-white text-white text-lg font-semibold rounded-full shadow-lg hover:bg-white/10 transition-all duration-300"
             >
-              Visit Our Location
+              Visit Our Locations
             </Link>
           </div>
         </div>

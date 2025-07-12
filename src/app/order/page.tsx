@@ -5,7 +5,8 @@ import { useCart } from '@/lib/cart-context';
 import { CartItem } from '@/lib/types';
 import Link from 'next/link';
 import { useState, useCallback } from 'react';
-import { FireIcon, ShoppingCartIcon } from '@heroicons/react/24/solid';
+import { ShoppingCartIcon, MapPinIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { isOrderingAllowed } from '@/data/restaurant-hours';
 
 // Log all categories and menu items for debugging
 console.log('All categories:', categories);
@@ -17,6 +18,28 @@ if (invalidMenuItems.length > 0) {
   console.warn('Menu items with invalid categories:', invalidMenuItems);
 }
 
+// Combo selection types and data
+interface ComboItem {
+  itemType: string;
+  meatType: string;
+}
+
+const comboOptions = [
+  { id: 'enchilada', name: 'Enchilada' },
+  { id: 'taco', name: 'Taco' },
+  { id: 'burrito', name: 'Burrito' },
+  { id: 'tamale', name: 'Tamale' },
+  { id: 'chile-relleno', name: 'Chile Relleno' },
+  { id: 'tostada', name: 'Tostada' }
+];
+
+const meatOptions = [
+  { id: 'beef', name: 'Beef' },
+  { id: 'chicken', name: 'Chicken' },
+  { id: 'pork', name: 'Pork' },
+  { id: 'bean-cheese', name: 'Bean & Cheese' }
+];
+
 export default function OrderPage() {
   const { state, addItem } = useCart();
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
@@ -24,16 +47,22 @@ export default function OrderPage() {
   const [toastMessage, setToastMessage] = useState('');
   const [selectedVariants, setSelectedVariants] = useState<{[key: string]: string}>({});
   const [specialRequests, setSpecialRequests] = useState<{[key: string]: string}>({});
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedCombos, setSelectedCombos] = useState<{[key: string]: ComboItem[]}>({});
+  const orderingAllowed = isOrderingAllowed('berthoud');
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
     // Initialize all categories as collapsed by default
     const initialExpanded: { [key: string]: boolean } = {};
+    let firstCategorySet = false;
+    
     categories.forEach(category => {
-      initialExpanded[category.id] = false;
-      
       // Expand the first category by default if it has items
       const hasItems = menuItems.some(item => item.category === category.id);
-      if (hasItems && Object.keys(initialExpanded).length === 0) {
+      if (hasItems && !firstCategorySet) {
         initialExpanded[category.id] = true;
+        firstCategorySet = true;
+      } else {
+        initialExpanded[category.id] = false;
       }
     });
     return initialExpanded;
@@ -53,7 +82,110 @@ export default function OrderPage() {
     }));
   }, []);
 
+  // Combo helper functions
+  const getRequiredComboItems = (item: MenuItem): number => {
+    if (item.id === 'medium-combo' || item.id === 'large-combo') return 3;
+    return 0;
+  };
+
+  const addComboItem = (comboId: string, maxItems: number) => {
+    setSelectedCombos(prev => {
+      const currentItems = prev[comboId] || [];
+      if (currentItems.length >= maxItems) return prev;
+      
+      return {
+        ...prev,
+        [comboId]: [...currentItems, { itemType: comboOptions[0].id, meatType: meatOptions[0].id }]
+      };
+    });
+  };
+
+  const removeComboItem = (comboId: string, index: number) => {
+    setSelectedCombos(prev => {
+      const currentItems = [...(prev[comboId] || [])];
+      currentItems.splice(index, 1);
+      return { ...prev, [comboId]: currentItems };
+    });
+  };
+
+  const updateComboItem = (comboId: string, index: number, field: 'itemType' | 'meatType', value: string) => {
+    setSelectedCombos(prev => {
+      const currentItems = [...(prev[comboId] || [])];
+      if (index >= currentItems.length) return prev;
+      
+      // If selecting the same item type that already exists in another position, prevent it
+      if (field === 'itemType') {
+        const itemAlreadyExists = currentItems.some((item, i) => i !== index && item.itemType === value);
+        if (itemAlreadyExists) return prev;
+      }
+      
+      currentItems[index] = { ...currentItems[index], [field]: value };
+      return { ...prev, [comboId]: currentItems };
+    });
+  };
+
+  const isComboComplete = (item: MenuItem): boolean => {
+    const comboId = item.id;
+    const requiredItems = getRequiredComboItems(item);
+    const selectedItems = selectedCombos[comboId] || [];
+    return selectedItems.length === requiredItems;
+  };
+
+  const formatComboSpecialRequest = (selections: ComboItem[]) => {
+    const getItemName = (id: string) => {
+      const item = comboOptions.find(option => option.id === id);
+      return item ? item.name : id;
+    };
+    
+    const getMeatName = (id: string) => {
+      const meat = meatOptions.find(option => option.id === id);
+      return meat ? meat.name : id;
+    };
+    
+    return selections
+      .map((sel, idx) => `${idx + 1}. ${getItemName(sel.itemType)} (${getMeatName(sel.meatType)})`)
+      .join('\n') + '\nServed with rice and beans.';
+  };
+
+  const handleAddComboToCart = (menuItem: MenuItem) => {
+    if (!selectedLocation) {
+      setToastMessage('Please select a location first!');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+
+    const selections = selectedCombos[menuItem.id] || [];
+    if (selections.length !== 3) return; // should already be validated
+
+    const cartItem: CartItem = {
+      id: `${menuItem.id}-${Date.now()}`,
+      name: menuItem.name,
+      price: menuItem.price,
+      quantity: 1,
+      image: menuItem.image || '/lacasitalogo.jpg',
+      specialRequest: formatComboSpecialRequest(selections),
+      location: selectedLocation
+    };
+
+    addItem(cartItem);
+    // Reset selection for that combo after adding to cart
+    setSelectedCombos(prev => ({ ...prev, [menuItem.id]: [] }));
+    
+    // Show success message
+    setToastMessage('Combo added to cart!');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   const handleAddToCart = (item: MenuItem) => {
+    if (!selectedLocation) {
+      setToastMessage('Please select a location first!');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+    
     const quantity = quantities[item.id] || 1;
     const specialRequest = specialRequests[item.id] || '';
     const cartItem: CartItem = {
@@ -62,7 +194,8 @@ export default function OrderPage() {
       price: item.price,
       quantity: quantity,
       image: item.image || '/lacasitalogo.jpg',
-      specialRequest: specialRequest
+      specialRequest: specialRequest,
+      location: selectedLocation
     };
     addItem(cartItem);
     
@@ -72,7 +205,7 @@ export default function OrderPage() {
     setTimeout(() => setShowToast(false), 3000);
 
     // Reset quantity after adding to cart
-    setQuantities((prev: { [key: string]: number }) => ({ ...prev, [item.id]: 1 }));
+    setQuantities((prev) => ({ ...prev, [item.id]: 1 }));
   };
 
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
@@ -81,11 +214,62 @@ export default function OrderPage() {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        {/* Location Selector */}
+        <div className="bg-amber-50 p-6 rounded-lg shadow-lg mb-8 border-2 border-red-500">
+          <h2 className="text-2xl font-bold flex items-center mb-4 text-gray-800">
+            <MapPinIcon className="h-7 w-7 mr-2 text-red-600" />
+            Select Your Location First
+          </h2>
+          {!selectedLocation && (
+            <div className="bg-yellow-100 p-3 rounded-md mb-4 border-l-4 border-yellow-500">
+              <p className="text-yellow-800 font-medium">Please select a location before adding items to your cart</p>
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <button
+              onClick={() => setSelectedLocation('Berthoud')}
+              className={`p-5 rounded-lg flex items-center ${selectedLocation === 'Berthoud' 
+                ? 'bg-red-600 text-white border-2 border-red-700 ring-2 ring-red-300' 
+                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50'}`}
+            >
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">{selectedLocation === 'Berthoud' ? '✓ Berthoud' : 'Berthoud'}</h3>
+                <p className="text-sm">
+                  950 Mountain Ave, Berthoud, CO 80513
+                </p>
+                <p className="text-xs mt-1">
+                  {selectedLocation === 'Berthoud' ? 'Selected for pickup' : 'Tap to select this location'}
+                </p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setSelectedLocation('Fort Collins')}
+              className={`p-5 rounded-lg flex items-center ${selectedLocation === 'Fort Collins' 
+                ? 'bg-red-600 text-white border-2 border-red-700 ring-2 ring-red-300' 
+                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50'}`}
+            >
+              <div className="flex-1">
+                <h3 className="font-bold text-lg">{selectedLocation === 'Fort Collins' ? '✓ Fort Collins' : 'Fort Collins'}</h3>
+                <p className="text-sm">
+                  2909 E Harmony Rd, Fort Collins, CO 80528
+                </p>
+                <p className="text-xs mt-1">
+                  {selectedLocation === 'Fort Collins' ? 'Selected for pickup' : 'Tap to select this location'}
+                </p>
+              </div>
+            </button>
+          </div>
+          {!selectedLocation && (
+            <p className="mt-2 text-sm text-red-600">* Please select a location to continue with your order</p>
+          )}
+        </div>
+        
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">Online Ordering</h1>
             <p className="mt-4 text-lg text-gray-500">
-              Order your favorite Mexican dishes for pickup
+              Order your favorite Mexican dishes for pickup {selectedLocation && `at our ${selectedLocation} location`}
             </p>
           </div>
           <Link
@@ -95,7 +279,7 @@ export default function OrderPage() {
             <div className="relative">
               <ShoppingCartIcon className="h-6 w-6" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium text-primary-600">
+                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium text-red-600">
                   {cartItemCount}
                 </span>
               )}
@@ -104,23 +288,10 @@ export default function OrderPage() {
           </Link>
         </div>
 
-        {/* Toast Notification */}
+        {/* Toast notification */}
         {showToast && (
-          <div className="fixed bottom-4 right-4 z-50">
-            <div className="rounded-md bg-green-50 p-4 shadow-lg">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-green-800">
-                    {toastMessage}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className={`fixed bottom-4 right-4 ${toastMessage.includes('Please select') ? 'bg-amber-500' : 'bg-green-600'} text-white px-6 py-3 rounded-md shadow-lg z-50`}>
+            {toastMessage}
           </div>
         )}
 
@@ -160,12 +331,139 @@ export default function OrderPage() {
                     {category.description}
                   </p>
                 </div>
+
+                {/* Combo Cards - Full Width */}
+                {items.filter(item => item.id === 'medium-combo' || item.id === 'large-combo').map((item) => (
+                  <div key={`combo-${item.id}`} className={`transition-all duration-300 overflow-hidden mt-4 ${
+                    expandedCategories[category.id] ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}>
+                    <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6 bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg transition-shadow duration-200">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-900">Customize Your {item.name}</h4>
+                          <p className="text-sm text-gray-600 mt-1">Select 3 different items with your preferred meat choices - ${item.price.toFixed(2)}</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
+                            {(selectedCombos[item.id] || []).length}/3 Selected
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Combo Items */}
+                      <div className="space-y-3">
+                        {(selectedCombos[item.id] || []).map((selection, index) => (
+                          <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                            <span className="flex-shrink-0 w-8 h-8 bg-red-100 text-red-800 rounded-full flex items-center justify-center text-sm font-bold border border-red-200">
+                              {index + 1}
+                            </span>
+                            
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Item Type</label>
+                                <select
+                                  value={selection.itemType}
+                                  onChange={(e) => updateComboItem(item.id, index, 'itemType', e.target.value)}
+                                  className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-red-500 focus:outline-none focus:ring-red-500"
+                                  disabled={!orderingAllowed.allowed}
+                                >
+                                  {comboOptions.map(option => {
+                                    const isAlreadySelected = (selectedCombos[item.id] || []).some((sel, i) => i !== index && sel.itemType === option.id);
+                                    return (
+                                      <option key={option.id} value={option.id} disabled={isAlreadySelected}>
+                                        {option.name} {isAlreadySelected ? '(Already selected)' : ''}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              </div>
+                              
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Meat Choice</label>
+                                <select
+                                  value={selection.meatType}
+                                  onChange={(e) => updateComboItem(item.id, index, 'meatType', e.target.value)}
+                                  className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-red-500 focus:outline-none focus:ring-red-500"
+                                  disabled={!orderingAllowed.allowed}
+                                >
+                                  {meatOptions.map(meat => (
+                                    <option key={meat.id} value={meat.id}>
+                                      {meat.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            
+                            <button
+                              type="button"
+                              onClick={() => removeComboItem(item.id, index)}
+                              className="inline-flex items-center px-3 py-1.5 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 transition-colors"
+                              disabled={!orderingAllowed.allowed}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Add/Remove Controls */}
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 pt-4 border-t border-gray-200 gap-3">
+                        <div className="flex items-center gap-3">
+                          {(selectedCombos[item.id] || []).length < 3 && (
+                            <button
+                              type="button"
+                              onClick={() => addComboItem(item.id, getRequiredComboItems(item))}
+                              className="inline-flex items-center px-4 py-2 border border-green-300 text-sm font-medium rounded-md text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition-colors"
+                              disabled={!orderingAllowed.allowed}
+                            >
+                              Add Item
+                            </button>
+                          )}
+                          
+                          {(selectedCombos[item.id] || []).length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedCombos(prev => ({ ...prev, [item.id]: [] }))}
+                              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-500 transition-colors"
+                              disabled={!orderingAllowed.allowed}
+                            >
+                              Reset All
+                            </button>
+                          )}
+                        </div>
+                        
+                        <button
+                          onClick={() => {
+                            console.log('Combo button clicked:', {
+                              isComplete: isComboComplete(item),
+                              orderingAllowed: orderingAllowed.allowed,
+                              selectedLocation: selectedLocation,
+                              selections: selectedCombos[item.id]
+                            });
+                            handleAddComboToCart(item);
+                          }}
+                          disabled={!isComboComplete(item) || !orderingAllowed.allowed || !selectedLocation}
+                          className={`inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-all ${
+                            (!isComboComplete(item) || !orderingAllowed.allowed || !selectedLocation)
+                              ? 'bg-gray-400 cursor-not-allowed opacity-50'
+                              : 'bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500 hover:shadow-md'
+                          }`}
+                        >
+                          Add Combo to Cart
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Regular Items Grid */}
                 <div 
                   className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 overflow-hidden mt-2 ${
-                    expandedCategories[category.id] ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+                    expandedCategories[category.id] ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
-                  {items.map((item) => (
+                  {items.filter(item => !(item.id === 'medium-combo' || item.id === 'large-combo')).map((item) => (
                     <div
                       key={item.id}
                       className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow duration-200"
@@ -188,86 +486,72 @@ export default function OrderPage() {
                           <p className="text-sm text-gray-600 mt-2">{item.description}</p>
                         )}
                         
-                        
-                        <div className="mt-4 space-y-3">
+                        <div className="mt-4 space-y-3 flex-grow">
+                          {/* Variants */}
                           {item.variants && item.variants.length > 0 && (
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Style
-                              </label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Choose Option</label>
                               <select
                                 value={selectedVariants[item.id] || ''}
-                                onChange={(e) => setSelectedVariants(prev => ({
-                                  ...prev,
-                                  [item.id]: e.target.value
-                                }))}
-                                className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-red-500 focus:outline-none focus:ring-red-500 sm:text-sm"
+                                onChange={(e) => setSelectedVariants(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-red-500 focus:outline-none focus:ring-red-500"
                               >
-                                <option value="">Select an option</option>
-                                {item.variants.map(variant => (
+                                <option value="">Select option...</option>
+                                {item.variants.map((variant) => (
                                   <option key={variant.name} value={variant.name}>
                                     {variant.name} - ${variant.price.toFixed(2)}
                                   </option>
                                 ))}
                               </select>
-                              {selectedVariants[item.id] && (
-                                <p className="mt-1 text-xs text-gray-500">
-                                  {item.variants.find(v => v.name === selectedVariants[item.id])?.description}
-                                </p>
-                              )}
                             </div>
                           )}
-
+                          
+                          {/* Special Requests */}
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Special Request
-                            </label>
-                            <div className="flex space-x-4">
-                              <textarea
-                                name={`special-request-${item.id}`}
-                                value={specialRequests[item.id] || ''}
-                                onChange={(e) => setSpecialRequests(prev => ({
-                                  ...prev,
-                                  [item.id]: e.target.value
-                                }))}
-                                className="w-full px-3 py-2 text-sm text-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                                placeholder="Any special requests?"
-                                rows={2}
-                              />
-                            </div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Special Requests</label>
+                            <textarea
+                              value={specialRequests[item.id] || ''}
+                              onChange={(e) => setSpecialRequests(prev => ({ ...prev, [item.id]: e.target.value }))}
+                              placeholder="Any special requests or modifications..."
+                              className="block w-full rounded-md border-gray-300 py-2 px-3 text-base focus:border-red-500 focus:outline-none focus:ring-red-500"
+                              rows={2}
+                            />
                           </div>
-
-                          <div className="flex items-center justify-between pt-2">
-                            <div className="flex items-center border border-gray-300 rounded-md">
-                              <button
-                                type="button"
-                                onClick={() => handleQuantityChange(item.id, -1)}
-                                className="text-red-600 hover:text-red-900 font-bold text-lg px-2"
-                              >
-                                -
-                              </button>
-                              <span className="px-2">{quantities[item.id] || 1}</span>
-                              <button
-                                type="button"
-                                onClick={() => handleQuantityChange(item.id, 1)}
-                                className="text-red-600 hover:text-red-900 font-bold text-lg px-2"
-                              >
-                                +
-                              </button>
-                            </div>
-                            
+                        </div>
+                        
+                        {/* Quantity and Add to Cart */}
+                        <div className="flex items-center justify-between pt-4 mt-auto">
+                          <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => handleAddToCart(item)}
-                              disabled={item.variants && !selectedVariants[item.id]}
-                              className={`inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                                (item.variants && !selectedVariants[item.id])
-                                  ? 'bg-gray-400 cursor-not-allowed'
-                                  : 'bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
-                              }`}
+                              onClick={() => handleQuantityChange(item.id, -1)}
+                              className="w-10 h-10 rounded-full border-2 border-red-300 text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center font-bold text-lg"
+                              disabled={!orderingAllowed.allowed || (quantities[item.id] || 1) <= 1}
                             >
-                              Add to Cart
+                              −
+                            </button>
+                            <span className="text-xl font-semibold text-gray-900 min-w-[3rem] text-center">
+                              {quantities[item.id] || 1}
+                            </span>
+                            <button
+                              onClick={() => handleQuantityChange(item.id, 1)}
+                              className="w-10 h-10 rounded-full border-2 border-red-300 text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center font-bold text-lg"
+                              disabled={!orderingAllowed.allowed}
+                            >
+                              +
                             </button>
                           </div>
+                          
+                          <button
+                            onClick={() => handleAddToCart(item)}
+                            className={`px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
+                              orderingAllowed.allowed
+                                ? 'bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
+                                : 'bg-gray-400 cursor-not-allowed'
+                            }`}
+                            disabled={!orderingAllowed.allowed}
+                          >
+                            Add to Cart
+                          </button>
                         </div>
                       </div>
                     </div>

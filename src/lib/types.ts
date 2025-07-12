@@ -8,9 +8,10 @@ export type CartItem = {
   image: string;
   variant?: string;
   specialRequest?: string;
+  location: string;
 };
 
-export type OrderStatus = 'preparing' | 'ready' | 'completed' | 'cancelled';
+export type OrderStatus = 'preparing' | 'in-progress' | 'ready' | 'completed' | 'cancelled';
 
 export type OrderDetails = {
   id?: string;
@@ -25,12 +26,13 @@ export type OrderDetails = {
   orderType?: 'pickup';
   variant?: string;
   specialRequest?: string;
+  location?: string;
+  estimatedCompletionMinutes?: number;
 };
 
 export type CustomerInfo = {
   name: string;
   email: string;
   phone: string;
-  orderType: 'pickup';
   specialInstructions?: string;
 };

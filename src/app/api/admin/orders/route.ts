@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { error } from 'console';
 
 // Add any admin emails here
-const ADMIN_EMAILS = ['brendon1798@gmail.com', 'info@lacasita.io'];
+const ADMIN_EMAILS = ['brendon1798@gmail.com', 'info@lacasita.io', 'berthoud@lacasita.io','fortcollins@lacasita.io'];
 
 export async function GET() {
 

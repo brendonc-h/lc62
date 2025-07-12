@@ -17,6 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script 
+          type="text/javascript" 
+          src="https://sandbox.web.squarecdn.com/v1/square.js"
+          async
+        ></script>
+      </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
