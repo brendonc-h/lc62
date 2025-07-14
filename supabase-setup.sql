@@ -85,14 +85,32 @@ CREATE POLICY "Users can update own customer record" ON customers
 
 -- RLS Policies for orders
 CREATE POLICY "Users can view own orders" ON orders
-  FOR SELECT USING (customer_id IN (
-    SELECT id FROM customers WHERE auth_id = auth.uid()
-  ));
+  FOR SELECT USING (
+    customer_id IN (
+      SELECT id FROM customers WHERE auth_id = auth.uid()
+    ) OR customer_id IS NULL
+  );
 
-CREATE POLICY "Users can insert own orders" ON orders
-  FOR INSERT WITH CHECK (customer_id IN (
-    SELECT id FROM customers WHERE auth_id = auth.uid()
-  ));
+CREATE POLICY "Users can insert orders" ON orders
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admins can view all orders" ON orders
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM customers
+      WHERE auth_id = auth.uid()
+      AND role IN ('admin', 'kitchen')
+    )
+  );
+
+CREATE POLICY "Admins can update orders" ON orders
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM customers
+      WHERE auth_id = auth.uid()
+      AND role IN ('admin', 'kitchen')
+    )
+  );
 
 -- RLS Policies for order_items
 CREATE POLICY "Users can view own order items" ON order_items

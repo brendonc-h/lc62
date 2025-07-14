@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, createClient } from '@/lib/supabaseClient';
 import { OrderDetails } from '@/lib/types';
 import { sendOrderConfirmationEmail, sendOrderNotificationToAdmin } from '@/lib/email-utils';
 import { client } from '@/lib/square-client';
@@ -14,60 +14,67 @@ export async function POST(request: Request) {
     const paymentMethod = orderRequest.paymentMethod || 'instore';
     const paymentId = orderRequest.paymentId || null;
     const paymentStatus = orderRequest.paymentStatus || null;
-    
+
+    console.log('Creating order with data:', {
+      customerInfo: order.customerInfo,
+      total: order.total,
+      itemCount: order.items.length,
+      paymentMethod,
+      paymentId
+    });
+
+    // Get the current user to link the order
+    const supabase = createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    let customerId = null;
+
+    if (user) {
+      // User is logged in, get their customer record
+      const { data: customer, error: customerError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('auth_id', user.id)
+        .single();
+
+      if (customer) {
+        customerId = customer.id;
+      } else {
+        console.warn('Logged in user has no customer record');
+      }
+    }
+
     // Verify that all items in the order have the same location
     const orderLocation = order.items[0]?.location;
     if (!orderLocation) {
       return NextResponse.json({ error: 'Order items must have a location' }, { status: 400 });
     }
-    
+
     const locationMismatch = order.items.some(item => item.location !== orderLocation);
     if (locationMismatch) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'All items in an order must be from the same location'
       }, { status: 400 });
     }
-    
-    // If this is a Square payment, verify the payment status if we have a payment ID
-    if (paymentMethod === 'online' && paymentId) {
-      try {
-        // Verify payment with Square using paymentsApi
-        const { result } = await client.paymentsApi.getPayment(paymentId);
-        if (result.payment?.status !== 'COMPLETED') {
-          return NextResponse.json({ error: 'Payment not completed' }, { status: 400 });
-        }
-      } catch (squareError) {
-        console.error('Error verifying Square payment:', squareError);
-        // Continue if we can't verify (might be in sandbox mode)
-      }
-    }
-    
-    const doc = {
-      ...order,
-      status: 'preparing',
-      createdAt: new Date().toISOString(),
-      paymentMethod,
-      paymentId,
-      paymentStatus,
-    };
 
-    // Create a more database-friendly order structure
+    // Create the order record (matching the actual database schema)
     const dbOrder = {
-      customer_name: order.customerInfo.name,
-      customer_email: order.customerInfo.email,
-      customer_phone: order.customerInfo.phone,
+      customer_id: customerId, // Link to customer if logged in
       total_price: order.total,
       status: 'preparing',
-      location: order.items[0]?.location || '',
-      items_json: JSON.stringify(order.items),
-      payment_method: paymentMethod,
-      payment_id: paymentId,
-      payment_status: paymentStatus,
-      created_at: new Date().toISOString(),
-      order_type: order.customerInfo.orderType || 'pickup',
-      special_instructions: order.customerInfo.specialInstructions || '',
+      notes: JSON.stringify({
+        customerInfo: order.customerInfo,
+        items: order.items,
+        location: orderLocation,
+        paymentMethod,
+        paymentId,
+        paymentStatus,
+        specialInstructions: order.customerInfo.specialInstructions
+      })
     };
-    
+
+    console.log('Inserting order into database:', dbOrder);
+
     const { data, error } = await supabase
       .from('orders')
       .insert([dbOrder])
@@ -76,9 +83,53 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Error creating order:', error);
-      return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+      return NextResponse.json({
+        error: 'Failed to create order',
+        details: error.message,
+        code: error.code
+      }, { status: 500 });
     }
-    
+
+    console.log('Order created successfully:', data);
+
+    // Now create order_items for each item in the order
+    const orderItems = [];
+    for (const item of order.items) {
+      // First, find the menu item by name (since we might not have the exact ID)
+      const { data: menuItem, error: menuError } = await supabase
+        .from('menu_items')
+        .select('id')
+        .eq('name', item.name)
+        .single();
+
+      if (menuError) {
+        console.warn(`Could not find menu item: ${item.name}`, menuError);
+        // Continue without linking to menu item
+      }
+
+      orderItems.push({
+        order_id: data.id,
+        menu_item_id: menuItem?.id || null,
+        quantity: item.quantity,
+        price_each: item.price,
+        special_instructions: item.specialRequest || null
+      });
+    }
+
+    // Insert order items
+    if (orderItems.length > 0) {
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error('Error creating order items:', itemsError);
+        // Continue even if order items fail
+      } else {
+        console.log('Order items created successfully');
+      }
+    }
+
     // Add the order ID to the order object for email notifications
     const orderWithId: OrderDetails = {
       ...order,
@@ -86,24 +137,30 @@ export async function POST(request: Request) {
       status: 'preparing',
       createdAt: new Date().toISOString()
     };
-    
+
     // Send confirmation email to customer
     try {
       await sendOrderConfirmationEmail(orderWithId);
+      console.log('Customer confirmation email sent');
     } catch (emailError) {
       console.error('Failed to send customer confirmation email:', emailError);
       // Continue even if email fails
     }
-    
+
     // Send notification to the appropriate location admin
     try {
       await sendOrderNotificationToAdmin(orderWithId);
+      console.log('Admin notification email sent');
     } catch (emailError) {
       console.error('Failed to send admin notification email:', emailError);
       // Continue even if email fails
     }
-    
-    return NextResponse.json({ id: data.id }, { status: 201 });
+
+    return NextResponse.json({
+      orderId: data.id,
+      status: 'success',
+      message: 'Order created successfully'
+    }, { status: 201 });
   } catch (error) {
     console.error('Error creating order:', error);
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });

@@ -22,9 +22,9 @@ export default function AdminPage() {
 
         // Fetch user profile to check role
         const { data: profile, error: profileError } = await supabase
-          .from('profiles')
+          .from('customers')
           .select('*')
-          .eq('id', authUser.id)
+          .eq('auth_id', authUser.id)
           .single();
 
         if (profileError) throw profileError;

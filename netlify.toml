@@ -4,9 +4,26 @@
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
+
+  # Supabase Configuration
   NEXT_PUBLIC_SUPABASE_URL = "https://tpoqcxqyolnrkekdnorj.supabase.co"
   NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwb3FjeHF5b2xucmtla2Rub3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyOTc1OTksImV4cCI6MjA2NTg3MzU5OX0.lefMCOcrGhZIvfB3W9-vpd_wTCUu6GRzl-Gr4IqQ8TA"
   NEXT_PUBLIC_SITE_URL = "https://la-casita-restaurant.windsurf.build"
+
+  # Email Configuration (Zoho)
+  SMTP_HOST = "smtp.zoho.com"
+  SMTP_PORT = "587"
+  SMTP_SECURE = "false"
+  SMTP_USER = "brendon.curry-hobbs@hhsystems.org"
+  SMTP_PASSWORD = "EP316Wub8gZb"
+  ADMIN_EMAILS = "brendon1798@gmail.com"
+
+  # Square API Configuration (Production)
+  ENVIRONMENT = "production"
+  NEXT_PUBLIC_SQUARE_APP_ID = "YOUR_PRODUCTION_SQUARE_APP_ID"
+  NEXT_PUBLIC_SQUARE_LOCATION_ID = "YOUR_PRODUCTION_SQUARE_LOCATION_ID"
+  SQUARE_LOCATION_ID = "YOUR_PRODUCTION_SQUARE_LOCATION_ID"
+  SQUARE_ACCESS_TOKEN = "YOUR_PRODUCTION_SQUARE_ACCESS_TOKEN"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

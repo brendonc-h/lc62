@@ -11,6 +11,11 @@ const adminPaths = [
   '/admin/settings'
 ];
 
+// List of kitchen paths that require kitchen or admin role
+const kitchenPaths = [
+  '/kitchen'
+];
+
 // Public paths that don't require authentication
 const publicPaths = [
   '/',
@@ -83,9 +88,12 @@ export async function middleware(req: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
   
   // Check if the path is an admin path
-  const isAdminPath = adminPaths.some(path => pathname.startsWith(path)) || 
+  const isAdminPath = adminPaths.some(path => pathname.startsWith(path)) ||
                      pathname.startsWith('/api/admin/');
-  
+
+  // Check if the path is a kitchen path
+  const isKitchenPath = kitchenPaths.some(path => pathname.startsWith(path));
+
   // Check if the path is a protected path
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
 
@@ -119,7 +127,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Handle page routes
-  if (isAdminPath || isProtectedPath) {
+  if (isAdminPath || isKitchenPath || isProtectedPath) {
     // Redirect to sign-in if not authenticated
     if (!session) {
       const signInUrl = new URL('/auth/signin', req.url);
@@ -127,21 +135,31 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
+    // Get user profile for role checking
+    const { data: profile } = await supabase
+      .from('customers')
+      .select('role')
+      .eq('auth_id', session.user.id)
+      .single();
+
     // For admin paths, check if user has admin role
     if (isAdminPath) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single();
-      
       if (profile?.role !== 'admin') {
         // Redirect to dashboard if not admin
         const dashboardUrl = new URL('/dashboard', req.url);
         return NextResponse.redirect(dashboardUrl);
       }
     }
-    
+
+    // For kitchen paths, check if user has kitchen or admin role
+    if (isKitchenPath) {
+      if (profile?.role !== 'admin' && profile?.role !== 'kitchen') {
+        // Redirect to dashboard if not kitchen staff or admin
+        const dashboardUrl = new URL('/dashboard', req.url);
+        return NextResponse.redirect(dashboardUrl);
+      }
+    }
+
     // User is authenticated and authorized, proceed
     return res;
   }

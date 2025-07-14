@@ -5,7 +5,7 @@ A modern, full-featured website for La Casita Mexican Restaurant in Berthoud, Co
 ## Features
 
 - Responsive design optimized for all devices
-- Online ordering system with Stripe integration
+- Online ordering system with Square payment integration
 - Interactive menu with categories and item details
 - Contact form and location information
 - Admin-friendly content management
@@ -15,7 +15,7 @@ A modern, full-featured website for La Casita Mexican Restaurant in Berthoud, Co
 - Next.js 14
 - TypeScript
 - Tailwind CSS
-- Stripe Payments
+- Square Payments
 - Headless UI Components
 
 ## Getting Started
@@ -25,10 +25,11 @@ A modern, full-featured website for La Casita Mexican Restaurant in Berthoud, Co
    npm install
    ```
 
-2. Create a `.env.local` file with your Stripe keys:
+2. Create a `.env.local` file with your Square keys:
    ```
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_publishable_key
-   STRIPE_SECRET_KEY=your_secret_key
+   NEXT_PUBLIC_SQUARE_APP_ID=your_square_app_id
+   SQUARE_ACCESS_TOKEN=your_square_access_token
+   SQUARE_LOCATION_ID=your_square_location_id
    ```
 
 3. Run the development server:

@@ -50,38 +50,51 @@ export async function PATCH(request: Request) {
       .from('orders')
       .update(updateData)
       .eq('id', orderId)
-      .select()
-      .single();
+      .select();
     
     if (error) {
       console.error('Error updating order status:', error);
       return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });
     }
+
+    if (!data || data.length === 0) {
+      console.error('No order found with ID:', orderId);
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    const updatedOrder = data[0];
     
     // Get the customer information and order details for sending email
     try {
-      // Customer data should be stored in the order object
-      const customerEmail = order.customer.email;
-      const customerName = order.customer.name;
-      
-      // Get the location from the first item in the order
-      const location = order.items && order.items.length > 0 ? order.items[0].location : 'Unknown';
-      
-      // Send email notification to customer about status update
-      await sendOrderStatusUpdateEmail(
-        orderId, 
-        customerEmail, 
-        customerName, 
-        location,
-        status as 'preparing' | 'in-progress' | 'ready' | 'completed' | 'cancelled',
-        estimatedMinutes || order.estimated_completion_minutes
-      );
+      // Parse the notes field to get customer and order data
+      const orderData = JSON.parse(order.notes || '{}');
+      const customerInfo = orderData.customerInfo || {};
+      const customerEmail = customerInfo.email;
+      const customerName = customerInfo.name;
+
+      // Get the location from the order data
+      const location = orderData.location || 'Unknown';
+
+      if (customerEmail && customerName) {
+        // Send email notification to customer about status update
+        await sendOrderStatusUpdateEmail(
+          orderId,
+          customerEmail,
+          customerName,
+          location,
+          status as 'preparing' | 'in-progress' | 'ready' | 'completed' | 'cancelled',
+          estimatedMinutes || order.estimated_completion_minutes
+        );
+        console.log(`Order status update email sent to: ${customerEmail}`);
+      } else {
+        console.log('No customer email found for order:', orderId);
+      }
     } catch (emailError) {
       console.error('Failed to send order status update email:', emailError);
       // Continue with the response even if email fails
     }
     
-    return NextResponse.json({ success: true, order: data });
+    return NextResponse.json({ success: true, order: updatedOrder });
   } catch (error) {
     console.error('Error updating order status:', error);
     return NextResponse.json({ error: 'Failed to update order status' }, { status: 500 });

@@ -38,19 +38,89 @@ export default function Navbar() {
     };
   }, []);
 
-  const navigation = [
-    { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Menu', href: '/menu', icon: ShoppingBagIcon },
-    { name: 'My Orders', href: '/orders', icon: ShoppingBagIcon },
-    { name: 'About Us', href: '/about', icon: MapPinIcon },
-  ] as const;
+  // Role-based navigation
+  const getNavigation = () => {
+    const baseNav = [
+      { name: 'Home', href: '/', icon: HomeIcon },
+      { name: 'Menu', href: '/menu', icon: ShoppingBagIcon },
+    ];
+
+    if (!user) {
+      return [...baseNav, { name: 'About Us', href: '/about', icon: MapPinIcon }];
+    }
+
+    // Customer navigation
+    const customerNav = [
+      ...baseNav,
+      { name: 'My Orders', href: '/orders', icon: ShoppingBagIcon },
+      { name: 'Dashboard', href: '/dashboard', icon: UserCircleIcon },
+      { name: 'About Us', href: '/about', icon: MapPinIcon },
+    ];
+
+    // Admin navigation
+    if (user.role === 'admin') {
+      return [
+        ...baseNav,
+        { name: 'Admin Dashboard', href: '/admin', icon: UserCircleIcon },
+        { name: 'Kitchen', href: '/kitchen', icon: ShoppingBagIcon },
+        { name: 'Orders Management', href: '/admin/orders', icon: ShoppingBagIcon },
+      ];
+    }
+
+    // Kitchen staff navigation
+    if (user.role === 'kitchen') {
+      return [
+        ...baseNav,
+        { name: 'Kitchen Dashboard', href: '/kitchen', icon: ShoppingBagIcon },
+        { name: 'My Orders', href: '/orders', icon: ShoppingBagIcon },
+      ];
+    }
+
+    return customerNav;
+  };
+
+  const navigation = getNavigation();
 
   useEffect(() => {
     const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      setUser(data?.user || null);
-      setLoading(false);
+      try {
+        const { data: authData, error } = await supabase.auth.getUser();
+
+        if (error || !authData?.user) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user profile to get role
+        const { data: profile, error: profileError } = await supabase
+          .from('customers')
+          .select('role, name')
+          .eq('auth_id', authData.user.id)
+          .single();
+
+        if (profileError) {
+          console.warn('Could not fetch user profile:', profileError);
+          setUser({
+            ...authData.user,
+            role: 'customer', // Default role
+            name: authData.user.email?.split('@')[0] || 'User'
+          });
+        } else {
+          setUser({
+            ...authData.user,
+            role: profile.role || 'customer',
+            name: profile.name || authData.user.email?.split('@')[0] || 'User'
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching user:', err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
     };
+
     getUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(() => {

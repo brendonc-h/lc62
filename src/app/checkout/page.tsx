@@ -2,7 +2,7 @@
 
 import { useCart } from '@/lib/cart-context';
 import { useState, useEffect } from 'react';
-import { CustomerInfo } from '@/lib/types';
+import { CustomerInfo, OrderDetails } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { buttonStyles } from '@/lib/button-styles';
@@ -96,14 +96,51 @@ export default function CheckoutPage() {
   const handlePaymentSuccess = async (paymentResult: any) => {
     console.log('Payment successful:', paymentResult);
     setPaymentSuccess(true);
-    
-    // Clear the cart
-    clearCart();
-    
-    // Redirect to success page
-    setTimeout(() => {
-      router.push(`/order-confirmation?payment_id=${paymentResult.paymentId}&status=success`);
-    }, 2000);
+
+    try {
+      // Create order in our database
+      const orderData = {
+        items: state.items,
+        subtotal: state.subtotal,
+        tax: state.tax,
+        total: state.total,
+        customerInfo,
+        paymentMethod: 'square',
+        paymentId: paymentResult.paymentId,
+        paymentStatus: 'completed'
+      };
+
+      console.log('Creating order in database:', orderData);
+
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to create order:', errorData);
+        throw new Error(errorData.error || 'Failed to create order');
+      }
+
+      const orderResult = await response.json();
+      console.log('Order created successfully:', orderResult);
+
+      // Clear the cart
+      clearCart();
+
+      // Redirect to success page with order ID
+      setTimeout(() => {
+        router.push(`/order-confirmation?order_id=${orderResult.orderId}&payment_id=${paymentResult.paymentId}&status=success`);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setPaymentError('Payment successful but failed to create order. Please contact support.');
+    }
   };
 
   const handlePaymentError = (error: string) => {
@@ -360,7 +397,7 @@ export default function CheckoutPage() {
                           tax: state.tax,
                           total: state.total,
                           customerInfo,
-                        }}
+                        } as OrderDetails}
                         onPaymentSuccess={handlePaymentSuccess}
                         onPaymentError={handlePaymentError}
                         isProcessing={isProcessingPayment}

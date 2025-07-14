@@ -71,8 +71,15 @@ export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
 
-  // Check if user is admin - you can customize this logic
+  // Check if user is admin - redirect admins to admin dashboard
   const isAdmin = user?.role === 'admin' || user?.email?.includes('admin') || user?.email?.endsWith('@lacasita.com');
+
+  // Redirect admins to admin dashboard
+  useEffect(() => {
+    if (user && isAdmin) {
+      router.push('/admin');
+    }
+  }, [user, isAdmin, router]);
 
   const fetchAllOrders = async () => {
     if (!isAdmin) return;
@@ -243,8 +250,20 @@ export default function Dashboard() {
 
 
 
-  // Admin Dashboard
+  // If user is admin, they will be redirected to admin dashboard
   if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Redirecting to admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // This code is now unreachable but keeping for reference
+  if (false) {
     const adminStats = {
       totalOrders: allOrders.length,
       totalRevenue: allOrders.reduce((sum, order) => sum + (order.total || 0), 0),

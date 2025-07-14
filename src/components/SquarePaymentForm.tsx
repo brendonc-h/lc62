@@ -1,15 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-
-interface OrderDetails {
-  total: number;
-  items: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-}
+import { OrderDetails } from '@/lib/types';
 
 interface SquarePaymentFormProps {
   orderDetails: OrderDetails;
@@ -153,9 +145,7 @@ export default function SquarePaymentForm({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            sourceId: tokenResult.token,
-            amount: Math.round(orderDetails.total * 100), // Convert to cents
-            currency: 'USD',
+            token: tokenResult.token,
             orderDetails,
           }),
         });
@@ -207,34 +197,6 @@ export default function SquarePaymentForm({
         >
           {isProcessing ? 'Processing...' : `Pay $${orderDetails.total.toFixed(2)}`}
         </button>
-      </div>
-    </div>
-  );
-}
-
-        {/* Pay Button */}
-        <button
-          onClick={handlePayment}
-          disabled={!card || isProcessing}
-          className={`w-full mt-4 py-3 px-4 rounded-md font-medium text-white transition-colors ${
-            !card || isProcessing
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-          }`}
-        >
-          {isProcessing ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              Processing Payment...
-            </div>
-          ) : (
-            `Pay $${orderDetails.total.toFixed(2)}`
-          )}
-        </button>
-
-        <p className="text-xs text-gray-500 text-center mt-2">
-          Your payment information is secure and encrypted.
-        </p>
       </div>
     </div>
   );
