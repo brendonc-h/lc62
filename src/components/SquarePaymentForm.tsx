@@ -3,6 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { OrderDetails } from '@/lib/types';
 
+// Declare Square types for TypeScript
+declare global {
+  interface Window {
+    Square?: any;
+  }
+}
+
 interface SquarePaymentFormProps {
   orderDetails: OrderDetails;
   onPaymentSuccess: (result: any) => void;
