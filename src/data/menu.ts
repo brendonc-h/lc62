@@ -46,14 +46,14 @@ export const categories: MenuCategory[] = [
     name: 'Breakfast Burritos',
     description: 'Start your day with our delicious breakfast burritos',
     emoji: '🌯',
-    color: 'from-yellow-400 to-orange-500',
+    color: 'from-emerald-400 to-teal-500',
   },
   {
     id: 'breakfast-meals',
     name: 'Breakfast Meals',
     description: 'Start your day with our delicious breakfast meals',
     emoji: '🍳',
-    color: 'from-yellow-300 to-yellow-500',
+    color: 'from-blue-400 to-indigo-500',
   },
   {
     id: 'soups',
@@ -151,7 +151,7 @@ export const categories: MenuCategory[] = [
     name: 'Tortas y Hamburguesas',
     description: 'Mexican sandwiches and burgers with a twist',
     emoji: '🍔',
-    color: 'from-yellow-500 to-red-500',
+    color: 'from-purple-500 to-violet-600',
   },
   {
     id: 'drinks',

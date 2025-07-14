@@ -6,6 +6,7 @@ import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 import { Dialog } from '@headlessui/react';
 import { useCart } from '@/lib/cart-context';
 import { buttonStyles } from '@/lib/button-styles';
+import ThemeToggle from './ThemeToggle';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -21,11 +22,11 @@ export default function Header() {
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-gray-800">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-primary-600">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent hover:from-red-700 hover:to-orange-600 transition-all duration-300">
               La Casita
             </Link>
           </div>
@@ -34,11 +35,12 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-gray-700 hover:text-primary-600"
+                className="text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 transform hover:scale-105"
               >
                 {item.name}
               </Link>
             ))}
+            <ThemeToggle />
             <Link
               href="/checkout"
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
@@ -67,7 +69,7 @@ export default function Header() {
       <Dialog as="div" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
         <Dialog.Panel className="fixed inset-0 z-10 overflow-y-auto bg-white px-6 py-6 md:hidden">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-primary-600">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent">
               La Casita
             </Link>
             <button
@@ -85,7 +87,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block text-base font-medium text-gray-700 hover:text-primary-600"
+                  className="block text-base font-semibold text-gray-800 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}

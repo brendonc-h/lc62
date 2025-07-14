@@ -415,16 +415,16 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:max-w-none">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center mb-6">Our Menu</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 text-center mb-6">Our Menu</h2>
           
           {/* Restaurant hours and ordering status */}
           <div className="mb-6">
             <OrderingStatus className="mb-2" />
           </div>
-          <p className="mt-4 text-lg text-gray-500">
+          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
             Discover our authentic Mexican dishes made with fresh ingredients and traditional recipes
           </p>
           <Link
@@ -444,7 +444,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
             const isExpanded = expandedCategories[category.id];
             
             return (
-              <div key={category.id} className="mb-8 border-b border-gray-200 pb-8">
+              <div key={category.id} className="mb-8 border-b border-gray-200 dark:border-gray-700 pb-8">
                 <button
                   onClick={() => toggleCategoryExpansion(category.id)}
                   className="w-full text-left focus:outline-none group"
@@ -475,7 +475,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-white rounded-lg shadow-lg overflow-hidden"
+                      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden"
                     >
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
