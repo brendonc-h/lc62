@@ -84,6 +84,7 @@ function AuthCallbackContent() {
         const token = searchParams?.get('token') || ''; // Our custom token
         const type = searchParams?.get('type') || '';
         const provider = searchParams?.get('provider') || '';
+        const callbackUrl = searchParams?.get('callbackUrl') || '/';
         
         // For OAuth providers (like Google)
         if (code && (provider || type === 'oauth')) {
@@ -101,10 +102,10 @@ function AuthCallbackContent() {
             await ensureCustomerRecord(supabase, data.user);
             
             setMessage('Sign in successful! Redirecting you...');
-            
-            // Redirect to home page
+
+            // Redirect to callback URL or home page
             setTimeout(() => {
-              router.push('/');
+              router.push(callbackUrl);
             }, 1500);
           } else {
             throw new Error('Failed to get user session');
@@ -126,7 +127,7 @@ function AuthCallbackContent() {
           if (data.session && data.user) {
             // Ensure customer record exists
             await ensureCustomerRecord(supabase, data.user);
-            router.push('/');
+            router.push(callbackUrl);
           } else {
             router.push('/auth/signin?verified=true');
           }

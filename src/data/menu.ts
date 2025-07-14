@@ -29,6 +29,8 @@ export type MenuCategory = {
   id: string;
   name: string;
   description: string;
+  emoji?: string;
+  color?: string;
 };
 
 export const categories: MenuCategory[] = [
@@ -36,96 +38,134 @@ export const categories: MenuCategory[] = [
     id: 'appetizers',
     name: 'Appetizers',
     description: 'Start your meal with our delicious appetizers',
+    emoji: '🥨',
+    color: 'from-orange-400 to-red-500',
   },
   {
     id: 'breakfast-burritos',
     name: 'Breakfast Burritos',
     description: 'Start your day with our delicious breakfast burritos',
+    emoji: '🌯',
+    color: 'from-yellow-400 to-orange-500',
   },
   {
     id: 'breakfast-meals',
     name: 'Breakfast Meals',
     description: 'Start your day with our delicious breakfast meals',
+    emoji: '🍳',
+    color: 'from-yellow-300 to-yellow-500',
   },
   {
     id: 'soups',
     name: 'Soups',
     description: 'Warm and comforting soups made with fresh ingredients',
+    emoji: '🍲',
+    color: 'from-red-400 to-red-600',
   },
   {
     id: 'tacos',
     name: 'Tacos',
     description: 'Traditional Mexican tacos with your choice of meat',
+    emoji: '🌮',
+    color: 'from-green-400 to-green-600',
   },
   {
     id: 'tostadas',
     name: 'Tostadas',
     description: 'Traditional Tostadas with your choice of meat',
+    emoji: '🥙',
+    color: 'from-yellow-500 to-orange-600',
   },
     {
     id: 'salads',
     name: 'Salads',
     description: 'Fresh salads with a variety of toppings, served with rice,beans,pico de gallo, cheese and sour cream',
+    emoji: '🥗',
+    color: 'from-green-300 to-green-500',
   },
     {
     id: 'medium-combos',
     name: 'Medium Combos',
     description: 'Medium combo meals with your choice of items - no repeats allowed',
+    emoji: '🍽️',
+    color: 'from-purple-400 to-purple-600',
   },
   {
     id: 'large-combos',
     name: 'Large Combos',
     description: 'Large combo meals with your choice of items - no repeats allowed',
+    emoji: '🍛',
+    color: 'from-purple-500 to-purple-700',
   },
   {
     id: 'burritos',
     name: 'Burritos',
     description: 'Large flour tortillas filled with your favorite ingredients',
+    emoji: '🌯',
+    color: 'from-red-400 to-red-600',
   },
   {
     id: 'fajitas',
     name: 'Fajitas',
     description: 'Grilled meat with peppers and onions, served with tortillas',
+    emoji: '🥘',
+    color: 'from-orange-500 to-red-600',
   },
   {
     id: 'dinner-specials',
     name: 'Dinner Specials',
     description: 'Grilled meat with peppers and onions, served with tortillas',
+    emoji: '⭐',
+    color: 'from-yellow-400 to-yellow-600',
   },
   {
     id: 'enchiladas',
     name: 'Enchiladas',
     description: 'Corn tortillas rolled around a filling and covered with sauce',
+    emoji: '🫔',
+    color: 'from-red-500 to-red-700',
   },
   {
     id: 'chimichangas',
     name: 'Chimichangas',
     description: 'Deep-fried burritos filled with your choice of meat',
+    emoji: '🌯',
+    color: 'from-orange-400 to-orange-600',
   },
   {
     id: 'kids',
     name: 'Kids Menu',
     description: 'Special meals for our 12 & younger guests',
+    emoji: '🧒',
+    color: 'from-pink-400 to-pink-600',
   },
   {
     id: 'sides',
     name: 'Sides',
-    description: 'Grilled meat with peppers and onions, served with tortillas',
+    description: 'Perfect accompaniments to your meal',
+    emoji: '🍚',
+    color: 'from-gray-400 to-gray-600',
   },
   {
     id: 'tortas-y-hamburguesas',
     name: 'Tortas y Hamburguesas',
     description: 'Mexican sandwiches and burgers with a twist',
+    emoji: '🍔',
+    color: 'from-yellow-500 to-red-500',
   },
   {
     id: 'drinks',
     name: 'Drinks',
     description: 'Refreshing beverages and cocktails',
+    emoji: '🥤',
+    color: 'from-blue-400 to-blue-600',
   },
   {
     id: 'desserts',
     name: 'Desserts',
     description: 'Sweet treats to end your meal',
+    emoji: '🍰',
+    color: 'from-pink-300 to-pink-500',
   },
 ];
 
@@ -596,7 +636,6 @@ export const menuItems: MenuItem[] = [
     description: 'Juicy beef patty with lettuce, tomato, onion, pickles, ketchup, and mustard on a toasted bun',
     price: 8.45,
     category: 'tortas-y-hamburguesas',
-    popular: true,
   },
             {
     id: 'mexican-hamburger',
@@ -604,7 +643,6 @@ export const menuItems: MenuItem[] = [
     description: 'Beef patty topped with green chile, cheese, and served with lettuce, tomato, and onions on a toasted bun',
     price: 13.49,
     category: 'tortas-y-hamburguesas',
-    popular: true,
   },
   // Combos
  
@@ -1052,8 +1090,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the eggs and cheese, served with sour cream, guacamole, and a side of refried beans'
     }
   ],
-  // Special request field handles customizations,
-  popular: true
+  // Special request field handles customizations
 },
 {
   id: 'potato-bacon-egg-cheese-burrito',
@@ -1073,8 +1110,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the bacon, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
-  // Special request field handles customizations,
-  popular: true
+  // Special request field handles customizations
 },
 {
   id: 'chorizo-potato-egg-cheese-burrito',
@@ -1095,7 +1131,6 @@ export const menuItems: MenuItem[] = [
     }
   ],
   // Special request field handles customizations
-  popular: true
 },
 {
   id: 'sausage-potato-egg-cheese-burrito',
@@ -1115,8 +1150,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the sausage, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
-  // Special request field handles customizations,
-  popular: true
+  // Special request field handles customizations
 },
 {
   id: 'ham-potato-egg-cheese-burrito',
@@ -1157,8 +1191,7 @@ export const menuItems: MenuItem[] = [
       description: 'Extra-large burrito with double the steak, eggs, potatoes, and cheese, served with sour cream, guacamole, and pico de gallo'
     }
   ],
-  // Special request field handles customizations,
-  popular: true
+  // Special request field handles customizations
 },
 {
   id: 'machaca-burrito',
@@ -1212,13 +1245,12 @@ export const menuItems: MenuItem[] = [
     popular: true
   },
 
-  // Large Combo - Choose 3 different items with meat choices  
+  // Large Combo - Choose 3 different items with meat choices
   {
     id: 'large-combo',
     name: 'Large Combo',
     description: 'Choose 3 different items with your choice of meat. Served with rice and beans.',
     price: 14.99,
-    category: 'large-combos',
-    popular: true
+    category: 'large-combos'
   }
 ];

@@ -90,6 +90,12 @@ export default function SignUp() {
         
         if (!response.ok) {
           const errorData = await response.json();
+
+          // Handle specific error status codes
+          if (response.status === 429) {
+            throw new Error('Too many signup attempts. Please wait a few minutes and try again.');
+          }
+
           throw new Error(errorData.error || 'Failed to create account');
         } else {
           console.log('API signup successful');

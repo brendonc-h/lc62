@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
 import SquarePaymentForm from '@/components/SquarePaymentForm';
+import { checkOrderHours, getOrderStatusMessage, isCloseToClosing } from '@/lib/order-hours';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,8 +27,10 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [orderHours, setOrderHours] = useState(checkOrderHours());
   // Only online payment is available
   const paymentMethod = 'online';
   
@@ -68,27 +71,120 @@ export default function CheckoutPage() {
     checkAuth();
   }, [supabase]);
 
+  // Check order hours periodically
+  useEffect(() => {
+    const checkHours = () => {
+      setOrderHours(checkOrderHours());
+    };
+
+    // Check immediately
+    checkHours();
+
+    // Check every minute
+    const interval = setInterval(checkHours, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Phone number formatting function
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-numeric characters
+    const phoneNumber = value.replace(/\D/g, '');
+
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length === 0) return '';
+    if (phoneNumber.length <= 3) return `(${phoneNumber}`;
+    if (phoneNumber.length <= 6) return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+  };
+
+  // Validation functions
+  const validateField = (name: string, value: string) => {
+    const errors: {[key: string]: string} = {};
+
+    switch (name) {
+      case 'name':
+        if (!value.trim()) errors.name = 'Name is required';
+        else if (value.trim().length < 2) errors.name = 'Name must be at least 2 characters';
+        break;
+      case 'email':
+        if (!value.trim()) errors.email = 'Email is required';
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) errors.email = 'Please enter a valid email address';
+        break;
+      case 'phone':
+        const phoneDigits = value.replace(/\D/g, '');
+        if (!phoneDigits) errors.phone = 'Phone number is required';
+        else if (phoneDigits.length !== 10) errors.phone = 'Please enter a valid 10-digit phone number';
+        break;
+    }
+
+    return errors;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setCustomerInfo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // Clear previous error for this field
+    setFormErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[name];
+      return newErrors;
+    });
+
+    // Special handling for phone number formatting
+    if (name === 'phone') {
+      const formattedPhone = formatPhoneNumber(value);
+      setCustomerInfo((prev) => ({
+        ...prev,
+        [name]: formattedPhone,
+      }));
+
+      // Validate phone number
+      const phoneErrors = validateField(name, formattedPhone);
+      if (Object.keys(phoneErrors).length > 0) {
+        setFormErrors(prev => ({ ...prev, ...phoneErrors }));
+      }
+    } else {
+      setCustomerInfo((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      // Validate other fields
+      const fieldErrors = validateField(name, value);
+      if (Object.keys(fieldErrors).length > 0) {
+        setFormErrors(prev => ({ ...prev, ...fieldErrors }));
+      }
+    }
   };
 
   const handleProceedToPayment = () => {
+    // Check if orders are still open
+    const currentOrderHours = checkOrderHours();
+    if (!currentOrderHours.isOpen) {
+      setPaymentError('Sorry, orders are currently closed. We stop taking orders at 6:30 PM daily.');
+      return;
+    }
+
     // Validate customer info
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone) {
       setPaymentError('Please fill in all required customer information');
       return;
     }
-    
+
+    // Validate phone number format (should have 10 digits)
+    const phoneDigits = customerInfo.phone.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      setPaymentError('Please enter a valid 10-digit phone number');
+      return;
+    }
+
     // Check if we have items in the cart
     if (!state.items.length) {
       setPaymentError('Your cart is empty');
       return;
     }
-    
+
     setPaymentError(null);
     setShowPaymentForm(true);
   };
@@ -159,6 +255,43 @@ export default function CheckoutPage() {
         <div className="mx-auto max-w-lg px-4 lg:px-8">
           <h1 className="text-3xl font-bold tracking-tight text-red-600">Complete Your Order</h1>
 
+          {/* Order Hours Status */}
+          <div className={`mt-6 rounded-md p-4 ${orderHours.isOpen ?
+            (isCloseToClosing() ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200') :
+            'bg-red-50 border border-red-200'
+          }`}>
+            <div className="flex">
+              <div className="flex-shrink-0">
+                {orderHours.isOpen ? (
+                  isCloseToClosing() ? (
+                    <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  )
+                ) : (
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              <div className="ml-3">
+                <p className={`text-sm font-medium ${orderHours.isOpen ?
+                  (isCloseToClosing() ? 'text-yellow-800' : 'text-green-800') :
+                  'text-red-800'
+                }`}>
+                  {getOrderStatusMessage()}
+                </p>
+                {!orderHours.isOpen && orderHours.nextOpenTime && (
+                  <p className="mt-1 text-sm text-red-700">{orderHours.nextOpenTime}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8">
             {!isLoggedIn ? (
               <div className="rounded-md bg-blue-50 p-4">
@@ -173,7 +306,7 @@ export default function CheckoutPage() {
                       Already have an account?
                     </h3>
                     <div className="mt-2 text-sm text-blue-700">
-                      <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500 underline">
+                      <Link href="/auth/signin?callbackUrl=/checkout" className="font-medium text-blue-600 hover:text-blue-500 underline">
                         Sign in to your account
                       </Link>
                     </div>
@@ -260,9 +393,14 @@ export default function CheckoutPage() {
                         required
                         value={customerInfo.name}
                         onChange={handleInputChange}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3"
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                          formErrors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="Your full name"
                       />
+                      {formErrors.name && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>
+                      )}
                     </div>
                   </div>
 
@@ -278,9 +416,14 @@ export default function CheckoutPage() {
                         value={customerInfo.email}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3"
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                          formErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="you@example.com"
                       />
+                      {formErrors.email && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>
+                      )}
                     </div>
                   </div>
 
@@ -296,9 +439,14 @@ export default function CheckoutPage() {
                         value={customerInfo.phone}
                         onChange={handleInputChange}
                         required
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3"
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                          formErrors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                         placeholder="(555) 555-5555"
                       />
+                      {formErrors.phone && (
+                        <p className="mt-1 text-sm text-red-600">{formErrors.phone}</p>
+                      )}
                     </div>
                   </div>
 
@@ -374,10 +522,16 @@ export default function CheckoutPage() {
                       
                       <button
                         type="submit"
-                        disabled={loading || isProcessingPayment}
-                        className={`${buttonStyles.primary} ${buttonStyles.fullWidth} ${(loading || isProcessingPayment) ? buttonStyles.disabled : ''} mt-4`}
+                        disabled={loading || isProcessingPayment || !orderHours.isOpen}
+                        className={`${buttonStyles.primary} ${buttonStyles.fullWidth} ${(loading || isProcessingPayment || !orderHours.isOpen) ? buttonStyles.disabled : ''} mt-4 flex items-center justify-center`}
                       >
-                        {loading || isProcessingPayment ? 'Processing...' : 'Continue to Payment'}
+                        {(loading || isProcessingPayment) && (
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                        )}
+                        {!orderHours.isOpen ? 'Orders Closed' : (loading || isProcessingPayment ? 'Processing...' : 'Continue to Payment')}
                       </button>
                     </>
                   )}

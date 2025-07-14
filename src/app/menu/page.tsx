@@ -54,6 +54,7 @@ export default function MenuPage() {
   const [expandedCategories, setExpandedCategories] = useState<{[key: string]: boolean}>(() => {
     const initialCategories: {[key: string]: boolean} = {};
     categories.forEach(category => {
+      // All categories should be collapsed by default
       initialCategories[category.id] = false;
     });
     return initialCategories;
@@ -448,17 +449,26 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                   onClick={() => toggleCategoryExpansion(category.id)}
                   className="w-full text-left focus:outline-none group"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-3xl font-bold text-gray-900 group-hover:text-red-600 transition-colors">
-                        {category.name}
-                      </h2>
-                      <p className="mt-2 text-lg text-gray-600">{category.description}</p>
+                  <div className={`rounded-xl p-6 bg-gradient-to-r ${category.color || 'from-gray-400 to-gray-600'} shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {category.emoji && (
+                          <div className="text-4xl bg-white bg-opacity-20 rounded-full p-3 backdrop-blur-sm">
+                            {category.emoji}
+                          </div>
+                        )}
+                        <div>
+                          <h2 className="text-3xl font-bold text-white group-hover:text-yellow-100 transition-colors">
+                            {category.name}
+                          </h2>
+                          <p className="mt-2 text-lg text-white text-opacity-90">{category.description}</p>
+                        </div>
+                      </div>
+                      <ChevronDownIcon
+                        className={`h-8 w-8 text-white text-opacity-80 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        aria-hidden="true"
+                      />
                     </div>
-                    <ChevronDownIcon 
-                      className={`h-6 w-6 text-gray-500 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-                      aria-hidden="true" 
-                    />
                   </div>
                 </button>
                 <div className={`space-y-8 mt-6 ${isExpanded ? 'block' : 'hidden'}`}>

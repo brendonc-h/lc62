@@ -13,7 +13,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
   const verified = searchParams.get('verified') === 'true';
   
   useEffect(() => {
@@ -77,7 +77,7 @@ function SignInContent() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback?provider=google`
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
         }
       });
       
@@ -158,9 +158,6 @@ function SignInContent() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Demo account: test@example.com / password123
-          </p>
           <p className="mt-2 text-center text-sm text-gray-600">
             Don't have an account?{' '}
             <Link href="/auth/signup" className="font-medium text-indigo-600 hover:text-indigo-500">

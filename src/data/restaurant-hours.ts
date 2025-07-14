@@ -43,11 +43,73 @@ export const locationHours: LocationHours[] = [
 ];
 
 // Functions to check if orders are allowed
-// TEMPORARILY DISABLED FOR TESTING - ALWAYS ALLOWS ORDERING
+// Orders stop at 6:30 PM (18:30) daily
 export const isOrderingAllowed = (locationId: string = 'berthoud'): { allowed: boolean, message: string } => {
-  return { 
-    allowed: true, 
-    message: "We're open and accepting orders! (Testing mode - time restrictions disabled)"
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // Convert current time to minutes since midnight for easier comparison
+  const currentTimeMinutes = currentHour * 60 + currentMinute;
+
+  // Order cutoff is 6:30 PM (18:30) = 18 * 60 + 30 = 1110 minutes
+  const cutoffTimeMinutes = 18 * 60 + 30; // 6:30 PM
+
+  // Assuming restaurant opens at 7:00 AM (7 * 60 = 420 minutes)
+  const openTimeMinutes = 7 * 60; // 7:00 AM
+
+  // Check if current time is within ordering hours (7:00 AM - 6:30 PM)
+  const isWithinHours = currentTimeMinutes >= openTimeMinutes && currentTimeMinutes < cutoffTimeMinutes;
+
+  if (isWithinHours) {
+    // Calculate minutes until cutoff
+    const minutesUntilCutoff = cutoffTimeMinutes - currentTimeMinutes;
+
+    if (minutesUntilCutoff <= 60) {
+      // Less than 1 hour until cutoff
+      const hours = Math.floor(minutesUntilCutoff / 60);
+      const minutes = minutesUntilCutoff % 60;
+
+      if (hours > 0) {
+        return {
+          allowed: true,
+          message: `⏰ Orders close in ${hours} hour${hours > 1 ? 's' : ''} and ${minutes} minutes (6:30 PM)`
+        };
+      } else {
+        return {
+          allowed: true,
+          message: `⏰ Orders close in ${minutes} minutes (6:30 PM)`
+        };
+      }
+    }
+
+    return {
+      allowed: true,
+      message: '🍽️ We\'re open and accepting orders until 6:30 PM today'
+    };
+  }
+
+  // Calculate next opening time
+  let nextOpenDate = new Date(now);
+
+  if (currentTimeMinutes >= cutoffTimeMinutes) {
+    // After 6:30 PM today, next opening is 7:00 AM tomorrow
+    nextOpenDate.setDate(nextOpenDate.getDate() + 1);
+  }
+
+  // Set to 7:00 AM
+  nextOpenDate.setHours(7, 0, 0, 0);
+
+  const nextOpenTime = nextOpenDate.toLocaleString('en-US', {
+    weekday: 'long',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  return {
+    allowed: false,
+    message: `🕕 Orders are closed. We stop taking orders at 6:30 PM daily. Next opening: ${nextOpenTime}`
   };
 };
 

@@ -76,6 +76,22 @@ export async function POST(request: Request) {
       
       if (signUpError) {
         console.error('Signup error:', signUpError);
+
+        // Handle specific error types
+        if (signUpError.message?.includes('rate limit') || signUpError.status === 429) {
+          return NextResponse.json(
+            { error: 'Too many signup attempts. Please wait a few minutes and try again.' },
+            { status: 429 }
+          );
+        }
+
+        if (signUpError.message?.includes('already registered')) {
+          return NextResponse.json(
+            { error: 'An account with this email already exists. Please sign in instead.' },
+            { status: 400 }
+          );
+        }
+
         return NextResponse.json(
           { error: signUpError.message || 'Failed to create account' },
           { status: 500 }
