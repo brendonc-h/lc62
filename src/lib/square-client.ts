@@ -269,7 +269,7 @@ export async function createPaymentLink({ amount, currency, name }: { amount: nu
   try {
     // Square doesn't have a direct createPaymentLink method
     // Instead, we'll return a checkout URL for the Square payment form
-    const checkoutUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'}/checkout?amount=${amount}&currency=${currency}&name=${encodeURIComponent(name)}`;
+    const checkoutUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout?amount=${amount}&currency=${currency}&name=${encodeURIComponent(name)}`;
 
     return {
       success: true,

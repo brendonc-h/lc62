@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
     
     // Ensure we have a site URL for the redirect
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
     
     // Create a payment link with Square
     const { result } = await squareClient.checkoutApi.createPaymentLink({
