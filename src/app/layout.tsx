@@ -7,7 +7,12 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'La Casita',
-  description: 'Track and manage your points',
+  description: 'Authentic Mexican Restaurant - Order Online',
+  icons: {
+    icon: '/lacasitalogo.jpg',
+    shortcut: '/lacasitalogo.jpg',
+    apple: '/lacasitalogo.jpg',
+  },
 };
 
 export default function RootLayout({
