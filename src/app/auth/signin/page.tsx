@@ -13,7 +13,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) + '/';
   const verified = searchParams.get('verified') === 'true';
   
   useEffect(() => {
@@ -55,8 +55,8 @@ function SignInContent() {
         console.log('Signin successful via API:', result);
 
         // Redirect to the callback URL or dashboard on successful login
-        router.push(callbackUrl);
-        router.refresh();
+        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+        window.location.href = redirectUrl;
         return;
 
       } catch (apiError) {
@@ -90,8 +90,8 @@ function SignInContent() {
       await ensureCustomerRecord(supabase, data.user);
 
       // Redirect to the callback URL or dashboard on successful login
-      router.push(callbackUrl);
-      router.refresh();
+      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+      window.location.href = redirectUrl;
     } catch (err) {
       console.error('Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');

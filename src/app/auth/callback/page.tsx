@@ -105,7 +105,8 @@ function AuthCallbackContent() {
 
             // Redirect to callback URL or home page
             setTimeout(() => {
-              router.push(callbackUrl);
+              const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+              window.location.href = redirectUrl;
             }, 1500);
           } else {
             throw new Error('Failed to get user session');
@@ -127,9 +128,11 @@ function AuthCallbackContent() {
           if (data.session && data.user) {
             // Ensure customer record exists
             await ensureCustomerRecord(supabase, data.user);
-            router.push(callbackUrl);
+            const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+            window.location.href = redirectUrl;
           } else {
-            router.push('/auth/signin?verified=true');
+            const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/signin?verified=true`;
+            window.location.href = signinUrl;
           }
         } 
         // For our custom verification token
@@ -153,12 +156,14 @@ function AuthCallbackContent() {
           
           // Redirect to sign in page
           setTimeout(() => {
-            router.push('/auth/signin?verified=true');
+            const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/signin?verified=true`;
+            window.location.href = signinUrl;
           }, 1500);
         }
         // For password reset flow
         else if (type === 'recovery' && code) {
-          router.push(`/auth/update-password?code=${code}`);
+          const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/update-password?code=${code}`;
+          window.location.href = resetUrl;
         }
         // For other types or missing code/token
         else {
@@ -169,7 +174,8 @@ function AuthCallbackContent() {
         setError(err instanceof Error ? err.message : 'Verification failed');
         // Still redirect to signin after error
         setTimeout(() => {
-          router.push('/auth/signin');
+          const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/signin`;
+          window.location.href = signinUrl;
         }, 3000);
       }
     };

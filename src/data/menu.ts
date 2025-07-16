@@ -729,6 +729,85 @@ export const menuItems: MenuItem[] = [
     price: 8.99,
     category: 'drinks',
   },
+
+  // Mexican Sodas
+  {
+    id: 'mexican-coke',
+    name: 'Mexican Coke',
+    description: 'Authentic Mexican Coca-Cola made with real cane sugar in a glass bottle',
+    price: 3.49,
+    category: 'drinks',
+    popular: true,
+  },
+  {
+    id: 'jarritos-lime',
+    name: 'Jarritos Lime',
+    description: 'Traditional Mexican lime-flavored soda made with natural fruit flavors',
+    price: 3.49,
+    category: 'drinks',
+    popular: true,
+  },
+  {
+    id: 'jarritos-pineapple',
+    name: 'Jarritos Pineapple',
+    description: 'Sweet and tangy pineapple-flavored Mexican soda',
+    price: 3.49,
+    category: 'drinks',
+  },
+  {
+    id: 'jarritos-orange',
+    name: 'Jarritos Orange',
+    description: 'Refreshing orange-flavored Mexican soda with natural fruit flavors',
+    price: 3.49,
+    category: 'drinks',
+  },
+  {
+    id: 'jarritos-strawberry',
+    name: 'Jarritos Strawberry',
+    description: 'Sweet strawberry-flavored Mexican soda',
+    price: 3.49,
+    category: 'drinks',
+  },
+  {
+    id: 'jarritos-grapefruit',
+    name: 'Jarritos Grapefruit',
+    description: 'Tart and refreshing grapefruit-flavored Mexican soda',
+    price: 3.49,
+    category: 'drinks',
+  },
+  {
+    id: 'jarritos-mandarin',
+    name: 'Jarritos Mandarin',
+    description: 'Citrusy mandarin-flavored Mexican soda',
+    price: 3.49,
+    category: 'drinks',
+  },
+
+  // Fountain Drinks (Coke Products)
+  {
+    id: 'fountain-coke',
+    name: 'Coca-Cola',
+    description: 'Classic Coca-Cola fountain drink',
+    price: 2.99,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 2.99,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.49,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 3.99,
+        size: 'large'
+      }
+    ]
+  },
   {
     id: 'flan',
     name: 'Flan',
@@ -736,7 +815,148 @@ export const menuItems: MenuItem[] = [
     price: 6.99,
     category: 'desserts',
   },
-  
+  {
+    id: 'fountain-diet-coke',
+    name: 'Diet Coke',
+    description: 'Diet Coca-Cola fountain drink',
+    price: 2.99,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 2.99,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.49,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 3.99,
+        size: 'large'
+      }
+    ]
+  },
+  {
+    id: 'fountain-sprite',
+    name: 'Sprite',
+    description: 'Lemon-lime fountain drink',
+    price: 2.99,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 2.99,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.49,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 3.99,
+        size: 'large'
+      }
+    ]
+  },
+  {
+    id: 'fountain-orange-fanta',
+    name: 'Orange Fanta',
+    description: 'Orange-flavored fountain drink',
+    price: 2.99,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 2.99,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.49,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 3.99,
+        size: 'large'
+      }
+    ]
+  },
+  {
+    id: 'fountain-dr-pepper',
+    name: 'Dr Pepper',
+    description: 'Classic Dr Pepper fountain drink',
+    price: 2.99,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 2.99,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.49,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 3.99,
+        size: 'large'
+      }
+    ]
+  },
+  {
+    id: 'fountain-lemonade',
+    name: 'Fresh Lemonade',
+    description: 'House-made fresh lemonade',
+    price: 3.49,
+    category: 'drinks',
+    variants: [
+      {
+        name: 'Small (16 oz)',
+        price: 3.49,
+        size: 'small'
+      },
+      {
+        name: 'Medium (20 oz)',
+        price: 3.99,
+        size: 'medium'
+      },
+      {
+        name: 'Large (32 oz)',
+        price: 4.49,
+        size: 'large'
+      }
+    ]
+  },
+  {
+    id: 'horchata',
+    name: 'Horchata',
+    description: 'Traditional Mexican rice drink with cinnamon and vanilla',
+    price: 4.49,
+    category: 'drinks',
+    popular: true,
+    variants: [
+      {
+        name: 'Small (12 oz)',
+        price: 4.49,
+        size: 'small'
+      },
+      {
+        name: 'Large (16 oz)',
+        price: 5.49,
+        size: 'large'
+      }
+    ]
+  },
+
+
   //dinner specials
   {
     id: 'sopapilla',
