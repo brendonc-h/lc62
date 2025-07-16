@@ -221,8 +221,8 @@ export default function OrderPage() {
             Select Your Location First
           </h2>
           {!selectedLocation && (
-            <div className="bg-yellow-100 p-3 rounded-md mb-4 border-l-4 border-yellow-500">
-              <p className="text-yellow-800 font-medium">Please select a location before adding items to your cart</p>
+            <div className="bg-amber-100 p-3 rounded-md mb-4 border-l-4 border-amber-500">
+              <p className="text-amber-800 font-medium">Please select a location before adding items to your cart</p>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -471,7 +471,7 @@ export default function OrderPage() {
                       {/* Popular badge */}
                       <div className="w-full h-8 flex items-center justify-center bg-gray-100 rounded-t">
                         {item.popular && (
-                          <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                          <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                             Popular
                           </span>
                         )}

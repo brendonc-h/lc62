@@ -218,7 +218,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
 
     return (
       <div className="mt-2">
-        <label className="block text-sm font-medium text-gray-700 mb-1">{label}:</label>
+        <label className="block text-sm font-medium text-black dark:text-gray-200 mb-1">{label}:</label>
         <div className="relative">
           <select
             className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md"
@@ -285,7 +285,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
               
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-5 w-full">
                 <div>
-                  <label className="block text-base font-semibold text-gray-700 mb-2">Item Type</label>
+                  <label className="block text-base font-semibold text-black dark:text-gray-200 mb-2">Item Type</label>
                   <select
                     className={`block w-full rounded-md border-gray-300 py-3 pl-3 pr-10 text-base font-medium focus:border-red-500 focus:outline-none focus:ring-red-500 ${
                       !orderingAllowed.allowed ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
@@ -306,7 +306,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                 </div>
                 
                 <div>
-                  <label className="block text-base font-semibold text-gray-700 mb-2">Meat Choice</label>
+                  <label className="block text-base font-semibold text-black dark:text-gray-200 mb-2">Meat Choice</label>
                   <select
                     className={`block w-full rounded-md border-gray-300 py-3 pl-3 pr-10 text-base font-medium focus:border-red-500 focus:outline-none focus:ring-red-500 ${
                       !orderingAllowed.allowed ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white'
@@ -424,7 +424,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
           <div className="mb-6">
             <OrderingStatus className="mb-2" />
           </div>
-          <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
+          <p className="mt-4 text-lg text-gray-800 dark:text-gray-300">
             Discover our authentic Mexican dishes made with fresh ingredients and traditional recipes
           </p>
           <Link
@@ -458,7 +458,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                           </div>
                         )}
                         <div>
-                          <h2 className="text-3xl font-bold text-white group-hover:text-yellow-100 transition-colors">
+                          <h2 className="text-3xl font-bold text-white group-hover:text-orange-100 transition-colors">
                             {category.name}
                           </h2>
                           <p className="mt-2 text-lg text-white text-opacity-90">{category.description}</p>
@@ -493,7 +493,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                               </button>
                             </div>
                             {item.popular && (
-                              <span className="mt-1 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-sm font-medium text-yellow-800">
+                              <span className="mt-1 inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-800 dark:bg-red-900 dark:text-red-200">
                                 Popular Choice
                               </span>
                             )}
@@ -503,12 +503,12 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                           </p>
                         </div>
                         
-                        <p className="text-lg text-gray-600 mb-4">{item.description}</p>
+                        <p className="text-lg text-black dark:text-gray-100 mb-4">{item.description}</p>
                         
                         <div className={`space-y-3 ${expandedItems[item.id] ? 'block' : 'hidden md:block'}`}>
                           {item.spicyLevel && (
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-gray-700">Spice Level:</span>
+                              <span className="text-sm font-medium text-black dark:text-gray-200">Spice Level:</span>
                               <div className="flex items-center gap-1">
                                 {[...Array(item.spicyLevel)].map((_, i) => (
                                   <FireIcon
@@ -540,7 +540,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                                 {orderingAllowed.allowed ? 'Add to Cart' : 'Ordering Closed'}
                               </button>
                               {!orderingAllowed.allowed && (
-                                <p className="mt-2 text-xs text-amber-600">
+                                <p className="mt-2 text-xs text-red-700 dark:text-red-400">
                                   <ClockIcon className="inline-block h-4 w-4 mr-1" />
                                   {orderingAllowed.message}
                                 </p>

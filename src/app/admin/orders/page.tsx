@@ -310,7 +310,7 @@ export default function AdminOrdersPage() {
                                 : order.status === 'in-progress'
                                 ? 'bg-purple-100 text-purple-800'
                                 : order.status === 'preparing'
-                                ? 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-orange-100 text-orange-800'
                                 : order.status === 'cancelled'
                                 ? 'bg-red-100 text-red-800'
                                 : 'bg-gray-100 text-gray-800'

@@ -33,6 +33,38 @@ function SignInContent() {
         throw new Error('Please enter both email and password');
       }
 
+      // Try API route first for consistency with signup
+      try {
+        const response = await fetch('/api/auth/signin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email.trim(),
+            password: password.trim(),
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to sign in');
+        }
+
+        console.log('Signin successful via API:', result);
+
+        // Redirect to the callback URL or dashboard on successful login
+        router.push(callbackUrl);
+        router.refresh();
+        return;
+
+      } catch (apiError) {
+        console.error('API signin failed, trying direct Supabase:', apiError);
+        // Fall back to direct Supabase signin
+      }
+
+      // Fallback: Direct Supabase signin
       const supabase = createClient();
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),

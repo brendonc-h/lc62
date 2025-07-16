@@ -59,7 +59,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black bg-opacity-50" />
           
           {/* Location Badge */}
-          <div className="absolute top-5 right-5 bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold shadow-lg">
+          <div className="absolute top-5 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg">
             {backgrounds[currentBgIndex].location} Location
           </div>
           
@@ -67,7 +67,7 @@ export default function Home() {
           <div className="relative z-10 text-center text-white px-4 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Welcome to{' '}
-              <span className="text-yellow-400">La Casita</span>
+              <span className="text-orange-400">La Casita</span>
             </h1>
             <p className="text-xl md:text-2xl mb-8 leading-relaxed">
               Authentic Mexican flavors crafted with love and tradition
@@ -75,7 +75,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/menu"
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
               >
                 Order Now
               </Link>

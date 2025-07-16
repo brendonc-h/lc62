@@ -74,7 +74,7 @@ export const categories: MenuCategory[] = [
     name: 'Tostadas',
     description: 'Traditional Tostadas with your choice of meat',
     emoji: '🥙',
-    color: 'from-yellow-500 to-orange-600',
+    color: 'from-orange-500 to-red-600',
   },
     {
     id: 'salads',
@@ -116,7 +116,7 @@ export const categories: MenuCategory[] = [
     name: 'Dinner Specials',
     description: 'Grilled meat with peppers and onions, served with tortillas',
     emoji: '⭐',
-    color: 'from-yellow-400 to-yellow-600',
+    color: 'from-amber-400 to-amber-600',
   },
   {
     id: 'enchiladas',

@@ -23,13 +23,51 @@ type User = {
   updatedAt: Date;
 };
 
+// Simple in-memory rate limiting for development
+const signupAttempts = new Map<string, { count: number; lastAttempt: number }>();
+
+function checkRateLimit(email: string): boolean {
+  const now = Date.now();
+  const key = email.toLowerCase();
+  const attempt = signupAttempts.get(key);
+
+  if (!attempt) {
+    signupAttempts.set(key, { count: 1, lastAttempt: now });
+    return true;
+  }
+
+  // Reset count if more than 15 minutes have passed
+  if (now - attempt.lastAttempt > 15 * 60 * 1000) {
+    signupAttempts.set(key, { count: 1, lastAttempt: now });
+    return true;
+  }
+
+  // Allow max 3 attempts per 15 minutes
+  if (attempt.count >= 3) {
+    return false;
+  }
+
+  attempt.count++;
+  attempt.lastAttempt = now;
+  signupAttempts.set(key, attempt);
+  return true;
+}
+
 export async function POST(request: Request) {
   console.log('Starting signup process');
   console.log('Environment variables:', ENV_DEBUG);
-  
+
   try {
     const { email, firstName, lastName, password, confirmPassword } = await request.json();
     console.log('Received signup request for:', email);
+
+    // Rate limiting check
+    if (!checkRateLimit(email)) {
+      return NextResponse.json(
+        { error: 'Too many signup attempts for this email. Please wait 15 minutes and try again.' },
+        { status: 429 }
+      );
+    }
 
     // Basic validation
     if (!email || !firstName || !lastName || !password || !confirmPassword) {
@@ -59,19 +97,30 @@ export async function POST(request: Request) {
     // Create user in Supabase Auth and corresponding profile in the customers table
     console.log('Attempting to create user in Supabase Auth...');
     try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      // For development, disable email confirmation to avoid email service issues
+      const isDevelopment = process.env.NODE_ENV === 'development';
+
+      const signUpOptions: any = {
+        data: {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          role: 'customer',
+          points: 0
+        }
+      };
+
+      // In development, disable email confirmation completely
+      if (isDevelopment) {
+        signUpOptions.emailRedirectTo = undefined;
+        // This will create the user without requiring email confirmation
+      } else if (process.env.NEXT_PUBLIC_SITE_URL) {
+        signUpOptions.emailRedirectTo = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
+      }
+
+      let { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.toLowerCase().trim(),
         password: password.trim(),
-        options: {
-          data: {
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            role: 'customer',
-            points: 0
-          },
-          // Use process.env.NEXT_PUBLIC_SITE_URL without hardcoded fallback
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
-        }
+        options: signUpOptions
       });
       
       if (signUpError) {
@@ -85,11 +134,31 @@ export async function POST(request: Request) {
           );
         }
 
-        if (signUpError.message?.includes('already registered')) {
+        if (signUpError.message?.includes('already registered') || signUpError.message?.includes('User already registered')) {
           return NextResponse.json(
             { error: 'An account with this email already exists. Please sign in instead.' },
             { status: 400 }
           );
+        }
+
+        // In development, provide more helpful error messages
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Development mode: Signup error details:', {
+            message: signUpError.message,
+            status: signUpError.status,
+            code: signUpError.code
+          });
+
+          // Handle email confirmation errors in development
+          if (signUpError.message?.includes('Error sending confirmation email')) {
+            return NextResponse.json(
+              {
+                error: 'Email service not configured. Please disable email confirmations in Supabase Dashboard → Authentication → Settings → "Enable email confirmations" = OFF',
+                details: 'This is a development configuration issue.'
+              },
+              { status: 500 }
+            );
+          }
         }
 
         return NextResponse.json(
@@ -107,6 +176,11 @@ export async function POST(request: Request) {
       }
 
       console.log('User created successfully:', signUpData.user.id);
+
+      // In development, if email confirmation is disabled, the user might be immediately confirmed
+      if (isDevelopment) {
+        console.log('Development mode: User confirmation status:', signUpData.user.email_confirmed_at ? 'confirmed' : 'pending');
+      }
       
       // Try to send a custom verification email
       try {
@@ -179,8 +253,28 @@ export async function POST(request: Request) {
       }
       
       console.log('Signup process completed successfully');
+
+      // Different messages for development vs production
+      const isEmailConfirmed = !!signUpData.user.email_confirmed_at;
+
+      let message;
+      if (isDevelopment && isEmailConfirmed) {
+        message = 'Account created successfully! You can now sign in.';
+      } else if (isDevelopment) {
+        message = 'Account created successfully! Email confirmation is disabled in development mode. You can now sign in.';
+      } else {
+        message = 'Account created successfully! Please check your email for a confirmation link.';
+      }
+
       return NextResponse.json(
-        { message: 'User created successfully' },
+        {
+          message,
+          user: {
+            id: signUpData.user.id,
+            email: signUpData.user.email,
+            emailConfirmed: isEmailConfirmed
+          }
+        },
         { status: 201 }
       );
       

@@ -143,7 +143,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           {/* Logo & Nav */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-800 tracking-tight">
+            <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-red-700 to-orange-600 bg-clip-text text-transparent hover:from-red-800 hover:to-orange-700 transition-all duration-300 tracking-tight">
               La&nbsp;Casita
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-2">
@@ -153,9 +153,9 @@ export default function Navbar() {
                   href={item.href}
                   className={`${
                     pathname === item.href
-                      ? 'bg-white/20 text-gray-800'
-                      : 'text-gray-800 hover:bg-white/10'
-                  } px-3 py-2 rounded-md text-sm font-medium flex items-center`}
+                      ? 'bg-white/20 text-gray-900 font-semibold'
+                      : 'text-gray-900 hover:bg-white/10 hover:text-gray-800'
+                  } px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-200`}
                 >
                   <item.icon className="h-5 w-5 mr-1.5" />
                   {item.name}

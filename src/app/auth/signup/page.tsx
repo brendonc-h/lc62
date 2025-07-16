@@ -87,7 +87,7 @@ export default function SignUp() {
             confirmPassword: confirmPassword.trim()
           }),
         });
-        
+
         if (!response.ok) {
           const errorData = await response.json();
 
@@ -99,12 +99,11 @@ export default function SignUp() {
           throw new Error(errorData.error || 'Failed to create account');
         } else {
           console.log('API signup successful');
-          // API signup was successful, no need to continue with client-side Supabase signup
-          setMessage(
-            'Success! Please check your email for a confirmation link to complete your registration. ' +
-            'After confirming your email, you can sign in to your account.'
-          );
-          
+          const result = await response.json();
+
+          // Use the message from the API response
+          setMessage(result.message || 'Account created successfully!');
+
           // Clear form fields for better UX
           setFirstName('');
           setLastName('');
