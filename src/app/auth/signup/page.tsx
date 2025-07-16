@@ -30,7 +30,7 @@ export default function SignUp() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback?provider=google`,
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build'}/auth/callback?provider=google`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'
@@ -129,8 +129,8 @@ export default function SignUp() {
             role: 'customer',
             points: 0
           },
-          // Get the site URL from environment or use window.location.origin as fallback
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback`
+          // Get the site URL from environment or use production URL as fallback
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build'}/auth/callback`
         }
       });
 

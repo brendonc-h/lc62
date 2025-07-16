@@ -13,7 +13,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) + '/';
+  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build') + '/';
   const verified = searchParams.get('verified') === 'true';
   
   useEffect(() => {
@@ -55,7 +55,7 @@ function SignInContent() {
         console.log('Signin successful via API:', result);
 
         // Redirect to the callback URL or dashboard on successful login
-        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build'}${callbackUrl}`;
         window.location.href = redirectUrl;
         return;
 
@@ -90,7 +90,7 @@ function SignInContent() {
       await ensureCustomerRecord(supabase, data.user);
 
       // Redirect to the callback URL or dashboard on successful login
-      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}${callbackUrl}`;
+      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build'}${callbackUrl}`;
       window.location.href = redirectUrl;
     } catch (err) {
       console.error('Sign in error:', err);
@@ -109,7 +109,7 @@ function SignInContent() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://la-casita-restaurant.windsurf.build'}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
         }
       });
       
