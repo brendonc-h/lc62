@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 export default function PointsCard() {
   const [user, setUser] = useState<any>(null);
@@ -29,7 +30,7 @@ export default function PointsCard() {
     getUser();
     
     // Listen for auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       getUser();
     });
 

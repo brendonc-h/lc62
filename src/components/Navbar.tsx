@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabaseClient';
+import { AuthChangeEvent } from '@supabase/supabase-js';
 import {
   UserCircleIcon,
   ShoppingBagIcon,
@@ -123,7 +124,7 @@ export default function Navbar() {
 
     getUser();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       getUser();
     });
 

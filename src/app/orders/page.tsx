@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { ArrowLeftIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 interface MenuItemData {
   name: string;
@@ -109,7 +110,7 @@ export default function OrdersPage() {
           schema: 'public',
           table: 'orders'
         },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<any>) => {
           if (payload.eventType === 'UPDATE') {
             setOrders(prev => 
               prev.map(order => 

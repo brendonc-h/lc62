@@ -4,6 +4,20 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { error } from 'console';
 
+// Define the order type based on the Supabase schema
+interface Order {
+  id: string;
+  customer_id: string;
+  total: number;
+  status: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+  estimated_completion_minutes?: number;
+  order_items?: any[];
+  customers?: any;
+}
+
 // Add any admin emails here
 const ADMIN_EMAILS = ['brendon1798@gmail.com', 'info@lacasita.io', 'berthoud@lacasita.io','fortcollins@lacasita.io'];
 
@@ -34,7 +48,7 @@ export async function GET() {
     }
 
     // Transform the data to match the expected format
-    const transformedOrders = orders?.map(order => {
+    const transformedOrders = orders?.map((order: Order) => {
       // Parse notes to get additional order information
       let orderInfo: any = {};
       try {
@@ -54,7 +68,7 @@ export async function GET() {
 
       return {
         id: order.id,
-        total: order.total_price,
+        total: order.total,
         status: order.status,
         createdAt: order.created_at,
         items: items,

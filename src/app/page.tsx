@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChefHat, Users, Smartphone, Star, Clock, MapPin, Phone } from 'lucide-react';
 import { createClient } from '../lib/supabaseClient';
-import { User } from '@supabase/supabase-js';
+import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
   const supabase = createClient();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (session?.user) {
         setUser(session.user);
         setIsLoggedIn(true);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { AuthChangeEvent } from '@supabase/supabase-js';
 import AdminTempPage from './temp-page';
 
 export default function AdminPage() {
@@ -50,7 +51,7 @@ export default function AdminPage() {
     checkAuth();
 
     // Listen for auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event: AuthChangeEvent) => {
       if (event === 'SIGNED_OUT') {
         router.push('/auth/signin');
       }

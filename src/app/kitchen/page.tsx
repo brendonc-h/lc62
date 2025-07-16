@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { CheckCircleIcon, XCircleIcon, ClockIcon, ArrowPathIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
+import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 export default function KitchenDashboard() {
   const [orders, setOrders] = useState<OrderDetails[]>([]);
@@ -197,7 +198,7 @@ export default function KitchenDashboard() {
             schema: 'public',
             table: 'orders'
           },
-          (payload) => {
+          (payload: RealtimePostgresChangesPayload<any>) => {
             console.log('Order update received:', payload);
             fetchOrders(); // Refresh orders when changes occur
           }
