@@ -9,9 +9,21 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholde
 const isProduction = process.env.NODE_ENV === 'production';
 const hasValidEnvVars = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Singleton instances to prevent multiple client creation
-let browserClient: any = null;
-let serverClient: any = null;
+// Global singleton instances to prevent multiple client creation
+// Use globalThis to persist across hot reloads in development
+declare global {
+  var __supabase_browser_client__: any;
+  var __supabase_server_client__: any;
+}
+
+// Initialize global singletons if they don't exist
+if (typeof window !== 'undefined') {
+  // Browser environment
+  globalThis.__supabase_browser_client__ = globalThis.__supabase_browser_client__ || null;
+} else {
+  // Server environment
+  globalThis.__supabase_server_client__ = globalThis.__supabase_server_client__ || null;
+}
 
 export function createClient() {
   // Check for environment variables at runtime
@@ -24,22 +36,22 @@ export function createClient() {
 
   if (isServer) {
     // For server-side (API routes and server components)
-    if (!serverClient) {
-      console.log('Creating server-side Supabase client');
-      serverClient = createServerClient(supabaseUrl, supabaseAnonKey, {
+    if (!globalThis.__supabase_server_client__) {
+      console.log('🔧 Creating server-side Supabase client (singleton)');
+      globalThis.__supabase_server_client__ = createServerClient(supabaseUrl, supabaseAnonKey, {
         auth: {
           autoRefreshToken: true,
           persistSession: false
         }
       });
     }
-    return serverClient;
+    return globalThis.__supabase_server_client__;
   }
 
   // For client-side (browser)
-  if (!browserClient) {
-    console.log('Creating browser-side Supabase client');
-    browserClient = createBrowserClient(
+  if (!globalThis.__supabase_browser_client__) {
+    console.log('🔧 Creating browser-side Supabase client (singleton)');
+    globalThis.__supabase_browser_client__ = createBrowserClient(
       supabaseUrl,
       supabaseAnonKey,
       {
@@ -81,7 +93,7 @@ export function createClient() {
       }
     );
   }
-  return browserClient;
+  return globalThis.__supabase_browser_client__;
 }
 
 // Export a default instance for convenience, but prefer using createClient() function
