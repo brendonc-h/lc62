@@ -153,8 +153,8 @@ export default function Navbar() {
                   href={item.href}
                   className={`${
                     pathname === item.href
-                      ? 'bg-white/20 text-gray-900 font-semibold'
-                      : 'text-gray-900 hover:bg-white/10 hover:text-gray-800'
+                      ? 'bg-white/20 text-yellow-300 font-semibold shadow-lg'
+                      : 'text-yellow-200 hover:bg-white/10 hover:text-yellow-100'
                   } px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-200`}
                 >
                   <item.icon className="h-5 w-5 mr-1.5" />
@@ -172,8 +172,8 @@ export default function Navbar() {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center space-x-2 max-w-xs rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
-                  <UserCircleIcon className="h-8 w-8 text-gray-800" />
-                  <span className="hidden md:inline text-sm font-medium text-gray-800">
+                  <UserCircleIcon className="h-8 w-8 text-yellow-200" />
+                  <span className="hidden md:inline text-sm font-medium text-yellow-200">
                     {user.name || user.email?.split('@')[0]}
                   </span>
                 </button>

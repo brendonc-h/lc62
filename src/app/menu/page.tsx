@@ -247,8 +247,8 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
       <div className="mt-6 border-2 border-gray-300 rounded-xl p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-white to-gray-50 shadow-lg min-h-[400px] sm:min-h-[450px] lg:min-h-[500px] mx-3 sm:mx-4 lg:mx-6">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h4 className="text-xl font-bold text-gray-900">Customize Your Combo</h4>
-            <p className="text-base text-gray-700 mt-2 font-medium">Select {maxItems} different items with your preferred meat choices</p>
+            <h4 className="text-xl font-bold text-gray-800">Customize Your Combo</h4>
+            <p className="text-base text-gray-600 mt-2 font-medium">Select {maxItems} different items with your preferred meat choices</p>
           </div>
           <div className="text-right">
             <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-red-100 text-red-800 border border-red-200">
@@ -418,13 +418,13 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
     <div className="bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:max-w-none">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 text-center mb-6">Our Menu</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-800 dark:text-white text-center mb-6">Our Menu</h2>
           
           {/* Restaurant hours and ordering status */}
           <div className="mb-6">
             <OrderingStatus className="mb-2" />
           </div>
-          <p className="mt-4 text-lg text-gray-800 dark:text-gray-300">
+          <p className="mt-4 text-lg text-gray-700 dark:text-gray-200">
             Discover our authentic Mexican dishes made with fresh ingredients and traditional recipes
           </p>
           <Link
@@ -481,7 +481,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <div className="flex items-center justify-between">
-                              <h3 className="text-2xl font-bold text-gray-900">{item.name}</h3>
+                              <h3 className="text-2xl font-bold text-gray-800 dark:text-white">{item.name}</h3>
                               <button
                                 onClick={() => toggleItemExpansion(item.id)}
                                 className="md:hidden text-gray-400 hover:text-gray-500"
@@ -503,12 +503,12 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                           </p>
                         </div>
                         
-                        <p className="text-lg text-black dark:text-gray-100 mb-4">{item.description}</p>
+                        <p className="text-lg text-gray-700 dark:text-gray-200 mb-4">{item.description}</p>
                         
                         <div className={`space-y-3 ${expandedItems[item.id] ? 'block' : 'hidden md:block'}`}>
                           {item.spicyLevel && (
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-black dark:text-gray-200">Spice Level:</span>
+                              <span className="text-sm font-medium text-gray-800 dark:text-gray-100">Spice Level:</span>
                               <div className="flex items-center gap-1">
                                 {[...Array(item.spicyLevel)].map((_, i) => (
                                   <FireIcon
