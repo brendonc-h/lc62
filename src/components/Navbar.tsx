@@ -153,8 +153,8 @@ export default function Navbar() {
                   href={item.href}
                   className={`${
                     pathname === item.href
-                      ? 'bg-white/20 text-yellow-300 font-semibold shadow-lg'
-                      : 'text-yellow-200 hover:bg-white/10 hover:text-yellow-100'
+                      ? 'bg-white/20 text-red-300 font-semibold shadow-lg'
+                      : 'text-red-200 hover:bg-white/10 hover:text-red-100'
                   } px-3 py-2 rounded-md text-sm font-medium flex items-center transition-all duration-200`}
                 >
                   <item.icon className="h-5 w-5 mr-1.5" />
@@ -253,8 +253,8 @@ export default function Navbar() {
               href={item.href}
               className={`${
                 pathname === item.href
-                  ? 'bg-white/20 border-white/50 text-white'
-                  : 'border-transparent text-white hover:bg-white/10 hover:border-white/30'
+                  ? 'bg-white/20 border-red-300/50 text-red-300'
+                  : 'border-transparent text-red-200 hover:bg-white/10 hover:border-red-300/30'
               } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -268,9 +268,9 @@ export default function Navbar() {
           {!loading && user && (
             <div className="pt-4 pb-3 border-t border-white/20">
               <div className="flex items-center px-4">
-                <UserCircleIcon className="h-10 w-10 text-white/80" />
+                <UserCircleIcon className="h-10 w-10 text-red-200/80" />
                 <div className="ml-3">
-                  <div className="text-base font-medium text-white">
+                  <div className="text-base font-medium text-red-200">
                     {user.name || user.email}
                   </div>
                 </div>
@@ -278,7 +278,7 @@ export default function Navbar() {
               <div className="mt-3 space-y-1">
                 <Link
                   href="/dashboard"
-                  className="block px-4 py-2 text-base font-medium text-white/80 hover:text-white hover:bg-white/10"
+                  className="block px-4 py-2 text-base font-medium text-red-200/80 hover:text-red-200 hover:bg-white/10"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Dashboard

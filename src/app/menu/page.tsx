@@ -458,14 +458,14 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                           </div>
                         )}
                         <div>
-                          <h2 className="text-3xl font-bold text-white group-hover:text-orange-100 transition-colors">
+                          <h2 className="text-3xl font-bold text-black group-hover:text-gray-800 transition-colors">
                             {category.name}
                           </h2>
-                          <p className="mt-2 text-lg text-white text-opacity-90">{category.description}</p>
+                          <p className="mt-2 text-lg text-black text-opacity-90">{category.description}</p>
                         </div>
                       </div>
                       <ChevronDownIcon
-                        className={`h-8 w-8 text-white text-opacity-80 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        className={`h-8 w-8 text-black text-opacity-80 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                         aria-hidden="true"
                       />
                     </div>
