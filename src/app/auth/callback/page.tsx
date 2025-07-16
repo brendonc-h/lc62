@@ -86,26 +86,29 @@ function AuthCallbackContent() {
         const provider = searchParams?.get('provider') || '';
         const callbackUrl = searchParams?.get('callbackUrl') || '/';
         
-        // For OAuth providers (like Google)
-        if (code && (provider || type === 'oauth')) {
+        // For OAuth providers (like Google) - handle both with and without provider param
+        if (code && (provider || type === 'oauth' || !type)) {
           setMessage(`${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'OAuth'} sign-in processing...`);
-          
+
           // Exchange the code for a session
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-          
+
           if (error) {
+            console.error('OAuth session exchange error:', error);
             throw new Error(error.message);
           }
-          
+
           if (data.session && data.user) {
             // Ensure the user has a customer record
             await ensureCustomerRecord(supabase, data.user);
-            
+
             setMessage('Sign in successful! Redirecting you...');
 
-            // Redirect to callback URL or home page
+            // For production, always redirect to menu page after successful OAuth
             setTimeout(() => {
-              const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}${callbackUrl}`;
+              const redirectUrl = callbackUrl && callbackUrl !== '/' ?
+                (callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`) :
+                'https://lacasita.io/menu';
               window.location.href = redirectUrl;
             }, 1500);
           } else {

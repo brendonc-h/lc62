@@ -38,7 +38,10 @@ const publicPaths = [
 const protectedPaths = [
   '/dashboard',
   '/profile',
-  '/orders'
+  '/orders',
+  '/menu',
+  '/checkout',
+  '/order'
 ];
 
 export async function middleware(req: NextRequest) {

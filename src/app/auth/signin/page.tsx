@@ -13,7 +13,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io') + '/';
+  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io') + '/menu';
   const verified = searchParams.get('verified') === 'true';
   
   useEffect(() => {
@@ -55,7 +55,8 @@ function SignInContent() {
         console.log('Signin successful via API:', result);
 
         // Redirect to the callback URL or dashboard on successful login
-        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}${callbackUrl}`;
+        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`;
+        console.log('Redirecting to:', redirectUrl);
         window.location.href = redirectUrl;
         return;
 
@@ -90,7 +91,8 @@ function SignInContent() {
       await ensureCustomerRecord(supabase, data.user);
 
       // Redirect to the callback URL or dashboard on successful login
-      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}${callbackUrl}`;
+      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`;
+      console.log('Redirecting to:', redirectUrl);
       window.location.href = redirectUrl;
     } catch (err) {
       console.error('Sign in error:', err);
@@ -109,7 +111,7 @@ function SignInContent() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
+          redirectTo: `https://lacasita.io/auth/callback?provider=google&callbackUrl=${encodeURIComponent('/menu')}`
         }
       });
       

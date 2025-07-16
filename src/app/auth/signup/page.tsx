@@ -30,7 +30,7 @@ export default function SignUp() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/callback?provider=google`,
+          redirectTo: `https://lacasita.io/auth/callback?provider=google&callbackUrl=${encodeURIComponent('/menu')}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'

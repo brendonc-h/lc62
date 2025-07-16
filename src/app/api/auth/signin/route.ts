@@ -20,11 +20,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Attempt to sign in with Supabase
+    // Attempt to sign in with Supabase and set session
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email: email.toLowerCase().trim(),
       password: password.trim(),
     });
+    
+    // Set the session cookie
+    if (data?.session) {
+      const response = new NextResponse(
+        JSON.stringify({
+          user: data.user,
+          session: data.session,
+          message: 'Signed in successfully'
+        }),
+        { status: 200 }
+      );
+      
+      // Set auth cookie
+      await supabase.auth.setSession(data.session);
+      
+      return response;
+    }
 
     if (signInError) {
       console.error('Signin error:', signInError);
