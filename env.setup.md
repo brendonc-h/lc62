@@ -17,7 +17,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://tpoqcxqyolnrkekdnorj.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwb3FjeHF5b2xucmtla2Rub3JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyOTc1OTksImV4cCI6MjA2NTg3MzU5OX0.lefMCOcrGhZIvfB3W9-vpd_wTCUu6GRzl-Gr4IqQ8TA
-NEXT_PUBLIC_SITE_URL=https://la-casita-restaurant.windsurf.build
+NEXT_PUBLIC_SITE_URL=https://lacasita.io
 ```
 
 ## Why This Matters
