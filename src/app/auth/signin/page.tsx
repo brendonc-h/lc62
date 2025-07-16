@@ -13,7 +13,7 @@ function SignInContent() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io') + '/menu';
+  const callbackUrl = searchParams.get('callbackUrl') || '/menu';
   const verified = searchParams.get('verified') === 'true';
   
   useEffect(() => {
@@ -33,40 +33,9 @@ function SignInContent() {
         throw new Error('Please enter both email and password');
       }
 
-      // Try API route first for consistency with signup
-      try {
-        const response = await fetch('/api/auth/signin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            password: password.trim(),
-          }),
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.error || 'Failed to sign in');
-        }
-
-        console.log('Signin successful via API:', result);
-
-        // Redirect to the callback URL or dashboard on successful login
-        const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`;
-        console.log('Redirecting to:', redirectUrl);
-        window.location.href = redirectUrl;
-        return;
-
-      } catch (apiError) {
-        console.error('API signin failed, trying direct Supabase:', apiError);
-        // Fall back to direct Supabase signin
-      }
-
-      // Fallback: Direct Supabase signin
       const supabase = createClient();
+      
+      // Sign in with Supabase
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
@@ -83,20 +52,25 @@ function SignInContent() {
         }
       }
 
-      if (!data?.user) {
-        throw new Error('No user data returned');
+      if (!data?.user || !data?.session) {
+        throw new Error('Authentication failed - no session created');
       }
+
+      console.log('Sign in successful:', data.user.email);
 
       // Check if user has a customer record and create one if not
       await ensureCustomerRecord(supabase, data.user);
 
-      // Redirect to the callback URL or dashboard on successful login
-      const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`;
-      console.log('Redirecting to:', redirectUrl);
-      window.location.href = redirectUrl;
+      // Wait a moment for the session to be fully established
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Use Next.js router for navigation instead of window.location
+      router.push(callbackUrl);
+      
     } catch (err) {
       console.error('Sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -111,7 +85,7 @@ function SignInContent() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://lacasita.io/auth/callback?provider=google&callbackUrl=${encodeURIComponent('/menu')}`
+          redirectTo: `${window.location.origin}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
         }
       });
       
@@ -119,7 +93,7 @@ function SignInContent() {
         throw new Error(error.message || 'Failed to sign in with Google');
       }
       
-      // The redirect happens automatically so we don't need to do anything else here
+      // OAuth redirect happens automatically
     } catch (err) {
       console.error('Google sign in error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
@@ -131,23 +105,32 @@ function SignInContent() {
   const ensureCustomerRecord = async (supabase: any, user: any) => {
     try {
       // Check if customer record already exists
-      const { data: existingCustomer } = await supabase
+      const { data: existingCustomer, error: fetchError } = await supabase
         .from('customers')
         .select('id, email')
         .eq('auth_id', user.id)
         .single();
         
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = no rows found
+        console.error('Error checking customer record:', fetchError);
+        return;
+      }
+        
       if (existingCustomer) {
-        console.log('Customer record already exists:', existingCustomer);
+        console.log('Customer record already exists:', existingCustomer.email);
         return;
       }
       
       // If no customer record exists, create one
-      console.log('Creating customer record for user:', user.id);
+      console.log('Creating customer record for user:', user.email);
       
-      // Extract name parts from email if not available
-      let firstName = user.user_metadata?.firstName || user.user_metadata?.given_name || '';
-      let lastName = user.user_metadata?.lastName || user.user_metadata?.family_name || '';
+      // Extract name parts from user metadata or email
+      let firstName = user.user_metadata?.firstName || 
+                     user.user_metadata?.given_name || 
+                     user.user_metadata?.first_name || '';
+      let lastName = user.user_metadata?.lastName || 
+                    user.user_metadata?.family_name || 
+                    user.user_metadata?.last_name || '';
       
       // If no name data is available, use the part before @ in email
       if (!firstName && !lastName && user.email) {
@@ -169,6 +152,9 @@ function SignInContent() {
 
       if (customerError) {
         console.error('Failed to create customer record:', customerError);
+        // Don't throw here - customer record creation is not critical for sign-in
+      } else {
+        console.log('Customer record created successfully');
       }
     } catch (error) {
       console.error('Error ensuring customer record:', error);
@@ -311,8 +297,6 @@ function SignInContent() {
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" 
-                    fill="#4285F4"/>
-                  <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"
                     fill="#4285F4"/>
                 </svg>
                 Sign in with Google

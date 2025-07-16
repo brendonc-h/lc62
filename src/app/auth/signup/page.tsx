@@ -1,14 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabaseClient';
 
-export default function SignUp() {
-  // Check if user arrived from email confirmation
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const emailConfirmed = searchParams?.get('emailConfirmed') === 'true';
+function SignUpContent() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,6 +16,16 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Check if user arrived from email confirmation
+  const emailConfirmed = searchParams.get('emailConfirmed') === 'true';
+
+  useEffect(() => {
+    if (emailConfirmed) {
+      setMessage('Your email has been confirmed! You can now sign in to your account.');
+    }
+  }, [emailConfirmed]);
 
   // Handle Google sign up
   const handleGoogleSignUp = async () => {
@@ -30,7 +37,7 @@ export default function SignUp() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `https://lacasita.io/auth/callback?provider=google&callbackUrl=${encodeURIComponent('/menu')}`,
+          redirectTo: `${window.location.origin}/auth/callback?provider=google&callbackUrl=${encodeURIComponent('/menu')}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'
@@ -39,13 +46,13 @@ export default function SignUp() {
       });
       
       if (error) {
-        throw new Error(error.message || 'Failed to sign in with Google');
+        throw new Error(error.message || 'Failed to sign up with Google');
       }
       
-      // The redirect happens automatically so we don't need to do anything else here
+      // OAuth redirect happens automatically
     } catch (err) {
-      console.error('Google sign in error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+      console.error('Google sign up error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sign up with Google');
       setGoogleLoading(false);
     }
   };
@@ -53,6 +60,7 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     setIsLoading(true);
 
     // Validate input
@@ -71,54 +79,7 @@ export default function SignUp() {
     try {
       const supabase = createClient();
       
-      // Use our API route for signup which handles both user creation and sending verification email
-      try {
-        setMessage('Creating your account...');
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email.trim(),
-            firstName: firstName.trim(),
-            lastName: lastName.trim(),
-            password: password.trim(),
-            confirmPassword: confirmPassword.trim()
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-
-          // Handle specific error status codes
-          if (response.status === 429) {
-            throw new Error('Too many signup attempts. Please wait a few minutes and try again.');
-          }
-
-          throw new Error(errorData.error || 'Failed to create account');
-        } else {
-          console.log('API signup successful');
-          const result = await response.json();
-
-          // Use the message from the API response
-          setMessage(result.message || 'Account created successfully!');
-
-          // Clear form fields for better UX
-          setFirstName('');
-          setLastName('');
-          setEmail('');
-          setPassword('');
-          setConfirmPassword('');
-          setIsLoading(false);
-          return; // Exit early since we've handled everything
-        }
-      } catch (apiError) {
-        console.error('Failed to call signup API:', apiError);
-        // If the API route fails, fall back to client-side Supabase signup
-      }
-      
-      // Fallback: Register the user with Supabase Auth directly
+      // Register the user with Supabase Auth
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password: password.trim(),
@@ -129,12 +90,14 @@ export default function SignUp() {
             role: 'customer',
             points: 0
           },
-          // Get the site URL from environment or use production URL as fallback
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
 
       if (signUpError) {
+        if (signUpError.message.includes('User already registered')) {
+          throw new Error('An account with this email already exists. Please sign in instead.');
+        }
         throw new Error(signUpError.message || 'Failed to create account');
       }
 
@@ -142,9 +105,15 @@ export default function SignUp() {
         throw new Error('Failed to create user account');
       }
 
-      // The API route already creates the customer record, but if we're using the fallback
-      // Supabase signup, we need to create the customer record here
-      console.log('Creating customer record with ID:', signUpData.user.id);
+      // Check if user already exists (they might have signed up before)
+      if (signUpData.user.identities && signUpData.user.identities.length === 0) {
+        setError('An account with this email already exists. Please sign in.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Create customer record in the database
+      console.log('Creating customer record for user:', signUpData.user.id);
       
       // Check if a customer record already exists for this user
       const { data: existingCustomer } = await supabase
@@ -169,32 +138,16 @@ export default function SignUp() {
 
         if (customerError) {
           console.error('Customer creation error:', customerError);
-          
-          // Try to get more details about the error
-          if (customerError.details) {
-            console.error('Error details:', customerError.details);
-          }
-          
-          if (customerError.hint) {
-            console.error('Error hint:', customerError.hint);
-          }
-          
-          throw new Error('Account created, verify account in your email.');
+          // Don't throw here - email verification is more important
+          console.warn('Failed to create customer record, but user account was created');
+        } else {
+          console.log('Customer record created successfully');
         }
       } else {
         console.log('Customer record already exists, skipping creation');
       }
 
-      // 3. Check if user needs to confirm email
-      if (signUpData.user.identities && signUpData.user.identities.length === 0) {
-        // User already exists
-        setError('An account with this email already exists. Please sign in.');
-        setIsLoading(false);
-        return;
-      }
-
-      // Email confirmation is almost always required with Supabase
-      setIsLoading(false);
+      // Show success message
       setMessage(
         'Success! Please check your email for a confirmation link to complete your registration. ' +
         'After confirming your email, you can sign in to your account.'
@@ -206,6 +159,7 @@ export default function SignUp() {
       setEmail('');
       setPassword('');
       setConfirmPassword('');
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create account';
       
@@ -215,7 +169,7 @@ export default function SignUp() {
       } else {
         setError(errorMessage);
       }
-      
+    } finally {
       setIsLoading(false);
     }
   };
@@ -236,6 +190,7 @@ export default function SignUp() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
           </h2>
+          
           {message && (
             <div className="mt-4 bg-green-50 border-l-4 border-green-500 p-6 rounded-md shadow-sm">
               <div className="flex">
@@ -245,15 +200,21 @@ export default function SignUp() {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-lg font-medium text-green-800">Email Verification Required</h3>
+                  <h3 className="text-lg font-medium text-green-800">
+                    {emailConfirmed ? 'Email Confirmed!' : 'Email Verification Required'}
+                  </h3>
                   <div className="mt-2 text-sm text-green-700">
                     <p>{message}</p>
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>Check your inbox for an email from La Casita</li>
-                      <li>Click the confirmation link in the email</li>
-                      <li>Once confirmed, you'll be able to sign in</li>
-                    </ul>
-                    <p className="mt-2 italic">Don't see the email? Check your spam folder.</p>
+                    {!emailConfirmed && (
+                      <>
+                        <ul className="list-disc list-inside mt-2 space-y-1">
+                          <li>Check your inbox for an email from La Casita</li>
+                          <li>Click the confirmation link in the email</li>
+                          <li>Once confirmed, you'll be able to sign in</li>
+                        </ul>
+                        <p className="mt-2 italic">Don't see the email? Check your spam folder.</p>
+                      </>
+                    )}
                   </div>
                   <div className="mt-4">
                     <Link href="/auth/signin" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -264,6 +225,7 @@ export default function SignUp() {
               </div>
             </div>
           )}
+          
           <p className="mt-2 text-center text-sm text-gray-600">
             Already have an account?{' '}
             <Link href="/auth/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
@@ -287,148 +249,162 @@ export default function SignUp() {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="first-name" className="sr-only">First Name</label>
-              <input
-                id="first-name"
-                name="firstName"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="First name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                disabled={isLoading}
-              />
+        {!message && (
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="first-name" className="sr-only">First Name</label>
+                <input
+                  id="first-name"
+                  name="firstName"
+                  type="text"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="First name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="last-name" className="sr-only">Last Name</label>
+                <input
+                  id="last-name"
+                  name="lastName"
+                  type="text"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="email-address" className="sr-only">Email address</label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={6}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Password (min 6 characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
+                <input
+                  id="confirm-password"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={6}
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-            <div>
-              <label htmlFor="last-name" className="sr-only">Last Name</label>
-              <input
-                id="last-name"
-                name="lastName"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={6}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password (min 6 characters)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
-              <input
-                id="confirm-password"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={6}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={isLoading || googleLoading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
-                isLoading
-                  ? 'bg-indigo-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-              }`}
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                'Sign up'
-              )}
-            </button>
-          </div>
-          
-          <div className="mt-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
-              </div>
-            </div>
-            
-            <div className="mt-4">
+            <div>
               <button
-                type="button"
-                onClick={handleGoogleSignUp}
+                type="submit"
                 disabled={isLoading || googleLoading}
-                className={`w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${googleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                  isLoading
+                    ? 'bg-indigo-400 cursor-not-allowed'
+                    : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                }`}
               >
-                {googleLoading ? (
+                {isLoading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Connecting...
+                    Creating account...
                   </>
                 ) : (
-                  <>
-                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" 
-                        fill="#4285F4"/>
-                    </svg>
-                    Sign up with Google
-                  </>
+                  'Sign up'
                 )}
               </button>
             </div>
-          </div>
-        </form>
+            
+            <div className="mt-4">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-gray-50 text-gray-500">Or continue with</span>
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={handleGoogleSignUp}
+                  disabled={isLoading || googleLoading}
+                  className={`w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${googleLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {googleLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" 
+                          fill="#4285F4"/>
+                      </svg>
+                      Sign up with Google
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
       </div>
     </div>
+  );
+}
+
+export default function SignUp() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   );
 }
