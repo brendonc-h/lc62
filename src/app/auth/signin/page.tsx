@@ -64,8 +64,8 @@ function SignInContent() {
       // Wait a moment for the session to be fully established
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Use Next.js router for navigation instead of window.location
-      router.push(callbackUrl);
+      // Use window.location for production to ensure proper redirect
+      window.location.href = `https://lacasita.io${callbackUrl}`;
       
     } catch (err) {
       console.error('Sign in error:', err);
