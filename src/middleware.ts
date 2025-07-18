@@ -105,14 +105,19 @@ export async function middleware(req: NextRequest) {
         );
       }
       
-      // Check if user has admin role (admin role now covers all staff access)
+      // Check if user has admin role or is a La Casita admin email
       const { data: profile } = await supabase
         .from('customers')
-        .select('role')
+        .select('role, email')
         .eq('auth_id', session.user.id)
         .single();
       
-      if (profile?.role !== 'admin') {
+      const isAdmin = profile?.role === 'admin' || 
+                     profile?.email === 'info@lacasita.io' ||
+                     profile?.email === 'berthoud@lacasita.io' ||
+                     profile?.email === 'fortcollins@lacasita.io';
+                     
+      if (!isAdmin) {
         return NextResponse.json(
           { error: 'Not authorized' },
           { status: 403 }
@@ -132,16 +137,21 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
-    // Get user profile for role checking
+    // Get user profile for role and email checking
     const { data: profile } = await supabase
       .from('customers')
-      .select('role')
+      .select('role, email')
       .eq('auth_id', session.user.id)
       .single();
 
-    // For staff paths, check if user has admin role (admin role now covers all staff access)
+    // For staff paths, check if user has admin role or is a La Casita admin email
     if (isStaffPath) {
-      if (profile?.role !== 'admin') {
+      const isAdmin = profile?.role === 'admin' || 
+                     profile?.email === 'info@lacasita.io' ||
+                     profile?.email === 'berthoud@lacasita.io' ||
+                     profile?.email === 'fortcollins@lacasita.io';
+                     
+      if (!isAdmin) {
         // Redirect to dashboard if not staff
         const dashboardUrl = new URL('/dashboard', req.url);
         return NextResponse.redirect(dashboardUrl);
