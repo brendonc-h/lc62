@@ -104,13 +104,20 @@ function AuthCallbackContent() {
 
             setMessage('Sign in successful! Redirecting you...');
 
-            // For production, always redirect to menu page after successful OAuth
+            // Get base URL from window or environment
+            const baseUrl = typeof window !== 'undefined' 
+              ? window.location.origin 
+              : (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io');
+
+            // Determine the redirect URL
+            const redirectUrl = callbackUrl && callbackUrl !== '/' 
+              ? (callbackUrl.startsWith('http') ? callbackUrl : `${baseUrl}${callbackUrl}`)
+              : `${baseUrl}/menu`;
+
+            // Redirect after a short delay
             setTimeout(() => {
-              const redirectUrl = callbackUrl && callbackUrl !== '/' ?
-                (callbackUrl.startsWith('http') ? callbackUrl : `https://lacasita.io${callbackUrl}`) :
-                'https://lacasita.io/menu';
               window.location.href = redirectUrl;
-            }, 1500);
+            }, 500);
           } else {
             throw new Error('Failed to get user session');
           }

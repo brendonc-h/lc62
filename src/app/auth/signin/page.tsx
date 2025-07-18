@@ -82,10 +82,19 @@ function SignInContent() {
     
     try {
       const supabase = createClient();
+      // Get the site URL from environment or fallback to window.location.origin
+      const siteUrl = typeof window !== 'undefined' 
+        ? window.location.origin 
+        : (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io');
+        
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`
+          redirectTo: `${siteUrl}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       
