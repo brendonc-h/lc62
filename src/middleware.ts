@@ -2,21 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
-// List of admin paths that require admin role
-const adminPaths = [
+// List of staff paths that require admin role
+const staffPaths = [
   '/admin',
   '/admin/dashboard',
   '/admin/orders',
   '/admin/users',
-  '/admin/settings'
-];
-
-// List of kitchen paths that require kitchen or admin role
-const kitchenPaths = [
-  '/kitchen'
-];
-
-// Public paths that don't require authentication
+  '/admin/settings',
+  '/kitchen',
+  '/kitchen/orders',
+  '/kitchen/dashboard'
+];// Public paths that don't require authentication
 const publicPaths = [
   '/',
   '/auth/signin',
@@ -90,12 +86,10 @@ export async function middleware(req: NextRequest) {
   // Refresh session if expired - required for Server Components
   const { data: { session } } = await supabase.auth.getSession();
   
-  // Check if the path is an admin path
-  const isAdminPath = adminPaths.some(path => pathname.startsWith(path)) ||
-                     pathname.startsWith('/api/admin/');
-
-  // Check if the path is a kitchen path
-  const isKitchenPath = kitchenPaths.some(path => pathname.startsWith(path));
+  // Check if the path requires staff access (admin/kitchen)
+  const isStaffPath = staffPaths.some((path: string) => pathname.startsWith(path)) ||
+                     pathname.startsWith('/api/admin/') ||
+                     pathname.startsWith('/api/kitchen/');
 
   // Check if the path is a protected path
   const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
@@ -103,7 +97,7 @@ export async function middleware(req: NextRequest) {
   // Handle API routes
   if (pathname.startsWith('/api/')) {
     // For API routes, we can return JSON responses
-    if (isAdminPath) {
+    if (isStaffPath) {
       if (!session) {
         return NextResponse.json(
           { error: 'Not authenticated' },
@@ -111,11 +105,11 @@ export async function middleware(req: NextRequest) {
         );
       }
       
-      // Check if user has admin role
+      // Check if user has admin role (admin role now covers all staff access)
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('customers')
         .select('role')
-        .eq('id', session.user.id)
+        .eq('auth_id', session.user.id)
         .single();
       
       if (profile?.role !== 'admin') {
@@ -130,7 +124,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // Handle page routes
-  if (isAdminPath || isKitchenPath || isProtectedPath) {
+  if (isStaffPath || isProtectedPath) {
     // Redirect to sign-in if not authenticated
     if (!session) {
       const signInUrl = new URL('/auth/signin', req.url);
@@ -145,19 +139,10 @@ export async function middleware(req: NextRequest) {
       .eq('auth_id', session.user.id)
       .single();
 
-    // For admin paths, check if user has admin role
-    if (isAdminPath) {
+    // For staff paths, check if user has admin role (admin role now covers all staff access)
+    if (isStaffPath) {
       if (profile?.role !== 'admin') {
-        // Redirect to dashboard if not admin
-        const dashboardUrl = new URL('/dashboard', req.url);
-        return NextResponse.redirect(dashboardUrl);
-      }
-    }
-
-    // For kitchen paths, check if user has kitchen or admin role
-    if (isKitchenPath) {
-      if (profile?.role !== 'admin' && profile?.role !== 'kitchen') {
-        // Redirect to dashboard if not kitchen staff or admin
+        // Redirect to dashboard if not staff
         const dashboardUrl = new URL('/dashboard', req.url);
         return NextResponse.redirect(dashboardUrl);
       }

@@ -9,6 +9,7 @@ import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);

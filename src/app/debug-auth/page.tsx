@@ -1,10 +1,10 @@
-// Authentication Debug Page
 'use client';
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabaseClient';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
-export function SupabaseConnectionTest() {
+function SupabaseConnectionTest() {
   const [status, setStatus] = useState('Not tested');
   const [error, setError] = useState('');
 
@@ -41,7 +41,7 @@ export function SupabaseConnectionTest() {
   );
 }
 
-export function EnvChecker() {
+function EnvChecker() {
   const envVars = {
     'NEXT_PUBLIC_SUPABASE_URL': process.env.NEXT_PUBLIC_SUPABASE_URL,
     'NEXT_PUBLIC_SUPABASE_ANON_KEY': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -63,7 +63,7 @@ export function EnvChecker() {
   );
 }
 
-export function GoogleOAuthTest() {
+function GoogleOAuthTest() {
   const [result, setResult] = useState('');
 
   const testGoogleOAuth = async () => {
@@ -95,7 +95,7 @@ export function GoogleOAuthTest() {
   );
 }
 
-export function AuthStateMonitor() {
+function AuthStateMonitor() {
   const [user, setUser] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
 
@@ -108,7 +108,7 @@ export function AuthStateMonitor() {
     setUser(session?.user || null);
 
     // Listen for auth changes
-    supabase.auth.onAuthStateChange((event, session) => {
+    supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       console.log('Auth event:', event, session);
       setSession(session);
       setUser(session?.user || null);
@@ -130,7 +130,7 @@ export function AuthStateMonitor() {
   );
 }
 
-export default function AuthDebugDashboard() {
+export default function Page() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <h1 className="text-2xl font-bold">Authentication Debug Dashboard</h1>
