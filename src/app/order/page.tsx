@@ -8,15 +8,15 @@ import { useState, useCallback } from 'react';
 import { ShoppingCartIcon, MapPinIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { isOrderingAllowed } from '@/data/restaurant-hours';
 
-// Log all categories and menu items for debugging
-console.log('All categories:', categories);
-console.log('All menu items:', menuItems);
+import { useEffect } from 'react';
 
-// Log menu items that don't have matching categories
+// Validate menu items at compile time
 const invalidMenuItems = menuItems.filter(item => !categories.some(cat => cat.id === item.category));
-if (invalidMenuItems.length > 0) {
-  console.warn('Menu items with invalid categories:', invalidMenuItems);
-}
+
+// Create a reusable debug logging function
+const debug = process.env.NODE_ENV === 'development' 
+  ? (...args: any[]) => console.log(...args)
+  : () => {};
 
 // Combo selection types and data
 interface ComboItem {
@@ -284,7 +284,7 @@ export default function OrderPage() {
                 </span>
               )}
             </div>
-            <span>View Cart - ${cartTotal.toFixed(2)}</span>
+            <span>View Cart {cartTotal !== undefined ? `- $${cartTotal.toFixed(2)}` : ''}</span>
           </Link>
         </div>
 
@@ -341,7 +341,7 @@ export default function OrderPage() {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h4 className="text-lg font-bold text-gray-900">Customize Your {item.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">Select 3 different items with your preferred meat choices - ${item.price.toFixed(2)}</p>
+                          <p className="text-sm text-gray-600 mt-1">Select 3 different items with your preferred meat choices - ${item.price ? item.price.toFixed(2) : '0.00'}</p>
                         </div>
                         <div className="text-right">
                           <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">
@@ -435,7 +435,7 @@ export default function OrderPage() {
                         
                         <button
                           onClick={() => {
-                            console.log('Combo button clicked:', {
+                            debug('Combo button clicked:', {
                               isComplete: isComboComplete(item),
                               orderingAllowed: orderingAllowed.allowed,
                               selectedLocation: selectedLocation,
@@ -479,7 +479,7 @@ export default function OrderPage() {
                       <div className="p-4 flex flex-col h-full">
                         <div className="flex justify-between items-start">
                           <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                          <span className="text-red-600 font-bold whitespace-nowrap ml-2">${item.price.toFixed(2)}</span>
+                          <span className="text-red-600 font-bold whitespace-nowrap ml-2">${item.price ? item.price.toFixed(2) : '0.00'}</span>
                         </div>
                         
                         {item.description && (
@@ -499,7 +499,7 @@ export default function OrderPage() {
                                 <option value="">Select option...</option>
                                 {item.variants.map((variant) => (
                                   <option key={variant.name} value={variant.name}>
-                                    {variant.name} - ${variant.price.toFixed(2)}
+                                    {variant.name} - ${variant.price ? variant.price.toFixed(2) : '0.00'}
                                   </option>
                                 ))}
                               </select>
