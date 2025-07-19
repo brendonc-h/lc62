@@ -1,4 +1,4 @@
-// Removed spice levels as requested
+// Updated menu with corrected prices from PDF (+$0.50)
 export const STYLE_TYPES = ['Beef', 'Chicken', 'Bean'] as const;
 export type StyleType = typeof STYLE_TYPES[number];
 
@@ -38,7 +38,7 @@ export const categories: MenuCategory[] = [
     id: 'appetizers',
     name: 'Appetizers',
     description: 'Start your meal with our delicious appetizers',
-    emoji: '🧀',
+    emoji: '🥨',
     color: 'from-orange-400 to-red-500',
   },
   {
@@ -227,7 +227,7 @@ export const menuItems: MenuItem[] = [
     id: 'three-al-pastor',
     name: '3 Tacos al Pastor',
     description: 'Three marinated pork tacos with pineapple, onions, and cilantro',
-    price: 13.75,
+    price: 19.49, // Updated from PDF
     category: 'tacos',
   },
   {
@@ -242,7 +242,7 @@ export const menuItems: MenuItem[] = [
     id: 'bean-guacamole-tostada',
     name: 'Bean and Guacamole Tostada',
     description: 'Crispy corn tortilla topped with refried beans, fresh guacamole, lettuce, and cheese',
-    price: 6.75,
+    price: 6.75, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
@@ -250,7 +250,7 @@ export const menuItems: MenuItem[] = [
     id: 'chicken-tostada',
     name: 'Chicken Tostada',
     description: 'Crispy corn tortilla topped with shredded chicken, refried beans, lettuce, cheese, and sour cream',
-    price: 5.95,
+    price: 5.95, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
@@ -258,7 +258,7 @@ export const menuItems: MenuItem[] = [
     id: 'beef-tostada',
     name: 'Beef Tostada',
     description: 'Crispy corn tortilla layered with seasoned ground beef, refried beans, lettuce, tomatoes, and cheese',
-    price: 6.25,
+    price: 6.25, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
@@ -266,7 +266,7 @@ export const menuItems: MenuItem[] = [
     id: 'guacamole-tostada',
     name: 'Guacamole Tostada',
     description: 'Crispy corn tortilla topped with fresh guacamole, lettuce, tomatoes, and queso fresco',
-    price: 7.45,
+    price: 7.45, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
@@ -274,31 +274,31 @@ export const menuItems: MenuItem[] = [
     id: 'bean-tostada',
     name: 'Bean Tostada',
     description: 'Crispy corn tortilla with a layer of refried beans, lettuce, cheese, and your choice of toppings',
-    price: 4.25,
+    price: 4.25, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
      {
     id: 'indian-taco',
     name: 'Indian Taco',
-    description: 'Crispy fry bread topped with your choice of beef, chicken, or carnitas, smothered in green chile, beans, lettuce, tomatoes, and cheese',
-    price: 13.49,
+    description: 'Deep fried flour tortilla comes with your choice of beef, Chicken, Carnitas along side of beans smothered in green chile with lettuce tomatoes and cheese',
+    price: 13.49, // Updated from PDF
     category: 'tostadas',
     popular: true,
   },
      {
     id: 'nacho-fans',
     name: 'Nacho Fans',
-    description: 'Crispy tortilla chips loaded with melted cheese, your choice of chicken or beef, jalapeños, and all the fixings. Add steak for $2.00',
-    price: 13.49,
+    description: 'Chicken or beef, served with sour cream & jalapeños Add steak for $2.00',
+    price: 13.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
       {
     id: 'chili-cheese-fries',
     name: 'Chili Cheese Fries',
-    description: 'Crispy golden fries smothered in our homemade chili, melted cheese, and green onions. Add any meat for $2.00',
-    price: 10.75,
+    description: 'Add ANY meat for $2.00',
+    price: 10.75, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
@@ -306,31 +306,31 @@ export const menuItems: MenuItem[] = [
     id: 'cheese-dip-small',
     name: 'Cheese Dip (Small)',
     description: 'Creamy, melted cheese dip served with warm tortilla chips. Add chicken or beef for an extra charge',
-    price: 6.49,
+    price: 6.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
        {
     id: 'cheese-dip-large',
     name: 'Cheese Dip (Large)',
-    description: 'Our famous creamy cheese dip, perfect for sharing. Served with a generous portion of tortilla chips',
-    price: 8.49,
+    description: 'Our famous creamy cheese dip, perfect for sharing. Served with a generous portion of tortilla chips. Add Chorizo for $1.99',
+    price: 8.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
        {
     id: 'mexican-taquitos',
     name: 'Mexican Taquitos',
-    description: 'Crispy rolled corn tortillas filled with your choice of shredded chicken or seasoned beef, served with guacamole and sour cream',
-    price: 12.75,
+    description: 'Beef or Chicken, Flour Tortillas',
+    price: 12.75, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
        {
     id: 'quesadilla',
     name: 'Quesadilla',
-    description: 'Flour tortilla stuffed with melted cheese and your choice of chicken or beef, served with sour cream, guacamole, and pico de gallo',
-    price: 12.49,
+    description: 'Chicken, beef or cheese',
+    price: 12.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
@@ -338,7 +338,7 @@ export const menuItems: MenuItem[] = [
     id: 'shrimp-quesadilla',
     name: 'Shrimp Quesadilla',
     description: 'Flour tortilla filled with sautéed shrimp, melted cheese, and a blend of peppers and onions. Served with sour cream and guacamole',
-    price: 15.75,
+    price: 15.75, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
@@ -346,15 +346,15 @@ export const menuItems: MenuItem[] = [
     id: 'pizza-birria',
     name: 'Pizza Birria',
     description: 'A delicious fusion of birria and pizza, featuring our slow-cooked birria meat, melted cheese, and our special sauce on a crispy crust',
-    price: 20.49,
+    price: 20.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
        {
     id: 'queso-fundido',
     name: 'Queso Fundido',
-    description: 'A sizzling skillet of melted cheese with chorizo, poblano peppers, and onions. Served with warm corn or flour tortillas',
-    price: 14.49,
+    description: 'Corn or Flour',
+    price: 14.49, // Updated from PDF
     category: 'appetizers',
     popular: true,
   },
@@ -362,15 +362,15 @@ export const menuItems: MenuItem[] = [
     id: 'steak-bowl',
     name: 'Steak Bowl',
     description: 'Grilled steak served over cilantro-lime rice with black beans, corn, pico de gallo, guacamole, and queso fresco',
-    price: 15.49,
+    price: 15.49, // Updated from PDF
     category: 'salads',
     popular: true,
   },
      {
     id: 'shrimp-bowl',
     name: 'Shrimp Bowl',
-    description: 'Sautéed shrimp served over cilantro-lime rice with black beans, corn, pico de gallo, and avocado crema',
-    price: 16.49,
+    description: 'Served with lettuce rice, beans, pico de gallo, cheese and sour cream',
+    price: 16.49, // Updated from PDF
     category: 'salads',
     popular: true,
   },
@@ -378,7 +378,7 @@ export const menuItems: MenuItem[] = [
     id: 'taco-salad',
     name: 'Taco Salad',
     description: 'Crispy flour tortilla bowl filled with fresh lettuce, your choice of protein, black beans, corn, cheese, and all your favorite taco toppings',
-    price: 10.75,
+    price: 10.75, // Updated from PDF
     category: 'salads',
     popular: true,
   },
@@ -386,7 +386,7 @@ export const menuItems: MenuItem[] = [
     id: 'chicken-nuggets',
     name: 'Chicken Nuggets',
     description: 'Crispy breaded chicken nuggets served with a side of fries and your choice of dipping sauce',
-    price: 7.49,
+    price: 7.49, // Updated from PDF
     category: 'kids',
     popular: true,
   },
@@ -394,7 +394,7 @@ export const menuItems: MenuItem[] = [
     id: 'quesadilla-kids',
     name: 'Quesadilla (Kids)',
     description: 'Small flour tortilla with melted cheese and your choice of chicken or beef, served with a side of rice and beans',
-    price: 7.49,
+    price: 7.49, // Updated from PDF
     category: 'kids',
     popular: true,
   },
@@ -402,7 +402,7 @@ export const menuItems: MenuItem[] = [
     id: 'taco-kids',
     name: 'Taco (Kids)',
     description: 'One soft or hard shell taco with your choice of meat, cheese, and lettuce. Served with a side of rice and beans',
-    price: 7.49,
+    price: 7.49, // Updated from PDF
     category: 'kids',
     popular: true,
   },
@@ -410,7 +410,7 @@ export const menuItems: MenuItem[] = [
     id: 'bean-cheese-burrito',
     name: 'Bean and Cheese Burrito (Kids)',
     description: 'Warm flour tortilla filled with refried beans and melted cheese. Served with a side of rice and chips',
-    price: 7.49,
+    price: 7.49, // Updated from PDF
     category: 'kids',
     popular: true,
   },
@@ -418,7 +418,7 @@ export const menuItems: MenuItem[] = [
     id: 'sopapillas',
     name: 'Sopapillas',
     description: 'Light and fluffy fried pastries dusted with cinnamon sugar, served with honey for drizzling',
-    price: 6.49,
+    price: 6.49, // Updated from PDF
     category: 'desserts',
     popular: true,
   },
@@ -426,7 +426,7 @@ export const menuItems: MenuItem[] = [
     id: 'fried-ice-cream',
     name: 'Fried Ice Cream',
     description: 'Vanilla ice cream coated in a crispy cinnamon-sugar crust, quickly fried to golden perfection. Served with whipped cream and a cherry',
-    price: 6.75,
+    price: 6.75, // Updated from PDF
     category: 'desserts',
     popular: true,
   },
@@ -434,7 +434,7 @@ export const menuItems: MenuItem[] = [
     id: 'cheesecake-chimichanga',
     name: 'Cheesecake Chimichanga',
     description: 'Creamy cheesecake filling wrapped in a flour tortilla, lightly fried, and dusted with powdered sugar and cinnamon. Served with strawberry sauce',
-    price: 8.49,
+    price: 8.49, // Updated from PDF
     category: 'desserts',
     popular: true,
   },
@@ -442,15 +442,131 @@ export const menuItems: MenuItem[] = [
     id: 'churros',
     name: 'Churros',
     description: 'Golden fried pastry sticks rolled in cinnamon sugar, served with warm chocolate and caramel dipping sauces',
-    price: 6.45,
+    price: 6.45, // Updated from PDF
     category: 'desserts',
     popular: true,
   },
         {
+    id: 'flan',
+    name: 'Flan',
+    description: 'Classic Mexican custard dessert with a rich caramel sauce, made fresh daily with eggs, milk, and vanilla',
+    price: 4.75, // Updated from PDF
+    category: 'desserts',
+  },
+  // Drinks
+  {
+    id: 'margarita',
+    name: 'House Margarita',
+    description: 'Our signature margarita made with premium tequila, fresh lime juice, and orange liqueur, served on the rocks with a salted rim',
+    price: 8.99,
+    category: 'drinks',
+  },
+  {
+    id: 'coca-cola',
+    name: 'Coca-Cola',
+    description: 'Classic Coca-Cola served ice cold',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'sprite',
+    name: 'Sprite',
+    description: 'Refreshing lemon-lime soda',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'orange-fanta',
+    name: 'Orange Fanta',
+    description: 'Sweet orange flavored soda',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'dr-pepper',
+    name: 'Dr Pepper',
+    description: 'Unique blend of 23 flavors',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'iced-tea',
+    name: 'Iced Tea',
+    description: 'Freshly brewed iced tea, sweetened or unsweetened',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'coffee',
+    name: 'Coffee',
+    description: 'Freshly brewed coffee, hot or iced',
+    price: 2.49,
+    category: 'drinks',
+  },
+  {
+    id: 'horchata',
+    name: 'Horchata',
+    description: 'Traditional Mexican rice drink with cinnamon and vanilla',
+    price: 3.99,
+    category: 'drinks',
+    popular: true,
+  },
+  {
+    id: 'agua-fresca',
+    name: 'Agua Fresca',
+    description: 'Fresh fruit water - flavors vary daily',
+    price: 3.49,
+    category: 'drinks',
+  },
+  {
+    id: 'mexican-coke',
+    name: 'Mexican Coke',
+    description: 'Coca-Cola made with real cane sugar',
+    price: 3.49,
+    category: 'drinks',
+    popular: true,
+  },
+  {
+    id: 'jarritos',
+    name: 'Jarritos',
+    description: 'Mexican soda in various fruit flavors',
+    price: 2.99,
+    category: 'drinks',
+  },
+  {
+    id: 'beer-corona',
+    name: 'Corona',
+    description: 'Mexican lager beer served with lime',
+    price: 4.99,
+    category: 'drinks',
+  },
+  {
+    id: 'beer-dos-equis',
+    name: 'Dos Equis',
+    description: 'Mexican amber lager',
+    price: 4.99,
+    category: 'drinks',
+  },
+  {
+    id: 'milk',
+    name: 'Milk',
+    description: 'Cold fresh milk',
+    price: 2.49,
+    category: 'drinks',
+  },
+  {
+    id: 'orange-juice',
+    name: 'Orange Juice',
+    description: 'Fresh squeezed orange juice',
+    price: 3.49,
+    category: 'drinks',
+  },
+  // Sides
+  {
     id: 'crispy-relleno',
     name: 'Crispy Relleno',
     description: 'Crispy breaded chile relleno stuffed with cheese, lightly fried to perfection',
-    price: 5.49,
+    price: 5.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -458,7 +574,7 @@ export const menuItems: MenuItem[] = [
     id: 'soft-relleno',
     name: 'Soft Relleno',
     description: 'Mild green chile stuffed with cheese, lightly battered and served with red or green chile sauce',
-    price: 6.75,
+    price: 6.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -466,7 +582,7 @@ export const menuItems: MenuItem[] = [
     id: 'rice',
     name: 'Spanish Rice',
     description: 'Traditional Mexican-style rice cooked with tomatoes, onions, and garlic',
-    price: 3.75,
+    price: 3.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -474,7 +590,7 @@ export const menuItems: MenuItem[] = [
     id: 'guacamole',
     name: 'Guacamole',
     description: 'Freshly made with ripe avocados, tomatoes, onions, cilantro, and lime juice. Served with warm tortilla chips',
-    price: 6.75,
+    price: 6.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -482,7 +598,7 @@ export const menuItems: MenuItem[] = [
     id: 'sour-cream',
     name: 'Sour Cream',
     description: 'Cool and creamy topping for your favorite Mexican dishes',
-    price: 2.50,
+    price: 2.50, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -490,7 +606,7 @@ export const menuItems: MenuItem[] = [
     id: 'toreados',
     name: 'Chiles Toreados (3)',
     description: 'Pan-seared jalapeños with onions, cooked in a savory sauce with lime and spices',
-    price: 2.00,
+    price: 2.00, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -498,7 +614,7 @@ export const menuItems: MenuItem[] = [
     id: 'chips-salsa',
     name: 'Chips and Salsa',
     description: 'Freshly made tortilla chips served with our house-made tomato salsa',
-    price: 8.49,
+    price: 8.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -506,7 +622,7 @@ export const menuItems: MenuItem[] = [
     id: 'chips-guacamole',
     name: 'Chips and Guacamole',
     description: 'Crispy tortilla chips served with our fresh, hand-mashed guacamole made with ripe avocados',
-    price: 10.49,
+    price: 10.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -514,7 +630,7 @@ export const menuItems: MenuItem[] = [
     id: 'beans',
     name: 'Refried Beans',
     description: 'Creamy, slow-cooked pinto beans, mashed and lightly fried with traditional seasonings',
-    price: 3.75,
+    price: 3.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -522,7 +638,7 @@ export const menuItems: MenuItem[] = [
     id: 'chicharron',
     name: 'Chicharron',
     description: 'Crispy fried pork rinds, perfect for dipping in guacamole or salsa',
-    price: 5.25,
+    price: 5.25, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -530,7 +646,7 @@ export const menuItems: MenuItem[] = [
     id: 'green-chile-8oz',
     name: 'Green Chile (8 oz)',
     description: 'Our signature roasted green chile sauce, medium spice level',
-    price: 5.75,
+    price: 5.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -538,7 +654,7 @@ export const menuItems: MenuItem[] = [
     id: 'green-chile-16oz',
     name: 'Green Chile (16 oz)',
     description: 'A larger portion of our signature roasted green chile sauce, perfect for sharing',
-    price: 9.25,
+    price: 9.25, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -546,7 +662,7 @@ export const menuItems: MenuItem[] = [
     id: 'green-chile-32oz',
     name: 'Green Chile (32 oz)',
     description: 'Family-sized portion of our signature roasted green chile sauce',
-    price: 14.49,
+    price: 14.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -554,7 +670,7 @@ export const menuItems: MenuItem[] = [
     id: 'tortillas-4',
     name: 'Tortillas (4)',
     description: 'Warm flour tortillas, made fresh daily',
-    price: 2.50,
+    price: 2.50, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -562,7 +678,7 @@ export const menuItems: MenuItem[] = [
     id: 'potatoes',
     name: 'Mexican Potatoes',
     description: 'Diced potatoes seasoned with Mexican spices and roasted until golden brown',
-    price: 3.49,
+    price: 3.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -570,7 +686,7 @@ export const menuItems: MenuItem[] = [
     id: 'french-fries',
     name: 'French Fries',
     description: 'Crispy golden fries, lightly salted and served hot',
-    price: 4.75,
+    price: 4.75, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -578,7 +694,7 @@ export const menuItems: MenuItem[] = [
     id: 'plain-tamal',
     name: 'Plain Tamal',
     description: 'Traditional Mexican tamal made with masa and steamed in a corn husk',
-    price: 4.00,
+    price: 4.00, // Updated from PDF
     category: 'sides',
     popular: true,
   },
@@ -586,15 +702,16 @@ export const menuItems: MenuItem[] = [
     id: 'smothered-tamal',
     name: 'Smothered Tamal',
     description: 'Traditional tamal smothered in our signature red or green chile sauce and melted cheese',
-    price: 5.49,
+    price: 5.49, // Updated from PDF
     category: 'sides',
     popular: true,
   },
+  // Tortas y Hamburguesas
           {
     id: 'torta-steak',
     name: 'Torta Steak',
     description: 'Grilled steak served on toasted bolillo bread with refried beans, avocado, lettuce, tomato, and mayonnaise',
-    price: 15.49,
+    price: 15.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
     popular: true,
   },
@@ -602,7 +719,7 @@ export const menuItems: MenuItem[] = [
     id: 'torta-carnitas',
     name: 'Torta Carnitas',
     description: 'Tender braised pork served on toasted bolillo bread with refried beans, avocado, and pickled jalapeños',
-    price: 15.49,
+    price: 15.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
     popular: true,
   },
@@ -610,15 +727,15 @@ export const menuItems: MenuItem[] = [
     id: 'torta-barbacoa',
     name: 'Torta Barbacoa',
     description: 'Slow-cooked barbacoa beef served on toasted bolillo bread with refried beans, avocado, and pickled onions',
-    price: 15.49,
+    price: 15.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
     popular: true,
   },
             {
     id: 'torta-pastor',
     name: 'Torta Pastor',
-    description: 'Marinated pork al pastor with grilled pineapple, served on toasted bolillo bread with refried beans and avocado',
-    price: 15.49,
+    description: 'Marinated pork al pastor with grilled pineapple, served on toasted bolillo bread with refried beans and avocado. Lettuce, tomato, onions, jalapeños, beans and fries',
+    price: 15.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
     popular: true,
   },
@@ -626,7 +743,7 @@ export const menuItems: MenuItem[] = [
     id: 'cheese-burger',
     name: 'Cheeseburger',
     description: 'Classic cheeseburger with American cheese, lettuce, tomato, onion, pickles, and our special sauce on a toasted bun',
-    price: 10.49,
+    price: 10.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
     popular: true,
   },
@@ -634,20 +751,16 @@ export const menuItems: MenuItem[] = [
     id: 'hamburger',
     name: 'Hamburger',
     description: 'Juicy beef patty with lettuce, tomato, onion, pickles, ketchup, and mustard on a toasted bun',
-    price: 8.45,
+    price: 8.45, // Updated from PDF
     category: 'tortas-y-hamburguesas',
   },
             {
     id: 'mexican-hamburger',
     name: 'Mexican Hamburger',
     description: 'Beef patty topped with green chile, cheese, and served with lettuce, tomato, and onions on a toasted bun',
-    price: 13.49,
+    price: 13.49, // Updated from PDF
     category: 'tortas-y-hamburguesas',
   },
-  // Combos
- 
-    // Special request field already added to MenuItem interface
-
   // Burritos
   {
     id: 'deluxe-bean-cheese-burrito',
@@ -657,6 +770,7 @@ export const menuItems: MenuItem[] = [
     category: 'burritos',
     // Special request field handles customizations
   },
+  // Enchiladas
   {
     id: 'enchiladas-rojas',
     name: 'Enchiladas Rojas',
@@ -665,11 +779,12 @@ export const menuItems: MenuItem[] = [
     category: 'enchiladas',
     // Special request field handles customizations
   },
+  // Fajitas
   {
     id: 'skinny-fajitas',
     name: 'Skinny Fajitas',
-    description: 'Sizzling grilled chicken or steak with bell peppers and onions, served with crisp lettuce wraps and fresh pico de gallo',
-    price: 19.99,
+    description: 'Bell peppers, tomato, carrots and broccoli',
+    price: 17.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
@@ -677,7 +792,7 @@ export const menuItems: MenuItem[] = [
     id: 'chicken-fajitas',
     name: 'Chicken Fajitas',
     description: 'Sizzling platter of marinated grilled chicken with sautéed bell peppers and onions, served with warm flour tortillas and traditional sides',
-    price: 20.49,
+    price: 20.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
@@ -685,7 +800,7 @@ export const menuItems: MenuItem[] = [
     id: 'steak-fajitas',
     name: 'Steak Fajitas',
     description: 'Tender grilled steak strips with caramelized onions and bell peppers, served with warm flour tortillas and all the fixings',
-    price: 20.49,
+    price: 20.49, // Updated from PDF
     image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
     category: 'fajitas',
     popular: true,
@@ -693,16 +808,16 @@ export const menuItems: MenuItem[] = [
   {
     id: 'fajita-salad',
     name: 'Fajita Salad',
-    description: 'Fresh mixed greens topped with sizzling fajita meat, sautéed peppers and onions, pico de gallo, avocado, and drizzled with our house lime vinaigrette',
-    price: 14.49,
+    description: 'Chicken or Steak',
+    price: 14.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
   {
     id: 'fajitas-three-amigos',
     name: 'Fajitas Three Amigos',
-    description: 'A sizzling platter featuring three types of meat (chicken, steak, and shrimp) with bell peppers and onions, served with warm flour tortillas and all the fixings - perfect for sharing',
-    price: 26.49,
+    description: 'Combo of steak, chicken and shrimp',
+    price: 26.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
@@ -710,7 +825,7 @@ export const menuItems: MenuItem[] = [
     id: 'chicken-steak-fajitas',
     name: 'Chicken y Steak Fajitas Combo',
     description: 'The best of both worlds - tender grilled chicken and steak strips with sautéed bell peppers and onions, served with warm flour tortillas and traditional sides',
-    price: 23.49,
+    price: 23.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
@@ -718,433 +833,198 @@ export const menuItems: MenuItem[] = [
     id: 'shrimp-fajitas',
     name: 'Shrimp Fajitas',
     description: 'Jumbo shrimp sautéed with bell peppers and onions in our special garlic butter sauce, served sizzling with warm tortillas and traditional sides',
-    price: 20.49,
+    price: 20.49, // Updated from PDF
     category: 'fajitas',
     popular: true,
   },
-  {
-    id: 'margarita',
-    name: 'House Margarita',
-    description: 'Our signature margarita made with premium tequila, fresh lime juice, and orange liqueur, served on the rocks with a salted rim',
-    price: 8.99,
-    category: 'drinks',
-  },
-
-  // Mexican Sodas
-  {
-    id: 'mexican-coke',
-    name: 'Mexican Coke',
-    description: 'Authentic Mexican Coca-Cola made with real cane sugar in a glass bottle',
-    price: 3.49,
-    category: 'drinks',
-    popular: true,
-  },
-  {
-    id: 'jarritos-lime',
-    name: 'Jarritos Lime',
-    description: 'Traditional Mexican lime-flavored soda made with natural fruit flavors',
-    price: 3.49,
-    category: 'drinks',
-    popular: true,
-  },
-  {
-    id: 'jarritos-pineapple',
-    name: 'Jarritos Pineapple',
-    description: 'Sweet and tangy pineapple-flavored Mexican soda',
-    price: 3.49,
-    category: 'drinks',
-  },
-  {
-    id: 'jarritos-orange',
-    name: 'Jarritos Orange',
-    description: 'Refreshing orange-flavored Mexican soda with natural fruit flavors',
-    price: 3.49,
-    category: 'drinks',
-  },
-  {
-    id: 'jarritos-strawberry',
-    name: 'Jarritos Strawberry',
-    description: 'Sweet strawberry-flavored Mexican soda',
-    price: 3.49,
-    category: 'drinks',
-  },
-  {
-    id: 'jarritos-grapefruit',
-    name: 'Jarritos Grapefruit',
-    description: 'Tart and refreshing grapefruit-flavored Mexican soda',
-    price: 3.49,
-    category: 'drinks',
-  },
-  {
-    id: 'jarritos-mandarin',
-    name: 'Jarritos Mandarin',
-    description: 'Citrusy mandarin-flavored Mexican soda',
-    price: 3.49,
-    category: 'drinks',
-  },
-
-  // Fountain Drinks (Coke Products)
-  {
-    id: 'fountain-coke',
-    name: 'Coca-Cola',
-    description: 'Classic Coca-Cola fountain drink',
-    price: 2.99,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 2.99,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.49,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 3.99,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'flan',
-    name: 'Flan',
-    description: 'Classic Mexican custard dessert with a rich caramel sauce, made fresh daily with eggs, milk, and vanilla',
-    price: 6.99,
-    category: 'desserts',
-  },
-  {
-    id: 'fountain-diet-coke',
-    name: 'Diet Coke',
-    description: 'Diet Coca-Cola fountain drink',
-    price: 2.99,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 2.99,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.49,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 3.99,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'fountain-sprite',
-    name: 'Sprite',
-    description: 'Lemon-lime fountain drink',
-    price: 2.99,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 2.99,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.49,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 3.99,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'fountain-orange-fanta',
-    name: 'Orange Fanta',
-    description: 'Orange-flavored fountain drink',
-    price: 2.99,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 2.99,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.49,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 3.99,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'fountain-dr-pepper',
-    name: 'Dr Pepper',
-    description: 'Classic Dr Pepper fountain drink',
-    price: 2.99,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 2.99,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.49,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 3.99,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'fountain-lemonade',
-    name: 'Fresh Lemonade',
-    description: 'House-made fresh lemonade',
-    price: 3.49,
-    category: 'drinks',
-    variants: [
-      {
-        name: 'Small (16 oz)',
-        price: 3.49,
-        size: 'small'
-      },
-      {
-        name: 'Medium (20 oz)',
-        price: 3.99,
-        size: 'medium'
-      },
-      {
-        name: 'Large (32 oz)',
-        price: 4.49,
-        size: 'large'
-      }
-    ]
-  },
-  {
-    id: 'horchata',
-    name: 'Horchata',
-    description: 'Traditional Mexican rice drink with cinnamon and vanilla',
-    price: 4.49,
-    category: 'drinks',
-    popular: true,
-    variants: [
-      {
-        name: 'Small (12 oz)',
-        price: 4.49,
-        size: 'small'
-      },
-      {
-        name: 'Large (16 oz)',
-        price: 5.49,
-        size: 'large'
-      }
-    ]
-  },
-
-
   //dinner specials
   {
     id: 'sopapilla',
     name: 'Sopapilla (House Special)',
-    description: 'Golden-fried pastry puffs drizzled with honey and dusted with cinnamon sugar, served warm with a side of vanilla ice cream',
-    price: 6.49,
-    category: 'desserts',
+    description: 'Beef, Chicken or Carnitas',
+    price: 16.49, // Updated from PDF
+    category: 'dinner-specials',
   },
   {
     id: 'michis-special',
     name: 'Michis Special',
-    description: 'Two roasted poblano peppers stuffed with seasoned ground beef and melted cheese, topped with our house ranchera sauce, served with Spanish rice and crispy refried beans',
-    price: 15.49,
+    description: 'Two stuffed chiles garnished with rice and CRISPY beans accompanied by tortillas',
+    price: 15.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'pork-chops',
     name: 'Pork Chops a la Mexicana',
-    description: 'Two thick-cut, bone-in pork chops smothered in our homemade green chile sauce, served with Spanish rice and refried beans',
-    price: 18.49,
+    description: 'Smothered in green chile with side of rice and beans',
+    price: 18.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'carne-asada',
     name: 'Carne Asada',
     description: 'Grilled, marinated skirt steak served with charro beans, Spanish rice, grilled onions, bell peppers, and warm flour tortillas',
-    price: 19.49,
+    price: 19.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'carnitas-plate',
     name: 'Carnitas Plate',
     description: 'Tender, slow-braised pork carnitas served with fresh pico de gallo, guacamole, refried beans, and warm corn tortillas',
-    price: 17.49,
+    price: 17.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'los-tamales-plate',
     name: 'Los Tamales Plate',
-    description: 'Two homemade tamales (choice of chicken, pork, or cheese) smothered in green chile sauce, served with Spanish rice and refried beans',
-    price: 15.49,
+    description: '2 Tamales, Rice and Beans and green chile',
+    price: 15.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'jalisco-plate',
     name: 'Jalisco Plate',
-    description: 'Tender carne asada served with your choice of chile relleno, tamal, or cheese enchilada, accompanied by Spanish rice and refried beans',
-    price: 20.49,
+    description: 'Come with carne asada choice of chile relleno tamal or enchilada, rice and beans',
+    price: 20.49, // Updated from PDF
     image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
     category: 'dinner-specials',
   },
   {
     id: 'spinach-quesadilla',
     name: 'Spinach Quesadilla',
-    description: 'Flour tortilla filled with sautéed spinach, mushrooms, onions, and melted cheese blend, served with sour cream, Spanish rice, and refried beans',
-    price: 13.49,
+    description: 'Comes with sour cream, rice and beans',
+    price: 13.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'los-amigos',
     name: 'Los Amigos',
-    description: 'Two tender chile rellenos stuffed with cheese and topped with our house ranchera sauce, served with Spanish rice, refried beans, and warm corn tortillas',
-    price: 16.49,
+    description: '2 Soft Chile Rellenos with a side of rice and beans accompanied by tortillas',
+    price: 16.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'fish-tacos',
     name: 'Fish Tacos',
-    description: 'Three soft corn tortillas filled with beer-battered cod, shredded cabbage, pico de gallo, and drizzled with our creamy chipotle sauce, served with lime wedges',
-    price: 16.49,
+    description: 'tilapia rice and beans pico de gallo',
+    price: 16.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'la-tampiquena',
     name: 'La Tampiqueña',
-    description: 'Tender grilled skirt steak served with a cheese enchilada smothered in our rich mole sauce, refried beans, and grilled nopalitos',
-    price: 20.49,
+    description: 'Carne Asada served with a side of beans along side a bean Enchilada smothered in mole sauce',
+    price: 20.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'sopitos',
     name: 'Sopitos',
-    description: 'Crispy corn masa cakes topped with your choice of shredded beef or chicken, refried beans, lettuce, tomatoes, cheese, and crema',
-    price: 14.49,
+    description: 'Beef or Chicken',
+    price: 14.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'costillas',
     name: 'Costillas de Puerco',
-    description: 'Tender pork ribs slow-cooked in our special sauce, served with Spanish rice, refried beans, warm tortillas, and a side of green chile',
-    price: 20.49,
+    description: 'Rice, Beans, Tortillas and green chile',
+    price: 20.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'tacos-al-pastor',
     name: 'Tacos Al Pastor',
     description: 'Three corn tortillas filled with marinated pork cooked on a vertical spit, topped with fresh pineapple, onions, and cilantro, served with lime wedges',
-    price: 19.49,
+    price: 19.49, // Updated from PDF
     image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
     category: 'dinner-specials',
   },
   {
     id: 'pollo-plancha',
     name: 'Pollo a la Plancha',
-    description: 'Grilled chicken breast marinated in citrus and spices, served with Spanish rice, refried beans, and your choice of warm corn or flour tortillas',
-    price: 18.49,
+    description: 'Corn or Flour Tortillas',
+    price: 18.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'tacos-carbon',
     name: 'Tacos al Carbón',
     description: 'Three grilled steak tacos with caramelized onions, fresh cilantro, and your choice of salsa, served with charro beans and lime wedges',
-    price: 19.49,
+    price: 19.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'chicken-mole',
     name: 'Pollo en Mole',
-    description: 'Tender chicken smothered in our house-made mole sauce, a rich blend of chocolate, chiles, and spices, served with Spanish rice and warm corn or flour tortillas',
-    price: 19.49,
+    description: 'Flour or Corn Tortillas',
+    price: 19.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'flauta-plate',
     name: 'Flauta Plate',
-    description: 'Three crispy rolled corn tortillas filled with your choice of shredded beef, chicken, or carnitas, topped with lettuce, tomatoes, sour cream, and guacamole, served with rice and beans',
-    price: 15.49,
+    description: '3 Flautas with rice, beans, lettuce, tomatoes and sour cream and Beef chicken Carnitas',
+    price: 15.49, // Updated from PDF
     category: 'dinner-specials',
   },
   {
     id: 'pork-chile-verde',
     name: 'Chile Verde',
     description: 'Tender chunks of pork slow-cooked in our homemade green chile tomatillo sauce, served with Spanish rice, refried beans, and warm tortillas',
-    price: 18.49,
+    price: 18.49, // Updated from PDF
     category: 'dinner-specials',
   },
-  
+
   //enchiladas
   {
     id: 'cheese-dip-enchiladas',
     name: 'Cheese Dip Enchiladas',
-    description: 'Two cheese enchiladas smothered in our creamy cheese dip, served with Spanish rice and refried beans. Choose your filling: ground beef, shredded chicken, or cheese',
-    price: 15.49,
+    description: '2 Enchiladas side of rice and beans and your choice of beef,Chicken, or cheese',
+    price: 15.49, // Updated from PDF
     category: 'enchiladas',
   },
   {
     id: 'spinach-enchiladas',
     name: 'Spinach Enchiladas',
     description: '2 Enchiladas with a side of rice and beans',
-    price: 11.49,
+    price: 11.49, // Updated from PDF
     image: 'https://images.unsplash.com/photo-1597715469889-dd75fe4a1765',
     category: 'enchiladas',
   },
   {
     id: 'los-comadres',
     name: 'Los Comadres',
-    description: 'Three enchiladas, each with a different sauce: red chile, green chile, and tomatillo, topped with melted cheese, served with Spanish rice, refried beans, and sour cream. Choose your filling: beef, chicken, or cheese',
-    price: 19.49,
+    description: '3 Enchiladas bathed in red sauce, one with grenchile and the other with tomatillo, accompanied by rice and beanswith sour cream, beef, chicken or cheese of your choice',
+    price: 19.49, // Updated from PDF
     category: 'enchiladas',
   },
   {
     id: 'enchiladas-suizas',
     name: 'Enchiladas Suizas',
-    description: 'Two enchiladas filled with shredded chicken, topped with our creamy tomatillo sauce and melted cheese, served with Spanish rice and refried beans',
-    price: 16.49,
+    description: '2 enchiladas smothered in green sause, sour cream, rice and beans and Beef chicken Cheese',
+    price: 16.49, // Updated from PDF
     category: 'enchiladas',
   },
   {
     id: 'mole-enchiladas',
     name: 'Enchiladas de Mole',
-    description: 'Three corn tortillas filled with your choice of shredded chicken or cheese, smothered in our rich, house-made mole sauce, served with Spanish rice and refried beans',
-    price: 16.49,
+    description: 'Beef chicken Cheese',
+    price: 16.49, // Updated from PDF
     category: 'enchiladas',
   },
-  
+
   //chimichangas
   {
     id: 'chimichanga',
     name: 'Chimichanga',
-    description: 'Crispy deep-fried burrito filled with your choice of seasoned ground beef, shredded chicken, or tender carnitas, topped with cheese and served with Spanish rice, refried beans, lettuce, tomato, sour cream, and guacamole',
-    price: 15.49,
+    description: 'Comes with Rice and Beans Choice of Beef,Chicken, or Carnitas',
+    price: 15.49, // Updated from PDF
     category: 'chimichangas',
   },
   {
     id: 'cheesedip-chimichanga',
     name: 'Cheese Dip Chimichanga',
-    description: 'Our signature chimichanga smothered in warm cheese dip, served with Spanish rice and refried beans. Choose your filling: ground beef, shredded chicken, or carnitas',
-    price: 16.49,
+    description: 'Comes with rice and beans choice of Beef,Chicken, or Carnitas',
+    price: 16.49, // Updated from PDF
     category: 'chimichangas',
   },
 
@@ -1152,103 +1032,103 @@ export const menuItems: MenuItem[] = [
   {
     id: 'berthoud-plate',
     name: 'Berthoud Plate',
-    description: 'A hearty breakfast featuring two eggs any style, your choice of bacon or sausage, hash browns or breakfast potatoes, and toast or tortillas',
-    price: 12.99,
+    description: 'Two eggs, steak, potatos, side of green chile and Tortillas',
+    price: 19.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'breakfast-quesadilla',
     name: 'Breakfast Quesadilla',
-    description: 'Fluffy scrambled eggs with your choice of bacon, sausage, or chorizo, served with hash browns or breakfast potatoes and toast or tortillas',
-    price: 12.49,
+    description: 'Choice of bacon, chorizo, ham and sausage',
+    price: 15.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'casita-enchiladas',
     name: 'Casita Enchiladas',
-    description: 'Two cheese enchiladas topped with red or green chile sauce, served with two eggs any style, breakfast potatoes, and refried beans',
-    price: 14.99,
+    description: 'Two eggs, Beef chicken Cheese',
+    price: 15.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'breakfast-chimichanga',
     name: 'Breakfast Chimichanga',
-    description: 'A crispy flour tortilla filled with scrambled eggs, cheese, and your choice of bacon, sausage, or chorizo, topped with sour cream and guacamole, served with breakfast potatoes',
-    price: 14.75,
+    description: 'Choice of bacon, chorizo, ham and sausage',
+    price: 14.75, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'chilaquiles',
     name: 'Chilaquiles',
-    description: 'Crispy corn tortilla chips simmered in red or green chile sauce, topped with two eggs any style, queso fresco, crema, and onions. Served with refried beans and breakfast potatoes',
-    price: 13.99,
+    description: 'red or green',
+    price: 14.75, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'huevos-rancheros',
     name: 'Huevos Rancheros',
-    description: 'Two corn tortillas topped with refried beans, two eggs any style, and smothered in our homemade ranchera sauce, served with breakfast potatoes',
-    price: 13.00,
+    description: 'Two eggs smothered in green chile. Comes with rice, beans and tortillas',
+    price: 13.00, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'huevos-con-chorizo',
     name: 'Huevos con Chorizo',
-    description: 'Scrambled eggs with spicy Mexican chorizo, served with refried beans, breakfast potatoes, and warm corn or flour tortillas',
-    price: 12.99,
+    description: '2 Scrambled eggs. Comes with side of rice, beans and 3 tortillas',
+    price: 13.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'machaca-con-huevo',
     name: 'Machaca con Huevo',
-    description: 'Shredded beef scrambled with eggs, onions, tomatoes, and bell peppers, served with refried beans, breakfast potatoes, and warm flour tortillas',
-    price: 14.49,
+    description: 'Two eggs mixed with barbacoa, side of rice and beans',
+    price: 15.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'vickeys-special',
     name: 'Vickeys Special',
     description: 'Two pork chops, two eggs, beans smothered in green chile. With a side of tortillas',
-    price: 18.99,
+    price: 20.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   {
     id: 'colorado-special',
     name: 'Colorado Special',
-    description: 'A hearty combination of crispy chilaquiles, two eggs any style, and grilled steak strips, served with refried beans and breakfast potatoes',
-    price: 20.49,
+    description: 'Chilaquiles, eggs and steak',
+    price: 20.49, // Updated from PDF
     category: 'breakfast-meals',
   },
   //soups
   {
     id: 'menudo',
     name: 'Menudo',
-    description: 'Traditional Mexican tripe soup slow-cooked with hominy and red chile, served with chopped onions, cilantro, lime wedges, and your choice of warm corn or flour tortillas',
-    price: 15.49,
+    description: 'Alongside your choice of 4 Flour or Corn Tortillas',
+    price: 15.49, // Updated from PDF
     category: 'soups',
   },
   {
     id: 'pozole',
     name: 'Pozole Rojo',
     description: 'Hearty hominy and pork soup simmered in a rich red chile broth, garnished with shredded cabbage, radishes, onions, and served with tostadas, lime wedges, and warm tortillas',
-    price: 15.49,
+    price: 15.49, // Updated from PDF
     category: 'soups',
   },
   {
     id: 'ramen-birria',
     name: 'Ramen Birria',
     description: 'A fusion dish featuring ramen noodles in our rich, flavorful birria broth with tender braised beef, topped with onions, cilantro, and lime wedges',
-    price: 19.49,
+    price: 19.49, // Updated from PDF
     category: 'soups',
   },
   {
     id: 'sopa-de-papa',
     name: 'Sopa de Papa',
-    description: 'Creamy potato soup topped with crispy bacon, melted cheese, and fresh cilantro, served with warm tortillas',
-    price: 14.49,
+    description: 'Come with Potatos, Bacon, Cheese',
+    price: 14.49, // Updated from PDF
     category: 'soups',
   },
-  
+
   //breakfast burritos
   {
     id: 'potato-egg-cheese-burrito',
@@ -1259,12 +1139,12 @@ export const menuItems: MenuItem[] = [
   variants: [
     {
       name: 'Regular',
-      price: 4.75,
+      price: 4.75, // Updated from PDF
       description: 'Flour tortilla filled with scrambled eggs, crispy potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 9.00,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with double the filling, including extra cheese, potatoes, and eggs, served with a side of sour cream and salsa'
     }
   ],
@@ -1275,17 +1155,17 @@ export const menuItems: MenuItem[] = [
   id: 'egg-cheese-meat-burrito',
   name: 'Egg, Cheese & Meat Burrito',
   description: 'A hearty breakfast burrito with your choice of bacon, sausage, or chorizo, along with scrambled eggs, cheese, and potatoes',
-  price: 5.75, // Base price (will be overridden by variants)
+  price: 5.00, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 5.75,
+      price: 5.00, // Updated from PDF
       description: 'Flour tortilla filled with scrambled eggs, your choice of meat, cheese, and potatoes, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 10.00,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with double the filling, including extra meat, cheese, eggs, and potatoes, served with sour cream and salsa'
     }
   ],
@@ -1296,17 +1176,17 @@ export const menuItems: MenuItem[] = [
   id: 'egg-cheese-burrito',
   name: 'Egg & Cheese Burrito',
   description: 'A simple yet satisfying combination of fluffy scrambled eggs and melted cheese in a warm flour tortilla',
-  price: 4.75, // Base price (will be overridden by variants)
+  price: 5.45, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 5.45,
+      price: 5.45, // Updated from PDF
       description: 'Flour tortilla filled with fluffy scrambled eggs, melted cheese, and your choice of salsa, served with a side of refried beans'
     },
     {
       name: 'Deluxe',
-      price: 9.45,
+      price: 9.45, // Updated from PDF
       description: 'Extra-large burrito with double the eggs and cheese, served with sour cream, guacamole, and a side of refried beans'
     }
   ],
@@ -1316,17 +1196,17 @@ export const menuItems: MenuItem[] = [
   id: 'potato-bacon-egg-cheese-burrito',
   name: 'Bacon, Egg, Potato & Cheese Burrito',
   description: 'A hearty breakfast favorite featuring crispy bacon, scrambled eggs, golden potatoes, and melted cheese in a warm flour tortilla',
-  price: 6.25, // Base price (will be overridden by variants)
+  price: 4.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 6.25,
+      price: 4.75, // Updated from PDF
       description: 'Flour tortilla stuffed with crispy bacon, scrambled eggs, golden potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 10.50,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with double the bacon, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
@@ -1336,17 +1216,17 @@ export const menuItems: MenuItem[] = [
   id: 'chorizo-potato-egg-cheese-burrito',
   name: 'Chorizo, Egg, Potato & Cheese Burrito',
   description: 'Spicy Mexican chorizo mixed with scrambled eggs, crispy potatoes, and melted cheese in a warm flour tortilla',
-  price: 6.50, // Base price (will be overridden by variants)
+  price: 4.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 6.50,
+      price: 4.75, // Updated from PDF
       description: 'Flour tortilla filled with spicy chorizo, scrambled eggs, golden potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 10.75,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with extra chorizo, eggs, potatoes, and cheese, topped with sour cream and guacamole'
     }
   ],
@@ -1356,17 +1236,17 @@ export const menuItems: MenuItem[] = [
   id: 'sausage-potato-egg-cheese-burrito',
   name: 'Sausage, Egg, Potato & Cheese Burrito',
   description: 'Savory breakfast sausage, scrambled eggs, crispy potatoes, and melted cheese wrapped in a warm flour tortilla',
-  price: 6.25, // Base price (will be overridden by variants)
+  price: 4.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 6.25,
+      price: 4.75, // Updated from PDF
       description: 'Flour tortilla filled with savory breakfast sausage, scrambled eggs, crispy potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 10.50,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with double the sausage, eggs, potatoes, and cheese, served with sour cream and pico de gallo'
     }
   ],
@@ -1376,17 +1256,17 @@ export const menuItems: MenuItem[] = [
   id: 'ham-potato-egg-cheese-burrito',
   name: 'Ham, Egg, Potato & Cheese Burrito',
   description: 'Diced ham, scrambled eggs, golden potatoes, and melted cheese wrapped in a warm flour tortilla',
-  price: 6.25, // Base price (will be overridden by variants)
+  price: 4.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 6.25,
+      price: 4.75, // Updated from PDF
       description: 'Flour tortilla filled with diced ham, scrambled eggs, golden potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 10.50,
+      price: 9.00, // Updated from PDF
       description: 'Extra-large burrito with extra ham, eggs, potatoes, and cheese, served with sour cream and guacamole'
     }
   ],
@@ -1397,17 +1277,17 @@ export const menuItems: MenuItem[] = [
   id: 'steak-potato-egg-cheese-burrito',
   name: 'Steak, Egg, Potato & Cheese Burrito',
   description: 'Tender grilled steak, scrambled eggs, crispy potatoes, and melted cheese in a warm flour tortilla',
-  price: 8.75, // Base price (will be overridden by variants)
+  price: 8.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 8.75,
+      price: 8.75, // Updated from PDF
       description: 'Flour tortilla filled with tender grilled steak, scrambled eggs, golden potatoes, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 12.49,
+      price: 10.49, // Updated from PDF
       description: 'Extra-large burrito with double the steak, eggs, potatoes, and cheese, served with sour cream, guacamole, and pico de gallo'
     }
   ],
@@ -1417,17 +1297,17 @@ export const menuItems: MenuItem[] = [
   id: 'machaca-burrito',
   name: 'Machaca Burrito',
   description: 'Traditional shredded beef, scrambled with eggs, onions, bell peppers, and spices, wrapped in a warm flour tortilla',
-  price: 7.75, // Base price (will be overridden by variants)
+  price: 7.75, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 7.75,
+      price: 7.75, // Updated from PDF
       description: 'Flour tortilla filled with tender shredded beef, scrambled eggs, sautéed onions, bell peppers, and melted cheese, served with a side of salsa'
     },
     {
       name: 'Deluxe',
-      price: 9.50,
+      price: 9.75, // Updated from PDF
       description: 'Extra-large burrito with extra machaca, eggs, and cheese, served with sour cream, guacamole, and pico de gallo'
     }
   ],
@@ -1438,17 +1318,17 @@ export const menuItems: MenuItem[] = [
   id: 'breakfast-crispy',
   name: 'Breakfast Crispy Burrito',
   description: 'A crispy flour tortilla filled with your choice of breakfast ingredients, then grilled to perfection',
-  price: 9.49, // Base price (will be overridden by variants)
+  price: 9.49, // Base price (will be overridden by variants) - Updated from PDF
   category: 'breakfast-burritos',
   variants: [
     {
       name: 'Regular',
-      price: 9.49,
+      price: 9.49, // Updated from PDF
       description: 'Crispy flour tortilla filled with scrambled eggs, your choice of meat, potatoes, and cheese, served with a side of salsa and sour cream'
     },
     {
       name: 'Deluxe',
-      price: 11.49,
+      price: 11.49, // Updated from PDF
       description: 'Extra-large crispy burrito with double the fillings, served with sour cream, guacamole, and pico de gallo'
     }
   ],
