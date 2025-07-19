@@ -19,24 +19,28 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      const supabase = createClient();
-      
-      // Get the site URL from environment or use window.location.origin as fallback
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-      
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${siteUrl}/auth/update-password`,
+      // Use our custom API endpoint instead of Supabase's built-in method
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
 
-      setMessage('If an account with that email exists, you will receive a password reset link');
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send password reset email');
+      }
+
+      setMessage(data.message || 'If an account with that email exists, you will receive a password reset link');
     } catch (err) {
       console.error('Password reset error:', err);
-      
+
       // Check if this is a rate limit error
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      
+
       if (errorMessage.includes('rate limit') || errorMessage.includes('429')) {
         setError('Too many password reset attempts. Please try again later.');
       } else {
@@ -104,7 +108,7 @@ export default function ForgotPassword() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900"
                 />
               </div>
             </div>

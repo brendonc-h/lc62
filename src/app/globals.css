@@ -10,6 +10,11 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight;
   }
+
+  /* Ensure all form inputs have visible text */
+  input, textarea, select {
+    @apply text-gray-900;
+  }
 }
 
 @layer components {

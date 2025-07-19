@@ -117,7 +117,7 @@ export default function ComboSelector({ comboType, onComboComplete }: ComboSelec
               id="combo-item"
               value={currentItem}
               onChange={(e) => setCurrentItem(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-900"
             >
               <option value="">Select an item...</option>
               {comboOptions.map((option) => (
@@ -140,7 +140,7 @@ export default function ComboSelector({ comboType, onComboComplete }: ComboSelec
               id="meat-option"
               value={currentMeat}
               onChange={(e) => setCurrentMeat(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-gray-900"
             >
               <option value="">Select meat...</option>
               {meatOptions.map((option) => (

@@ -32,9 +32,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Look up user in Supabase
+    // Look up user in Supabase customers table
     const { data: user, error: userError } = await supabase
-      .from('users')
+      .from('customers')
       .select('*')
       .eq('email', email.toLowerCase())
       .single();
@@ -57,15 +57,15 @@ export async function POST(request: Request) {
     // Store the token in Supabase
     console.log('Storing reset token in Supabase...');
     const { error: tokenError } = await supabase
-      .from('passwordResetTokens')
+      .from('password_reset_tokens')
       .insert([
         {
           token,
-          userId: user.id ?? user.userId ?? user._id,
+          customer_id: user.id,
           email: user.email,
           expires: expires.toISOString(),
           used: false,
-          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         },
       ]);
 

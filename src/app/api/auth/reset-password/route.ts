@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     // Find the token in Supabase
     const { data: resetToken, error: tokenError } = await supabase
-      .from('passwordResetTokens')
+      .from('password_reset_tokens')
       .select('*')
       .eq('token', token)
       .gt('expires', new Date().toISOString())
@@ -34,9 +34,9 @@ export async function POST(request: Request) {
     // Update the user's password in Supabase
     const hashedPassword = await hash(password, 12);
     const { error: userUpdateError } = await supabase
-      .from('users')
-      .update({ password: hashedPassword, updatedAt: new Date().toISOString() })
-      .eq('id', resetToken.userId);
+      .from('customers')
+      .update({ password: hashedPassword, updated_at: new Date().toISOString() })
+      .eq('id', resetToken.customer_id);
 
     if (userUpdateError) {
       return NextResponse.json(
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
     // Mark the token as used in Supabase
     const { error: tokenUpdateError } = await supabase
-      .from('passwordResetTokens')
+      .from('password_reset_tokens')
       .update({ used: true })
       .eq('token', token);
 

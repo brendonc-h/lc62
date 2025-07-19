@@ -114,7 +114,7 @@ export default function ContactPage() {
                   type="text"
                   name="name"
                   id="name"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-gray-900"
                 />
               </div>
               <div>
@@ -125,7 +125,7 @@ export default function ContactPage() {
                   type="email"
                   name="email"
                   id="email"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-gray-900"
                 />
               </div>
               <div>
@@ -136,7 +136,7 @@ export default function ContactPage() {
                   type="tel"
                   name="phone"
                   id="phone"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-gray-900"
                 />
               </div>
               <div>
@@ -147,7 +147,7 @@ export default function ContactPage() {
                   name="message"
                   id="message"
                   rows={4}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-gray-900"
                 ></textarea>
               </div>
               <div>

@@ -395,7 +395,7 @@ export default function CheckoutPage() {
                         required
                         value={customerInfo.name}
                         onChange={handleInputChange}
-                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 text-gray-900 ${
                           formErrors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         placeholder="Your full name"
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                         value={customerInfo.email}
                         onChange={handleInputChange}
                         required
-                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 text-gray-900 ${
                           formErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         placeholder="you@example.com"
@@ -441,7 +441,7 @@ export default function CheckoutPage() {
                         value={customerInfo.phone}
                         onChange={handleInputChange}
                         required
-                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 ${
+                        className={`block w-full rounded-md shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 text-gray-900 ${
                           formErrors.phone ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         placeholder="(555) 555-5555"
@@ -462,7 +462,7 @@ export default function CheckoutPage() {
                       value={customerInfo.specialInstructions || ''}
                       onChange={handleInputChange}
                       rows={3}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm px-4 py-3 text-gray-900"
                       placeholder="Any special requests or notes for your order?"
                     />
                   </div>
