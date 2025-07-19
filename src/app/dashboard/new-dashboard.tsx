@@ -373,7 +373,7 @@ export default function Dashboard() {
                           {new Date(order.created_at).toLocaleString()}
                         </td>
                         <td className="px-4 py-4 text-sm font-medium text-gray-900 text-right">
-                          ${(order.total || 0).toFixed(2)}
+                          ${(order.total && typeof order.total === 'number') ? order.total.toFixed(2) : '0.00'}
                         </td>
                       </tr>
                     ))}

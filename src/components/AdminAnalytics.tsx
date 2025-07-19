@@ -114,7 +114,7 @@ export default function AdminAnalytics() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h4 className="text-sm text-gray-500">Total Sales</h4>
-          <p className="text-3xl font-bold">${totalSales.toFixed(2)}</p>
+          <p className="text-3xl font-bold">${typeof totalSales === 'number' ? totalSales.toFixed(2) : '0.00'}</p>
         </div>
       </div>
 

@@ -78,13 +78,13 @@ export default function OrdersPage() {
         const formattedOrders: Order[] = (ordersData as unknown as SupabaseOrderData[] || []).map(order => {
           const items: OrderItem[] = (order.order_items || []).map(item => ({
             name: item.menu_item?.[0]?.name || 'Unknown Item',
-            quantity: item.quantity,
-            price_each: item.price_each
+            quantity: item.quantity || 0,
+            price_each: item.price_each || 0
           }));
-          
+
           return {
             id: order.id,
-            total_price: order.total_price,
+            total_price: order.total_price || 0,
             status: order.status,
             created_at: order.created_at,
             estimated_ready_time: order.estimated_ready_time,
@@ -233,7 +233,9 @@ export default function OrdersPage() {
                                 </span>
                               </div>
                               <div className="ml-4 flex-shrink-0">
-                                ${(item.quantity * item.price_each).toFixed(2)}
+                                ${(item.quantity && item.price_each && typeof item.price_each === 'number')
+                                  ? (item.quantity * item.price_each).toFixed(2)
+                                  : '0.00'}
                               </div>
                             </li>
                           ))}
@@ -243,7 +245,9 @@ export default function OrdersPage() {
                     <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                       <dt className="text-sm font-medium text-gray-500">Total amount</dt>
                       <dd className="mt-1 text-sm font-semibold text-gray-900 sm:mt-0 sm:col-span-2">
-                        ${order.total_price.toFixed(2)}
+                        ${(order.total_price && typeof order.total_price === 'number')
+                          ? order.total_price.toFixed(2)
+                          : '0.00'}
                       </dd>
                     </div>
                   </dl>

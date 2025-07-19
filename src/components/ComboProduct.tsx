@@ -104,7 +104,8 @@ export default function ComboProduct({ product, comboType }: ComboProductProps) 
           <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
           <p className="text-gray-700 mb-2">{product.description}</p>
           <p className="text-xl font-bold text-green-700 mb-4">
-            ${product.variants?.[0]?.price.toFixed(2) || product.price.toFixed(2)}
+            ${(typeof product.variants?.[0]?.price === 'number' ? product.variants[0].price.toFixed(2) : '') || 
+              (typeof product.price === 'number' ? product.price.toFixed(2) : '0.00')}
           </p>
           
           {/* Quantity Selector */}

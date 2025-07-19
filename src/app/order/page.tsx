@@ -284,7 +284,7 @@ export default function OrderPage() {
                 </span>
               )}
             </div>
-            <span>View Cart {cartTotal !== undefined ? `- $${cartTotal.toFixed(2)}` : ''}</span>
+            <span>View Cart {(cartTotal !== undefined && typeof cartTotal === 'number') ? `- $${cartTotal.toFixed(2)}` : ''}</span>
           </Link>
         </div>
 
@@ -341,7 +341,7 @@ export default function OrderPage() {
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h4 className="text-lg font-bold text-gray-900">Customize Your {item.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">Select 3 different items with your preferred meat choices - ${item.price ? item.price.toFixed(2) : '0.00'}</p>
+                          <p className="text-sm text-gray-600 mt-1">Select 3 different items with your preferred meat choices - ${(item.price && typeof item.price === 'number') ? item.price.toFixed(2) : '0.00'}</p>
                         </div>
                         <div className="text-right">
                           <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">

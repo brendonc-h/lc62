@@ -237,7 +237,21 @@ export default function KitchenDashboard() {
     return true;
   });
 
-  const locations = ['Fort Collins', 'Berthoud'];
+  // Get unique locations from actual orders data
+  const getUniqueLocations = () => {
+    const locationSet = new Set<string>();
+    // Add safety check for orders array
+    if (orders && Array.isArray(orders)) {
+      orders.forEach(order => {
+        if (order.location && order.location !== 'Unknown') {
+          locationSet.add(order.location);
+        }
+      });
+    }
+    return Array.from(locationSet).sort();
+  };
+
+  const locations = getUniqueLocations().length > 0 ? getUniqueLocations() : ['Fort Collins', 'Berthoud'];
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 lg:p-6">
@@ -362,14 +376,16 @@ export default function KitchenDashboard() {
                     {order.items.map((item, index) => (
                       <div key={index} className="flex justify-between text-sm">
                         <span>{item.quantity}x {item.name}</span>
-                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        <span>${(item.price && item.quantity && typeof item.price === 'number')
+                          ? (item.price * item.quantity).toFixed(2)
+                          : '0.00'}</span>
                       </div>
                     ))}
                   </div>
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between font-semibold">
                       <span>Total:</span>
-                      <span>${order.total.toFixed(2)}</span>
+                      <span>${(order.total && typeof order.total === 'number') ? order.total.toFixed(2) : '0.00'}</span>
                     </div>
                   </div>
                 </div>

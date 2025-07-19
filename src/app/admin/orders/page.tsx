@@ -123,22 +123,26 @@ export default function AdminOrdersPage() {
   // Function to get all available locations from orders
   const getLocations = () => {
     const locations = new Set<string>();
-    orders.forEach(order => {
-      if (order.items && order.items.length > 0 && order.items[0].location) {
-        locations.add(order.items[0].location);
-      }
-    });
-    return Array.from(locations);
+    // Add safety check for orders array
+    if (orders && Array.isArray(orders)) {
+      orders.forEach(order => {
+        // Use order.location if available, otherwise fall back to item location
+        const location = order.location || (order.items && order.items.length > 0 && order.items[0].location);
+        if (location && location !== 'Unknown') {
+          locations.add(location);
+        }
+      });
+    }
+    return Array.from(locations).sort();
   };
 
   // Filter orders by location if filter is active
   const filteredOrders = locationFilter
-    ? orders.filter(order => 
-        order.items && 
-        order.items.length > 0 && 
-        order.items[0].location === locationFilter
-      )
-    : orders;
+    ? (orders || []).filter(order => {
+        const location = order.location || (order.items && order.items.length > 0 && order.items[0].location);
+        return location === locationFilter;
+      })
+    : (orders || []);
 
   useEffect(() => {
     // Fetch orders from API with proper error handling
@@ -160,9 +164,10 @@ export default function AdminOrdersPage() {
         if (!response.ok) throw new Error('Failed to fetch orders');
         
         const data = await response.json();
-        setOrders(data);
+        setOrders(data.orders || []);
       } catch (error) {
         console.error('Error fetching orders:', error);
+        setOrders([]); // Ensure orders is always an array
       } finally {
         setLoading(false);
       }
@@ -224,6 +229,10 @@ export default function AdminOrdersPage() {
         {loading ? (
           <div className="mt-8 flex justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        ) : !orders || orders.length === 0 ? (
+          <div className="mt-8 text-center">
+            <p className="text-gray-500">No orders found.</p>
           </div>
         ) : (
           <div className="mt-8 flow-root">

@@ -356,7 +356,9 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                       <p className="text-sm font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ${(item.price && item.quantity && typeof item.price === 'number')
+                          ? (item.price * item.quantity).toFixed(2)
+                          : '0.00'}
                       </p>
                     </div>
                   ))}
@@ -364,15 +366,15 @@ export default function CheckoutPage() {
                 <div className="mt-6 space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
                     <p>Subtotal</p>
-                    <p>${state.subtotal.toFixed(2)}</p>
+                    <p>${(state.subtotal && typeof state.subtotal === 'number') ? state.subtotal.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <p>Tax</p>
-                    <p>${state.tax.toFixed(2)}</p>
+                    <p>${(state.tax && typeof state.tax === 'number') ? state.tax.toFixed(2) : '0.00'}</p>
                   </div>
                   <div className="flex justify-between text-base font-medium text-gray-900">
                     <p>Total</p>
-                    <p>${state.total.toFixed(2)}</p>
+                    <p>${(state.total && typeof state.total === 'number') ? state.total.toFixed(2) : '0.00'}</p>
                   </div>
                 </div>
               </div>

@@ -202,7 +202,7 @@ export default function SquarePaymentForm({
           disabled={!isInitialized || isProcessing}
           className="w-full bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isProcessing ? 'Processing...' : `Pay $${orderDetails.total.toFixed(2)}`}
+          {isProcessing ? 'Processing...' : `Pay $${typeof orderDetails?.total === 'number' ? orderDetails.total.toFixed(2) : '0.00'}`}
         </button>
       </div>
     </div>

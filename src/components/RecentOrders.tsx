@@ -147,7 +147,7 @@ export function RecentOrders() {
                 <div className="mt-2 sm:flex sm:justify-between">
                   <div className="sm:flex">
                     <p className="flex items-center text-sm text-gray-500">
-                      ${order.total_price.toFixed(2)}
+                      ${(order.total_price && typeof order.total_price === 'number') ? order.total_price.toFixed(2) : '0.00'}
                     </p>
                   </div>
                   <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">

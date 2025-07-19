@@ -499,7 +499,7 @@ const handleAddComboToCart = (menuItem: MenuItem) => {
                             )}
                           </div>
                           <p className="text-2xl font-bold text-red-600 ml-4 whitespace-nowrap">
-                            ${getVariantPrice(item).toFixed(2)}
+                            ${(getVariantPrice(item) && typeof getVariantPrice(item) === 'number') ? getVariantPrice(item).toFixed(2) : '0.00'}
                           </p>
                         </div>
                         
