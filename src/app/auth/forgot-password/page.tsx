@@ -19,22 +19,23 @@ export default function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      // Use our custom API endpoint instead of Supabase's built-in method
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+      // Use Supabase's built-in password reset for now (simpler and more reliable)
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send password reset email');
+      if (error) {
+        // If Supabase email isn't configured, show a helpful message
+        if (error.message.includes('SMTP') || error.message.includes('email')) {
+          setMessage('Password reset functionality is currently being configured. Please contact support at info@lacasita.io for assistance.');
+        } else {
+          throw error;
+        }
+      } else {
+        setMessage('If an account with that email exists, you will receive a password reset link');
       }
-
-      setMessage(data.message || 'If an account with that email exists, you will receive a password reset link');
     } catch (err) {
       console.error('Password reset error:', err);
 

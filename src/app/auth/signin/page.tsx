@@ -2,8 +2,9 @@
 
 import { useState, Suspense, useEffect } from 'react';
 import { createClient } from '@/lib/supabaseClient';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { HydrationSafeWrapper } from '@/components/HydrationSafeWrapper';
 
 function SignInContent() {
   const [email, setEmail] = useState('');
@@ -11,11 +12,17 @@ function SignInContent() {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/menu';
-  const verified = searchParams.get('verified') === 'true';
-  
+
+  // Fix hydration issue by only accessing searchParams after mount
+  const callbackUrl = mounted ? (searchParams.get('callbackUrl') || '/menu') : '/menu';
+  const verified = mounted ? (searchParams.get('verified') === 'true') : false;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (verified) {
       setSuccessMessage('Your email has been verified! Please sign in with your credentials.');
@@ -82,15 +89,13 @@ function SignInContent() {
     
     try {
       const supabase = createClient();
-      // Get the site URL from environment or fallback to window.location.origin
-      const siteUrl = typeof window !== 'undefined' 
-        ? window.location.origin 
-        : (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io');
+      // Get the site URL - use production URL to avoid DNS issues
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io';
         
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${siteUrl}/auth/callback?provider=google&callbackUrl=${encodeURIComponent(callbackUrl)}`,
+          redirectTo: `${siteUrl}/auth/callback?callbackUrl=${encodeURIComponent(callbackUrl)}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -239,7 +244,7 @@ function SignInContent() {
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || !mounted}
               />
             </div>
             <div>
@@ -254,7 +259,7 @@ function SignInContent() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || !mounted}
               />
             </div>
           </div>
@@ -320,12 +325,14 @@ function SignInContent() {
 
 export default function SignIn() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    }>
-      <SignInContent />
-    </Suspense>
+    <HydrationSafeWrapper>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      }>
+        <SignInContent />
+      </Suspense>
+    </HydrationSafeWrapper>
   );
 }
