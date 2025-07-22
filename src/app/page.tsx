@@ -7,14 +7,18 @@ import { ChefHat, Users, Smartphone, Star, Clock, MapPin, Phone } from 'lucide-r
 import { createClient } from '../lib/supabaseClient';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import DineInSpecialsPopup, { useDineInSpecialsPopup } from '@/components/DineInSpecialsPopup';
 
 export default function Home() {
-  
+
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  // Dine-in specials popup
+  const { isOpen: isPopupOpen, closePopup } = useDineInSpecialsPopup();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
@@ -51,16 +55,23 @@ export default function Home() {
       <main>
         {/* Hero Section with Gradient Background */}
         <div className="relative h-screen flex items-center justify-center pt-16 overflow-hidden">
-          {/* Background Image */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${backgrounds[currentBgIndex].image})` }}
-          />
+          {/* Background Images with Smooth Transitions */}
+          {backgrounds.map((bg, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out ${
+                index === currentBgIndex
+                  ? 'opacity-100 scale-100'
+                  : 'opacity-0 scale-105'
+              }`}
+              style={{ backgroundImage: `url(${bg.image})` }}
+            />
+          ))}
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-black bg-opacity-50" />
-          
-          {/* Location Badge */}
-          <div className="absolute top-5 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg">
+
+          {/* Location Badge with Smooth Transition */}
+          <div className="absolute top-5 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg transition-all duration-500 ease-in-out transform">
             {backgrounds[currentBgIndex].location} Location
           </div>
           
@@ -75,7 +86,7 @@ export default function Home() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/menu"
+                href="/order"
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
               >
                 Order Now
@@ -91,6 +102,37 @@ export default function Home() {
         </div>
 
       </main>
+
+      {/* Breakfast All Day Banner */}
+      <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-500 to-red-500">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 shadow-2xl">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                <span className="text-2xl font-bold text-white">B</span>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                <span className="text-2xl font-bold text-white">A</span>
+              </div>
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="text-2xl font-bold text-white">D</span>
+              </div>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+              Breakfast All Day!
+            </h2>
+            <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
+              Start your morning right with our delicious breakfast burritos, huevos rancheros, and traditional Mexican breakfast favorites - available anytime!
+            </p>
+            <Link
+              href="/menu?category=breakfast-burritos"
+              className="inline-flex items-center bg-white text-orange-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              View Breakfast Menu
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Food Gallery Section */}
       <section className="relative py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-amber-50 to-orange-100">
@@ -306,6 +348,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Dine-In Specials Popup */}
+      <DineInSpecialsPopup isOpen={isPopupOpen} onClose={closePopup} />
     </div>
   );
 }

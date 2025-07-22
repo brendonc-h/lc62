@@ -85,9 +85,12 @@ function AuthCallbackContent() {
         const type = searchParams?.get('type') || '';
         const provider = searchParams?.get('provider') || '';
         const callbackUrl = searchParams?.get('callbackUrl') || '/';
+
+        // Debug logging
+        console.log('Auth callback params:', { code: !!code, token: !!token, type, provider, callbackUrl });
         
-        // For OAuth providers (like Google) - handle both with and without provider param
-        if (code && (provider || type === 'oauth' || !type)) {
+        // For OAuth providers (like Google) - handle OAuth callbacks
+        if (code && (provider || type !== 'signup')) {
           setMessage(`${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'OAuth'} sign-in processing...`);
 
           // Exchange the code for a session
@@ -104,13 +107,11 @@ function AuthCallbackContent() {
 
             setMessage('Sign in successful! Redirecting you...');
 
-            // Get base URL from window or environment
-            const baseUrl = typeof window !== 'undefined' 
-              ? window.location.origin 
-              : (process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io');
+            // Use production URL consistently
+            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io';
 
             // Determine the redirect URL
-            const redirectUrl = callbackUrl && callbackUrl !== '/' 
+            const redirectUrl = callbackUrl && callbackUrl !== '/'
               ? (callbackUrl.startsWith('http') ? callbackUrl : `${baseUrl}${callbackUrl}`)
               : `${baseUrl}/menu`;
 
@@ -175,9 +176,30 @@ function AuthCallbackContent() {
           const resetUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/update-password?code=${code}`;
           window.location.href = resetUrl;
         }
-        // For other types or missing code/token
+        // For other cases - check if user is already signed in
         else {
-          throw new Error('Invalid or missing parameters');
+          console.log('No specific auth flow detected, checking current session...');
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session && session.user) {
+            // User is already signed in, redirect to menu
+            setMessage('Already signed in! Redirecting you...');
+            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io';
+            const redirectUrl = callbackUrl && callbackUrl !== '/'
+              ? (callbackUrl.startsWith('http') ? callbackUrl : `${baseUrl}${callbackUrl}`)
+              : `${baseUrl}/menu`;
+
+            setTimeout(() => {
+              window.location.href = redirectUrl;
+            }, 1000);
+          } else {
+            // No session and no valid params, redirect to sign in
+            setMessage('Redirecting to sign in...');
+            setTimeout(() => {
+              const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/signin`;
+              window.location.href = signinUrl;
+            }, 1000);
+          }
         }
       } catch (err) {
         console.error('Auth callback error:', err);

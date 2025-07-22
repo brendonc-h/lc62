@@ -38,7 +38,7 @@ export const categories: MenuCategory[] = [
     id: 'appetizers',
     name: 'Appetizers',
     description: 'Start your meal with our delicious appetizers',
-    emoji: '🥨',
+    emoji: '🫓',
     color: 'from-orange-400 to-red-500',
   },
   {
