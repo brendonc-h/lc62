@@ -6,22 +6,26 @@ import Link from 'next/link';
 import { ChefHat, Users, Smartphone, Star, Clock, MapPin, Phone } from 'lucide-react';
 import { createClient } from '../lib/supabaseClient';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
-import { useRouter } from 'next/navigation';
+
 import DineInSpecialsPopup, { useDineInSpecialsPopup } from '@/components/DineInSpecialsPopup';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function Home() {
 
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter();
   const supabase = createClient();
 
   // Dine-in specials popup
   const { isOpen: isPopupOpen, closePopup } = useDineInSpecialsPopup();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+    let mounted = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      if (!mounted) return; // Prevent state updates on unmounted component
+
       if (session?.user) {
         setUser(session.user);
         setIsLoggedIn(true);
@@ -32,6 +36,7 @@ export default function Home() {
     });
 
     return () => {
+      mounted = false;
       subscription?.unsubscribe();
     };
   }, [supabase.auth]);
@@ -44,14 +49,22 @@ export default function Home() {
 
   // Change background image every 8 seconds
   useEffect(() => {
+    let mounted = true;
+
     const interval = setInterval(() => {
-      setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgrounds.length);
+      if (mounted) {
+        setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgrounds.length);
+      }
     }, 8000);
-    return () => clearInterval(interval);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, [backgrounds.length]);
 
   return (
-    <div className="min-h-screen">
+    <ErrorBoundary>
+      <div className="min-h-screen">
       <main>
         {/* Hero Section with Gradient Background */}
         <div className="relative h-screen flex items-center justify-center pt-16 overflow-hidden">
@@ -351,6 +364,7 @@ export default function Home() {
 
       {/* Dine-In Specials Popup */}
       <DineInSpecialsPopup isOpen={isPopupOpen} onClose={closePopup} />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
