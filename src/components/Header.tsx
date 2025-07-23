@@ -6,7 +6,7 @@ import { ShoppingCartIcon } from '@heroicons/react/24/solid';
 import { Dialog } from '@headlessui/react';
 import { useCart } from '@/lib/cart-context';
 import { buttonStyles } from '@/lib/button-styles';
-import ThemeToggle from './ThemeToggle';
+
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -22,7 +22,7 @@ export default function Header() {
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm dark:shadow-gray-800">
+    <header className="bg-white shadow-sm">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
@@ -35,12 +35,12 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 transform hover:scale-105"
+                className="text-sm font-semibold text-gray-800 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 transform hover:scale-105"
               >
                 {item.name}
               </Link>
             ))}
-            <ThemeToggle />
+
             <Link
               href="/checkout"
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"

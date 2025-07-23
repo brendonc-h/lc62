@@ -2,7 +2,7 @@
 
 import Navbar from '@/components/Navbar';
 import { CartProvider } from '@/lib/cart-context';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+
 import { usePathname } from 'next/navigation';
 
 // Client component for path-aware layout
@@ -20,10 +20,8 @@ function PageLayout({ children }: { children: React.ReactNode }) {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <CartProvider>
-        <PageLayout>{children}</PageLayout>
-      </CartProvider>
-    </ThemeProvider>
+    <CartProvider>
+      <PageLayout>{children}</PageLayout>
+    </CartProvider>
   );
 }
