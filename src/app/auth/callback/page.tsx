@@ -98,34 +98,36 @@ function AuthCallbackContent() {
         
         // For successful email confirmation with Supabase code (check this first)
         if (type === 'signup' && code) {
-          setMessage('Email verification processing...');
+          setMessage(`${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'OAuth'} sign-in processing...`);
 
           // Exchange the code for a session
           const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
           if (error) {
+            console.error('OAuth session exchange error:', error);
             throw new Error(error.message);
           }
 
-          // Success - redirect to dashboard or signin
-          setMessage('Email verified successfully! Redirecting you...');
-
-          // Check if user is signed in after exchange
           if (data.session && data.user) {
-            // Ensure customer record exists
+            // Ensure the user has a customer record
             await ensureCustomerRecord(supabase, data.user);
+
+            setMessage('Sign in successful! Redirecting you...');
+
+            // Use production URL consistently
             const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io';
+
+            // Determine the redirect URL
             const redirectUrl = callbackUrl && callbackUrl !== '/'
               ? (callbackUrl.startsWith('http') ? callbackUrl : `${baseUrl}${callbackUrl}`)
               : `${baseUrl}/menu`;
 
+            // Redirect after a short delay
             setTimeout(() => {
               window.location.href = redirectUrl;
             }, 500);
           } else {
-            // No session after exchange, redirect to signin with verified flag
-            const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/signin?verified=true`;
-            window.location.href = signinUrl;
+            throw new Error('Failed to get user session');
           }
         }
         // For OAuth providers (like Google) - handle any other callback with a code
@@ -137,24 +139,18 @@ function AuthCallbackContent() {
             throw new Error(error.message);
           }
           
-          // Success - OAuth sign in
-          setMessage(`${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : 'OAuth'} sign in successful! Redirecting you...`);
+          // Success - redirect to dashboard or signin
+          setMessage('Email verified successfully! Redirecting you...');
           
           // Check if user is signed in after exchange
           if (data.session && data.user) {
             // Ensure customer record exists
             await ensureCustomerRecord(supabase, data.user);
-
-            const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io';
-            const redirectUrl = callbackUrl && callbackUrl !== '/'
-              ? (callbackUrl.startsWith('http') ? callbackUrl : `${baseUrl}${callbackUrl}`)
-              : `${baseUrl}/menu`;
-
-            setTimeout(() => {
-              window.location.href = redirectUrl;
-            }, 500);
+            const redirectUrl = callbackUrl.startsWith('http') ? callbackUrl : `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}${callbackUrl}`;
+            window.location.href = redirectUrl;
           } else {
-            throw new Error('Failed to get user session after OAuth');
+            const signinUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://lacasita.io'}/auth/signin?verified=true`;
+            window.location.href = signinUrl;
           }
         } 
         // For our custom verification token

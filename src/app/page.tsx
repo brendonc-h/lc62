@@ -84,7 +84,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black bg-opacity-50" />
 
           {/* Location Badge with Smooth Transition */}
-          <div className="absolute top-20 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg transition-all duration-500 ease-in-out transform">
+          <div className="absolute top-5 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg transition-all duration-500 ease-in-out transform">
             {backgrounds[currentBgIndex].location} Location
           </div>
           
