@@ -18,26 +18,26 @@ export const locationHours: LocationHours[] = [
     locationId: 'berthoud',
     name: 'Berthoud',
     hours: [
-      { dayOfWeek: 0, openTime: '11:00', closeTime: '20:00' }, // Sunday
-      { dayOfWeek: 1, openTime: '11:00', closeTime: '21:00' }, // Monday
-      { dayOfWeek: 2, openTime: '11:00', closeTime: '21:00' }, // Tuesday
-      { dayOfWeek: 3, openTime: '11:00', closeTime: '21:00' }, // Wednesday
-      { dayOfWeek: 4, openTime: '11:00', closeTime: '21:00' }, // Thursday
-      { dayOfWeek: 5, openTime: '11:00', closeTime: '22:00' }, // Friday
-      { dayOfWeek: 6, openTime: '11:00', closeTime: '22:00' }, // Saturday
+      { dayOfWeek: 0, openTime: 'CLOSED', closeTime: 'CLOSED' }, // Sunday - Closed
+      { dayOfWeek: 1, openTime: '07:30', closeTime: '20:00' }, // Monday
+      { dayOfWeek: 2, openTime: '07:30', closeTime: '20:00' }, // Tuesday
+      { dayOfWeek: 3, openTime: '07:30', closeTime: '20:00' }, // Wednesday
+      { dayOfWeek: 4, openTime: '07:30', closeTime: '20:00' }, // Thursday
+      { dayOfWeek: 5, openTime: '07:30', closeTime: '20:00' }, // Friday
+      { dayOfWeek: 6, openTime: '07:30', closeTime: '14:00' }, // Saturday - 2 PM
     ]
   },
   {
     locationId: 'fortcollins',
     name: 'Fort Collins',
     hours: [
-      { dayOfWeek: 0, openTime: '11:00', closeTime: '20:00' }, // Sunday
-      { dayOfWeek: 1, openTime: '11:00', closeTime: '21:00' }, // Monday
-      { dayOfWeek: 2, openTime: '11:00', closeTime: '21:00' }, // Tuesday
-      { dayOfWeek: 3, openTime: '11:00', closeTime: '21:00' }, // Wednesday
-      { dayOfWeek: 4, openTime: '11:00', closeTime: '21:00' }, // Thursday
-      { dayOfWeek: 5, openTime: '11:00', closeTime: '22:00' }, // Friday
-      { dayOfWeek: 6, openTime: '11:00', closeTime: '22:00' }, // Saturday
+      { dayOfWeek: 0, openTime: 'CLOSED', closeTime: 'CLOSED' }, // Sunday - Closed
+      { dayOfWeek: 1, openTime: '07:00', closeTime: '20:00' }, // Monday
+      { dayOfWeek: 2, openTime: '07:00', closeTime: '20:00' }, // Tuesday
+      { dayOfWeek: 3, openTime: '07:00', closeTime: '20:00' }, // Wednesday
+      { dayOfWeek: 4, openTime: '07:00', closeTime: '20:00' }, // Thursday
+      { dayOfWeek: 5, openTime: '07:00', closeTime: '20:00' }, // Friday
+      { dayOfWeek: 6, openTime: '07:00', closeTime: '14:00' }, // Saturday - 2 PM
     ]
   },
 ];

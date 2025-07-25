@@ -24,24 +24,44 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Hours</h3>
-            <ul className="text-gray-300 space-y-2">
-              <li>Monday - Thursday: 11am - 9pm</li>
-              <li>Friday - Saturday: 11am - 10pm</li>
-              <li>Sunday: 12pm - 8pm</li>
-            </ul>
+            <div className="text-gray-300 space-y-3">
+              <div>
+                <p className="font-medium text-white">Berthoud:</p>
+                <ul className="space-y-1 text-sm">
+                  <li>Mon-Fri: 7:30 AM - 8 PM</li>
+                  <li>Saturday: 7:30 AM - 2 PM</li>
+                  <li>Sunday: Closed</li>
+                </ul>
+              </div>
+              <div>
+                <p className="font-medium text-white">Fort Collins:</p>
+                <ul className="space-y-1 text-sm">
+                  <li>Mon-Fri: 7 AM - 8 PM</li>
+                  <li>Saturday: 7 AM - 2 PM</li>
+                  <li>Sunday: Closed</li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Locations</h3>
-            <ul className="text-gray-300 space-y-2">
-              <li><span className="font-medium">Berthoud:</span> 950 Mountain Ave</li>
-              <li>Berthoud, CO 80513</li>
-              <li><span className="font-medium">Fort Collins:</span> 2909 E Harmony Rd</li>
-              <li>Fort Collins, CO 80528</li>
-              <li>(970) 555-1234</li>
-              <li>Berthoud: <a href="mailto:berthoud@lacasita.io" className="hover:text-red-400 transition-colors">berthoud@lacasita.io</a></li>
-              <li>Fort Collins: <a href="mailto:fortcollins@lacasita.io" className="hover:text-red-400 transition-colors">fortcollins@lacasita.io</a></li>
-              <li>General: <a href="mailto:info@lacasita.io" className="hover:text-red-400 transition-colors">info@lacasita.io</a></li>
-            </ul>
+            <div className="text-gray-300 space-y-4">
+              <div>
+                <p className="font-medium text-white">Berthoud</p>
+                <p className="text-sm">405 5th St</p>
+                <p className="text-sm">Berthoud, CO 80513</p>
+                <p className="text-sm">(970) 344-6448</p>
+                <p className="text-sm">
+                  <span className="font-medium">Service:</span> Outdoor seating, Kids' menu, Dogs allowed outside
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-white">Fort Collins</p>
+                <p className="text-sm">1720 W Mulberry St</p>
+                <p className="text-sm">Fort Collins, CO 80521</p>
+                <p className="text-sm">(970) 568-8363</p>
+              </div>
+            </div>
           </div>
         </div>
         <div className="mt-8 border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">

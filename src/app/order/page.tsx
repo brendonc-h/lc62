@@ -49,6 +49,12 @@ export default function OrderPage() {
   const [specialRequests, setSpecialRequests] = useState<{[key: string]: string}>({});
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [selectedCombos, setSelectedCombos] = useState<{[key: string]: ComboItem[]}>({});
+  const [noTortillaOptions, setNoTortillaOptions] = useState<{[key: string]: boolean}>({});
+  const [greenChileOptions, setGreenChileOptions] = useState<{[key: string]: string}>({});
+  const [addSteakOptions, setAddSteakOptions] = useState<{[key: string]: boolean}>({});
+  const [sauceTypeOptions, setSauceTypeOptions] = useState<{[key: string]: string}>({});
+  const [addChorizoOptions, setAddChorizoOptions] = useState<{[key: string]: boolean}>({});
+  const [meatChoiceOptions, setMeatChoiceOptions] = useState<{[key: string]: string}>({});
   const orderingAllowed = isOrderingAllowed('berthoud');
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
     // Initialize all categories as collapsed by default
@@ -187,11 +193,49 @@ export default function OrderPage() {
     }
     
     const quantity = quantities[item.id] || 1;
-    const specialRequest = specialRequests[item.id] || '';
+    let specialRequest = specialRequests[item.id] || '';
+
+    // Add selected options to special request
+    const options = [];
+    if (noTortillaOptions[item.id]) {
+      options.push('No Tortilla');
+    }
+    if (greenChileOptions[item.id]) {
+      options.push(`Green Chile: ${greenChileOptions[item.id]}`);
+    }
+    if (addSteakOptions[item.id]) {
+      options.push('Add Steak (+$2.00)');
+    }
+    if (sauceTypeOptions[item.id]) {
+      options.push(`${sauceTypeOptions[item.id]} Sauce`);
+    }
+    if (addChorizoOptions[item.id]) {
+      options.push('Add Chorizo (+$1.99)');
+    }
+    if (meatChoiceOptions[item.id]) {
+      options.push(`Add ${meatChoiceOptions[item.id]} (+$2.00)`);
+    }
+
+    if (options.length > 0) {
+      specialRequest = options.join(', ') + (specialRequest ? ` | ${specialRequest}` : '');
+    }
+
+    // Calculate price with add-ons
+    let finalPrice = item.price;
+    if (addSteakOptions[item.id]) {
+      finalPrice += 2.00;
+    }
+    if (addChorizoOptions[item.id]) {
+      finalPrice += 1.99;
+    }
+    if (meatChoiceOptions[item.id]) {
+      finalPrice += 2.00;
+    }
+
     const cartItem: CartItem = {
       id: item.id,
       name: item.name,
-      price: item.price,
+      price: finalPrice,
       quantity: quantity,
       image: item.image || '/lacasitalogo.jpg',
       specialRequest: specialRequest,
@@ -204,8 +248,14 @@ export default function OrderPage() {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
 
-    // Reset quantity after adding to cart
+    // Reset quantity and options after adding to cart
     setQuantities((prev) => ({ ...prev, [item.id]: 1 }));
+    setNoTortillaOptions((prev) => ({ ...prev, [item.id]: false }));
+    setGreenChileOptions((prev) => ({ ...prev, [item.id]: '' }));
+    setAddSteakOptions((prev) => ({ ...prev, [item.id]: false }));
+    setSauceTypeOptions((prev) => ({ ...prev, [item.id]: '' }));
+    setAddChorizoOptions((prev) => ({ ...prev, [item.id]: false }));
+    setMeatChoiceOptions((prev) => ({ ...prev, [item.id]: '' }));
   };
 
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
@@ -213,7 +263,7 @@ export default function OrderPage() {
 
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-16 pb-32 sm:px-6 lg:px-8">
         {/* Location Selector */}
         <div className="bg-amber-50 p-6 rounded-lg shadow-lg mb-8 border-2 border-red-500">
           <h2 className="text-2xl font-bold flex items-center mb-4 text-gray-800">
@@ -295,7 +345,7 @@ export default function OrderPage() {
           </div>
         )}
 
-        <div className="mt-16">
+        <div className="mt-16 pb-20">
           {categories.map((category) => {
             const items = menuItems.filter((item) => {
               // Debug: Log items that don't match any category
@@ -313,7 +363,7 @@ export default function OrderPage() {
             }
 
             return (
-              <div key={category.id} className="mb-16">
+              <div key={category.id} className={`mb-16 ${category.id === 'vegetarian' ? 'mb-24' : ''}`}>
                 <div className="mb-4 flex items-start gap-3">
                   <div className="flex-shrink-0">
                     <button
@@ -505,7 +555,118 @@ export default function OrderPage() {
                               </select>
                             </div>
                           )}
-                          
+
+                          {/* No Tortilla Option for Breakfast Burritos */}
+                          {item.noTortillaOption && (
+                            <div>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={noTortillaOptions[item.id] || false}
+                                  onChange={(e) => setNoTortillaOptions(prev => ({ ...prev, [item.id]: e.target.checked }))}
+                                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">No Tortilla</span>
+                              </label>
+                            </div>
+                          )}
+
+                          {/* Green Chile Options */}
+                          {item.greenChileOptions && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Green Chile</label>
+                              <div className="flex space-x-3">
+                                {['mild', 'medium', 'hot'].map((level) => (
+                                  <label key={level} className="flex items-center space-x-1">
+                                    <input
+                                      type="radio"
+                                      name={`greenChile-${item.id}`}
+                                      value={level}
+                                      checked={greenChileOptions[item.id] === level}
+                                      onChange={(e) => setGreenChileOptions(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                      className="text-red-600 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{level}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Add Steak Option */}
+                          {item.addSteakOption && (
+                            <div>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={addSteakOptions[item.id] || false}
+                                  onChange={(e) => setAddSteakOptions(prev => ({ ...prev, [item.id]: e.target.checked }))}
+                                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Add Steak (+$2.00)</span>
+                              </label>
+                            </div>
+                          )}
+
+                          {/* Sauce Type Options for Breakfast Meals */}
+                          {item.sauceTypeOptions && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Sauce Type</label>
+                              <div className="flex space-x-3">
+                                {['red', 'green'].map((sauce) => (
+                                  <label key={sauce} className="flex items-center space-x-1">
+                                    <input
+                                      type="radio"
+                                      name={`sauceType-${item.id}`}
+                                      value={sauce}
+                                      checked={sauceTypeOptions[item.id] === sauce}
+                                      onChange={(e) => setSauceTypeOptions(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                      className="text-red-600 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{sauce} Sauce</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Add Chorizo Option */}
+                          {item.addChorizoOption && (
+                            <div>
+                              <label className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  checked={addChorizoOptions[item.id] || false}
+                                  onChange={(e) => setAddChorizoOptions(prev => ({ ...prev, [item.id]: e.target.checked }))}
+                                  className="rounded border-gray-300 text-red-600 focus:ring-red-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Add Chorizo (+$1.99)</span>
+                              </label>
+                            </div>
+                          )}
+
+                          {/* Meat Choice Option */}
+                          {item.meatChoiceOption && (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Add Meat (+$2.00)</label>
+                              <div className="grid grid-cols-2 gap-2">
+                                {['bacon', 'chorizo', 'ham', 'sausage', 'steak'].map((meat) => (
+                                  <label key={meat} className="flex items-center space-x-1">
+                                    <input
+                                      type="radio"
+                                      name={`meatChoice-${item.id}`}
+                                      value={meat}
+                                      checked={meatChoiceOptions[item.id] === meat}
+                                      onChange={(e) => setMeatChoiceOptions(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                      className="text-red-600 focus:ring-red-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{meat}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
                           {/* Special Requests */}
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Special Requests</label>

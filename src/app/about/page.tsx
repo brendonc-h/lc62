@@ -86,12 +86,18 @@ export default function About() {
                   <div>
                     <p className="text-gray-700 mb-4">
                       <span className="block font-medium text-lg mb-2">Address:</span>
-                      950 Mountain Ave<br />
+                      405 5th St<br />
                       Berthoud, CO 80513
                     </p>
-                    <Link 
-                      href="https://maps.google.com/?q=950+Mountain+Ave+Berthoud+CO+80513" 
-                      target="_blank" 
+                    <p className="text-gray-700 mb-4">
+                      <span className="block font-medium text-lg mb-2">Service Options:</span>
+                      <span className="block">• Outdoor seating</span>
+                      <span className="block">• Kids' menu</span>
+                      <span className="block">• Dogs allowed outside</span>
+                    </p>
+                    <Link
+                      href="https://maps.google.com/?q=405+5th+St+Berthoud+CO+80513"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                     >
@@ -105,25 +111,27 @@ export default function About() {
                   <div>
                     <p className="text-gray-700 mb-4">
                       <span className="block font-medium text-lg mb-2">Hours:</span>
-                      <span className="block"><span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM</span>
-                      <span className="block"><span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM</span>
-                      <span className="block"><span className="font-medium">Sunday:</span> 12:00 PM - 8:00 PM</span>
+                      <span className="block"><span className="font-medium">Mon - Fri:</span> 7:30 AM - 8:00 PM</span>
+                      <span className="block"><span className="font-medium">Saturday:</span> 7:30 AM - 2:00 PM</span>
+                      <span className="block"><span className="font-medium">Sunday:</span> Closed</span>
                     </p>
                     <div className="space-y-2">
-                      <Link 
-                        href="tel:+19705551234" 
+                      <Link
+                        href="tel:+19703446448"
                         className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                       >
                         <Phone className="h-4 w-4 mr-1" />
-                        (970) 555-1234
+                        (970) 344-6448
                       </Link>
                       <div className="block">
-                        <Link 
-                          href="mailto:berthoud@lacasita.io" 
+                        <Link
+                          href="https://orderlacasitaauthenticmexicanrestaurant.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                         >
                           <Mail className="h-4 w-4 mr-1" />
-                          berthoud@lacasita.io
+                          orderlacasitaauthenticmexicanrestaurant.com
                         </Link>
                       </div>
                     </div>
@@ -160,12 +168,12 @@ export default function About() {
                   <div>
                     <p className="text-gray-700 mb-4">
                       <span className="block font-medium text-lg mb-2">Address:</span>
-                      2909 E Harmony Rd<br />
-                      Fort Collins, CO 80528
+                      1720 W Mulberry St<br />
+                      Fort Collins, CO 80521
                     </p>
-                    <Link 
-                      href="https://maps.google.com/?q=2909+E+Harmony+Rd+Fort+Collins+CO+80528" 
-                      target="_blank" 
+                    <Link
+                      href="https://maps.google.com/?q=1720+W+Mulberry+St+Fort+Collins+CO+80521"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                     >
@@ -179,25 +187,27 @@ export default function About() {
                   <div>
                     <p className="text-gray-700 mb-4">
                       <span className="block font-medium text-lg mb-2">Hours:</span>
-                      <span className="block"><span className="font-medium">Mon - Thu:</span> 11:00 AM - 9:00 PM</span>
-                      <span className="block"><span className="font-medium">Fri - Sat:</span> 11:00 AM - 10:00 PM</span>
-                      <span className="block"><span className="font-medium">Sunday:</span> 12:00 PM - 8:00 PM</span>
+                      <span className="block"><span className="font-medium">Mon - Fri:</span> 7:00 AM - 8:00 PM</span>
+                      <span className="block"><span className="font-medium">Saturday:</span> 7:00 AM - 2:00 PM</span>
+                      <span className="block"><span className="font-medium">Sunday:</span> Closed</span>
                     </p>
                     <div className="space-y-2">
-                      <Link 
-                        href="tel:+19705552345" 
+                      <Link
+                        href="tel:+19705688363"
                         className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                       >
                         <Phone className="h-4 w-4 mr-1" />
-                        (970) 555-2345
+                        (970) 568-8363
                       </Link>
                       <div className="block">
-                        <Link 
-                          href="mailto:fortcollins@lacasita.io" 
+                        <Link
+                          href="https://lacasitamexicancuisineco.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                         >
                           <Mail className="h-4 w-4 mr-1" />
-                          fortcollins@lacasita.io
+                          lacasitamexicancuisineco.com
                         </Link>
                       </div>
                     </div>

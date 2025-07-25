@@ -36,7 +36,8 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">Contact</h4>
                     <p className="mt-1 text-gray-600">
-                      Phone: <a href="tel:9705128593" className="text-red-600 hover:underline">(970) 512-8593</a>
+                      Phone: <a href="tel:9705688363" className="text-red-600 hover:underline">(970) 568-8363</a><br />
+                      Menu: <a href="https://lacasitamexicancuisineco.com" className="text-red-600 hover:underline" target="_blank" rel="noopener noreferrer">lacasitamexicancuisineco.com</a>
                     </p>
                   </div>
                 </div>
@@ -56,7 +57,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">Hours</h4>
                     <ul className="mt-1 text-gray-600 space-y-1">
-                      <li>Monday - Friday: 7:30 AM - 2:00 PM</li>
+                      <li>Monday - Friday: 7:30 AM - 8:00 PM</li>
                       <li>Saturday: 7:30 AM - 2:00 PM</li>
                       <li>Sunday: Closed</li>
                     </ul>
@@ -64,7 +65,16 @@ export default function ContactPage() {
                   <div>
                     <h4 className="font-medium text-gray-900">Contact</h4>
                     <p className="mt-1 text-gray-600">
-                      Phone: <a href="tel:9705174132" className="text-red-600 hover:underline">(970) 517-4132</a>
+                      Phone: <a href="tel:9703446448" className="text-red-600 hover:underline">(970) 344-6448</a><br />
+                      Menu: <a href="https://orderlacasitaauthenticmexicanrestaurant.com" className="text-red-600 hover:underline" target="_blank" rel="noopener noreferrer">orderlacasitaauthenticmexicanrestaurant.com</a>
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Service Options</h4>
+                    <p className="mt-1 text-gray-600">
+                      • Outdoor seating<br />
+                      • Kids' menu<br />
+                      • Dogs allowed outside
                     </p>
                   </div>
                 </div>

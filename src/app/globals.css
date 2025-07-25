@@ -11,9 +11,19 @@
     @apply font-bold tracking-tight;
   }
 
-  /* Ensure all form inputs have visible text */
+  /* Ensure all form inputs and text have visible colors */
   input, textarea, select {
     @apply text-gray-900;
+  }
+
+  /* Ensure all text is visible */
+  * {
+    color: inherit;
+  }
+
+  /* Override any potential gray text issues */
+  .text-gray-500, .text-gray-400, .text-gray-300 {
+    @apply text-gray-700;
   }
 }
 

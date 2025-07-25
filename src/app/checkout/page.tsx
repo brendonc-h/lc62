@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { createClient } from '@/lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
 import SquarePaymentForm from '@/components/SquarePaymentForm';
+import SquarePaymentDebugger from '@/components/SquarePaymentDebugger';
 import { checkOrderHours, getOrderStatusMessage, isCloseToClosing } from '@/lib/order-hours';
 
 export default function CheckoutPage() {
@@ -33,6 +34,10 @@ export default function CheckoutPage() {
   const [orderHours, setOrderHours] = useState(checkOrderHours());
   // Only online payment is available
   const paymentMethod = 'online';
+
+  // Square payment debugging state
+  const [squareInitialized, setSquareInitialized] = useState(false);
+  const [squareCard, setSquareCard] = useState<any>(null);
   
   // Check authentication state when component loads
   useEffect(() => {
@@ -586,6 +591,19 @@ export default function CheckoutPage() {
           </form>
         </div>
       </div>
+
+      {/* Square Payment Debugger - Only show in development */}
+      {process.env.NODE_ENV === 'development' && showPaymentForm && (
+        <SquarePaymentDebugger
+          isInitialized={squareInitialized}
+          isProcessing={isProcessingPayment}
+          card={squareCard}
+          onTestPayment={() => {
+            console.log('Test payment triggered from debugger');
+            // You can add test payment logic here
+          }}
+        />
+      )}
     </div>
   );
 }

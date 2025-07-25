@@ -9,6 +9,9 @@ export interface MenuItemVariant {
   protein?: 'beef' | 'chicken' | 'bean' | 'cheese';
   size?: 'small' | 'medium' | 'large';
   spiceLevel?: 'mild' | 'medium' | 'hot' | 'extra hot';
+  greenChile?: 'mild' | 'medium' | 'hot'; // Added green chile option
+  noTortilla?: boolean; // Added no tortilla option
+  addSteak?: boolean; // Added add steak option
 }
 
 export interface MenuItem {
@@ -24,6 +27,12 @@ export interface MenuItem {
   spicyLevel?: number;
   locations?: string[];
   vegetarian?: boolean;
+  greenChileOptions?: boolean; // Added for burritos/chimichangas
+  noTortillaOption?: boolean; // Added for breakfast burritos
+  addSteakOption?: boolean; // Added for items that can add steak
+  sauceTypeOptions?: boolean; // Added for breakfast meals
+  addChorizoOption?: boolean; // Added for cheese dips
+  meatChoiceOption?: boolean; // Added for items with meat choice upgrades
 }
 
 export type MenuCategory = {
@@ -198,10 +207,11 @@ export const menuItems: MenuItem[] = [
   {
     id: 'nacho-fans',
     name: 'Nacho Fans',
-    description: 'Chicken or beef, served with sour cream & jalapeños Add steak for $2.00',
+    description: 'Chicken or beef, served with sour cream & jalapeños',
     price: 13.99,
     category: 'appetizers',
     popular: true,
+    addSteakOption: true,
   },
   {
     id: 'chili-cheese-fries',
@@ -210,22 +220,25 @@ export const menuItems: MenuItem[] = [
     price: 10.99,
     category: 'appetizers',
     vegetarian: true,
+    addSteakOption: true,
   },
   {
     id: 'cheese-dip-small',
     name: 'Cheese Dip (Small)',
-    description: 'Creamy, melted cheese dip. Add chorizo for $1.99',
+    description: 'Creamy, melted cheese dip',
     price: 6.99,
     category: 'appetizers',
     vegetarian: true,
+    addChorizoOption: true,
   },
   {
     id: 'cheese-dip-large',
     name: 'Cheese Dip (Large)',
-    description: 'Our famous creamy cheese dip. Add chorizo for $1.99',
+    description: 'Our famous creamy cheese dip',
     price: 8.99,
     category: 'appetizers',
     vegetarian: true,
+    addChorizoOption: true,
   },
   {
     id: 'mexican-taquitos',
@@ -269,10 +282,12 @@ export const menuItems: MenuItem[] = [
   {
     id: 'potato-egg-cheese-burrito',
     name: 'Potato, Egg, and Cheese',
-    description: 'Breakfast burrito with potatoes, eggs, and cheese. Green chile options: mild, medium, hot',
+    description: 'Breakfast burrito with potatoes, eggs, and cheese',
     price: 4.99,
     category: 'breakfast-burritos',
     vegetarian: true,
+    greenChileOptions: true,
+    noTortillaOption: true,
     variants: [
       {
         name: 'Regular',
@@ -292,9 +307,11 @@ export const menuItems: MenuItem[] = [
   {
     id: 'egg-cheese-meat-burrito',
     name: 'Egg, Cheese, Meat',
-    description: 'Breakfast burrito with eggs, cheese, and your choice of meat. Green chile options: mild, medium, hot',
+    description: 'Breakfast burrito with eggs, cheese, potatoes, and your choice of meat',
     price: 5.99,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
     variants: [
       {
         name: 'Regular',
@@ -311,59 +328,76 @@ export const menuItems: MenuItem[] = [
   {
     id: 'egg-cheese-burrito',
     name: 'Egg, Cheese',
-    description: 'Simple breakfast burrito with eggs and cheese. Green chile options: mild, medium, hot',
+    description: 'Simple breakfast burrito with eggs, cheese, and potatoes',
     price: 5.99,
     category: 'breakfast-burritos',
     vegetarian: true,
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'potato-bacon-egg-cheese-burrito',
     name: 'Bacon Burrito',
-    description: 'Breakfast burrito with crispy bacon, eggs, and cheese',
+    description: 'Breakfast burrito with crispy bacon, potatoes, eggs, and cheese',
     price: 6.25,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'chorizo-potato-egg-cheese-burrito',
     name: 'Chorizo Burrito',
-    description: 'Breakfast burrito with chorizo, eggs, and cheese',
+    description: 'Breakfast burrito with chorizo, potato, eggs, and cheese',
     price: 6.25,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'sausage-potato-egg-cheese-burrito',
     name: 'Sausage Burrito',
-    description: 'Breakfast burrito with sausage, eggs, and cheese',
+    description: 'Breakfast burrito with sausage, potato, eggs, and cheese',
     price: 6.25,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'ham-potato-egg-cheese-burrito',
     name: 'Ham Burrito',
-    description: 'Breakfast burrito with ham, eggs, and cheese',
+    description: 'Breakfast burrito with ham, potatoes, eggs, and cheese',
     price: 6.25,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'steak-potato-egg-cheese-burrito',
     name: 'Steak, Egg, Cheese, Potato',
-    description: 'Hearty breakfast burrito with steak, eggs, cheese, and potatoes',
+    description: 'Hearty breakfast burrito with steak, potatoes, eggs, and cheese',
     price: 8.99,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'machaca-burrito',
     name: 'Machaca Burrito',
-    description: 'Breakfast burrito with barbacoa, eggs, and cheese',
+    description: 'Breakfast burrito with barbacoa, potatoes, eggs, and cheese',
     price: 8.99,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
   },
   {
     id: 'breakfast-crispy',
     name: 'Breakfast Crispy',
-    description: 'Crispy chile relleno with potatoes, eggs, and cheese. Choice of bacon, chorizo, ham, sausage, or steak for $2 more',
+    description: 'Crispy chile relleno with potatoes, eggs, and cheese',
     price: 9.99,
     category: 'breakfast-burritos',
+    greenChileOptions: true,
+    noTortillaOption: true,
+    meatChoiceOption: true,
   },
 
   // BREAKFAST MEALS
@@ -373,6 +407,7 @@ export const menuItems: MenuItem[] = [
     description: 'Two eggs, steak, potatoes, side of green chile and tortillas',
     price: 20.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'breakfast-quesadilla',
@@ -380,6 +415,7 @@ export const menuItems: MenuItem[] = [
     description: 'Grilled quesadilla filled with breakfast ingredients. Choice of bacon, chorizo, ham and sausage',
     price: 15.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'casita-enchiladas',
@@ -388,6 +424,7 @@ export const menuItems: MenuItem[] = [
     price: 15.99,
     category: 'breakfast-meals',
     popular: true,
+    sauceTypeOptions: true,
   },
   {
     id: 'breakfast-chimichanga',
@@ -395,6 +432,7 @@ export const menuItems: MenuItem[] = [
     description: 'Crispy flour tortilla filled with eggs, potato, and your choice of meat (bacon, chorizo, ham, sausage) served with rice and beans',
     price: 15.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'chilaquiles',
@@ -403,6 +441,7 @@ export const menuItems: MenuItem[] = [
     price: 15.99,
     category: 'breakfast-meals',
     vegetarian: true,
+    sauceTypeOptions: true,
   },
   {
     id: 'huevos-rancheros',
@@ -411,6 +450,7 @@ export const menuItems: MenuItem[] = [
     price: 13.99,
     category: 'breakfast-meals',
     vegetarian: true,
+    sauceTypeOptions: true,
   },
   {
     id: 'huevos-con-chorizo',
@@ -418,6 +458,7 @@ export const menuItems: MenuItem[] = [
     description: 'Scrambled eggs with chorizo, served with rice and beans and your choice of corn or flour tortillas',
     price: 13.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'machaca-con-huevo',
@@ -425,6 +466,7 @@ export const menuItems: MenuItem[] = [
     description: 'Barbacoa scrambled with eggs, served with rice and beans',
     price: 15.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'vickeys-special',
@@ -432,6 +474,7 @@ export const menuItems: MenuItem[] = [
     description: 'Two pork chops, two eggs, beans smothered in green chile. With a side of tortillas',
     price: 20.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
   {
     id: 'colorado-special',
@@ -439,6 +482,7 @@ export const menuItems: MenuItem[] = [
     description: 'Chilaquiles, eggs and steak',
     price: 20.99,
     category: 'breakfast-meals',
+    sauceTypeOptions: true,
   },
 
   // SOUPS
@@ -717,6 +761,7 @@ export const menuItems: MenuItem[] = [
     price: 16.99,
     category: 'dinner-specials',
     vegetarian: true,
+    greenChileOptions: true,
   },
   {
     id: 'fish-tacos',
@@ -784,9 +829,10 @@ export const menuItems: MenuItem[] = [
   {
     id: 'sopapilla',
     name: 'House Sopapilla',
-    description: 'Sopapilla filled with your choice of meat. Add steak for $2 more',
+    description: 'Sopapilla filled with your choice of meat',
     price: 17.99,
     category: 'dinner-specials',
+    addSteakOption: true,
   },
 
   // ENCHILADAS
@@ -926,6 +972,7 @@ export const menuItems: MenuItem[] = [
     price: 16.99,
     category: 'vegetarian',
     vegetarian: true,
+    greenChileOptions: true,
   },
   {
     id: 'cheesedip-enchiladas-veg',
@@ -1038,6 +1085,7 @@ export const menuItems: MenuItem[] = [
     price: 10.99,
     category: 'vegetarian',
     vegetarian: true,
+    addSteakOption: true,
   },
   {
     id: 'quesadilla-veg',

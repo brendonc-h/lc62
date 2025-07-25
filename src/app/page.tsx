@@ -190,8 +190,8 @@ export default function Home() {
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Carne Asada</h3>
-                <p className="text-gray-600">Perfectly grilled steak with fresh vegetables</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Pollo a la Plancha</h3>
+                <p className="text-gray-600">Perfectly grilled chicken with fresh vegetables</p>
               </div>
             </div>
 
