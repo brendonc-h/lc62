@@ -3,6 +3,16 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+
+// Add CSS module to handle z-index
+const navbarStyles = {
+  zIndex: 50,
+  position: 'fixed' as 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: 'white'
+};
 import { createClient } from '@/lib/supabaseClient';
 import { AuthChangeEvent } from '@supabase/supabase-js';
 import {

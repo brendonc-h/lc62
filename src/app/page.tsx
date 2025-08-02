@@ -72,7 +72,7 @@ export default function Home() {
           {backgrounds.map((bg, index) => (
             <div
               key={index}
-              className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out ${
+              className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out z-0 ${
                 index === currentBgIndex
                   ? 'opacity-100 scale-100'
                   : 'opacity-0 scale-105'
@@ -81,7 +81,7 @@ export default function Home() {
             />
           ))}
           {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black bg-opacity-50" />
+          <div className="absolute inset-0 bg-black bg-opacity-50 z-0" />
 
           {/* Location Badge with Smooth Transition */}
           <div className="absolute top-5 right-5 bg-orange-500 text-white px-4 py-2 rounded-full font-semibold shadow-lg transition-all duration-500 ease-in-out transform">
