@@ -7,7 +7,7 @@ import { ChefHat, Users, Smartphone, Star, Clock, MapPin, Phone } from 'lucide-r
 import { createClient } from '../lib/supabaseClient';
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js';
 
-import DineInSpecialsPopup, { useDineInSpecialsPopup } from '@/components/DineInSpecialsPopup';
+import NewBreakfastMenuPopup, { useNewBreakfastMenuPopup } from '@/components/NewBreakfastMenuPopup';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function Home() {
@@ -17,8 +17,8 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const supabase = createClient();
 
-  // Dine-in specials popup
-  const { isOpen: isPopupOpen, closePopup } = useDineInSpecialsPopup();
+  // New breakfast menu popup
+  const { isOpen: isPopupOpen, closePopup } = useNewBreakfastMenuPopup();
 
   useEffect(() => {
     let mounted = true;
@@ -138,10 +138,10 @@ export default function Home() {
               Start your morning right with our delicious breakfast burritos, huevos rancheros, and traditional Mexican breakfast favorites - available anytime!
             </p>
             <Link
-              href="/menu?category=breakfast-burritos"
+              href="/order"
               className="inline-flex items-center bg-white text-orange-600 font-bold py-3 px-8 rounded-full text-lg hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
-              View Breakfast Menu
+              Order Breakfast Now
             </Link>
           </div>
         </div>
@@ -362,8 +362,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Dine-In Specials Popup */}
-      <DineInSpecialsPopup isOpen={isPopupOpen} onClose={closePopup} />
+      {/* New Breakfast Menu Popup */}
+      <NewBreakfastMenuPopup isOpen={isPopupOpen} onClose={closePopup} />
       </div>
     </ErrorBoundary>
   );

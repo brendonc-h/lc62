@@ -1,6 +1,7 @@
 'use client';
 
 import { categories, menuItems, MenuItem } from '@/data/menu';
+import { breakfastMenu, getAllBreakfastItems, resolveOptionGroup, globalOptionLibraries, type BreakfastMenuItem, type BreakfastOptionGroup } from '@/data/breakfast-menu-new';
 import { useCart } from '@/lib/cart-context';
 import { CartItem } from '@/lib/types';
 import Link from 'next/link';
@@ -48,6 +49,8 @@ export default function OrderPage() {
   const [selectedVariants, setSelectedVariants] = useState<{[key: string]: string}>({});
   const [specialRequests, setSpecialRequests] = useState<{[key: string]: string}>({});
   const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [activeMenu, setActiveMenu] = useState<'regular' | 'breakfast'>('regular');
+  const [breakfastOptions, setBreakfastOptions] = useState<{[itemId: string]: {[optionGroupId: string]: string | string[]}}>({});
   const [selectedCombos, setSelectedCombos] = useState<{[key: string]: ComboItem[]}>({});
   const [noTortillaOptions, setNoTortillaOptions] = useState<{[key: string]: boolean}>({});
   const [greenChileOptions, setGreenChileOptions] = useState<{[key: string]: string}>({});
@@ -261,6 +264,36 @@ export default function OrderPage() {
   const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
   const cartTotal = state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
 
+  // Calculate dynamic price for breakfast items including selected options
+  const calculateBreakfastItemPrice = (item: BreakfastMenuItem): number => {
+    let finalPrice = item.basePrice;
+    
+    if (breakfastOptions[item.id]) {
+      Object.entries(breakfastOptions[item.id]).forEach(([optionGroupId, selection]) => {
+        const optionGroup = globalOptionLibraries[optionGroupId] || 
+          item.optionGroups.find(og => typeof og !== 'string' && og.id === optionGroupId);
+        
+        if (optionGroup && typeof optionGroup !== 'string') {
+          if (Array.isArray(selection)) {
+            selection.forEach(choiceId => {
+              const choice = optionGroup.choices.find(c => c.id === choiceId);
+              if (choice) {
+                finalPrice += choice.priceDelta;
+              }
+            });
+          } else if (selection) {
+            const choice = optionGroup.choices.find(c => c.id === selection);
+            if (choice) {
+              finalPrice += choice.priceDelta;
+            }
+          }
+        }
+      });
+    }
+    
+    return finalPrice;
+  };
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 pb-32 sm:px-6 lg:px-8">
@@ -317,10 +350,46 @@ export default function OrderPage() {
         
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">Online Ordering</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">Order Online</h1>
             <p className="mt-4 text-lg text-gray-500">
-              Order your favorite Mexican dishes for pickup {selectedLocation && `at our ${selectedLocation} location`}
+              Browse our menu and place your order for pickup {selectedLocation && `at our ${selectedLocation} location`}
             </p>
+            
+            {/* Menu Toggle */}
+            <div className="mt-4 flex items-center gap-4">
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setActiveMenu('regular')}
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                    activeMenu === 'regular'
+                      ? 'bg-red-600 text-white'
+                      : 'text-gray-700 hover:text-red-600'
+                  }`}
+                >
+                  Regular Menu
+                </button>
+                <button
+                  onClick={() => setActiveMenu('breakfast')}
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                    activeMenu === 'breakfast'
+                      ? 'bg-red-600 text-white'
+                      : 'text-gray-700 hover:text-red-600'
+                  }`}
+                >
+                  🍳 NEW Breakfast Menu
+                </button>
+              </div>
+              
+              <Link 
+                href="/menu" 
+                className="inline-flex items-center text-red-600 hover:text-red-700 font-medium"
+              >
+                View Menu Page
+                <svg className="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
           </div>
           <Link
             href="/checkout"
@@ -346,7 +415,229 @@ export default function OrderPage() {
         )}
 
         <div className="mt-16 pb-20">
-          {categories.map((category) => {
+          {activeMenu === 'breakfast' ? (
+            // Breakfast Menu Rendering
+            breakfastMenu.map((categoryData) => {
+              const items = categoryData.items;
+              
+              return (
+                <div key={categoryData.category} className="mb-16">
+                  <div className="mb-4 flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <button
+                        onClick={() => toggleCategory(categoryData.category)}
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 whitespace-nowrap"
+                        style={{ minWidth: '120px' }}
+                      >
+                        {categoryData.category}
+                        <span className="ml-2">
+                          {expandedCategories[categoryData.category] ? '−' : '+'}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Breakfast Items Grid */}
+                  <div 
+                    className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300 overflow-hidden mt-2 ${
+                      expandedCategories[categoryData.category] ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    {items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow duration-200"
+                      >
+                        <div className="p-4 flex flex-col h-full">
+                          <div className="flex justify-between items-start">
+                            <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                            <span className="text-red-600 font-bold whitespace-nowrap ml-2">${calculateBreakfastItemPrice(item).toFixed(2)}</span>
+                          </div>
+                          
+                          {item.description && (
+                            <p className="text-sm text-gray-600 mt-2">{item.description}</p>
+                          )}
+                          
+                          <div className="mt-4 space-y-3 flex-grow">
+                            {/* Render breakfast option groups */}
+                            {item.optionGroups.map((optionGroupRef, index) => {
+                              const optionGroup = typeof optionGroupRef === 'string' 
+                                ? globalOptionLibraries[optionGroupRef] 
+                                : optionGroupRef;
+                              
+                              if (!optionGroup) return null;
+                              
+                              return (
+                                <div key={optionGroup.id}>
+                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {optionGroup.name} {optionGroup.required && '*'}
+                                  </label>
+                                  {optionGroup.type === 'single' ? (
+                                    <select
+                                      value={breakfastOptions[item.id]?.[optionGroup.id] as string || ''}
+                                      onChange={(e) => setBreakfastOptions(prev => ({
+                                        ...prev,
+                                        [item.id]: {
+                                          ...prev[item.id],
+                                          [optionGroup.id]: e.target.value
+                                        }
+                                      }))}
+                                      className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-red-500 focus:outline-none focus:ring-red-500"
+                                    >
+                                      {!optionGroup.required && <option value="">None</option>}
+                                      {optionGroup.choices.map(choice => (
+                                        <option key={choice.id} value={choice.id}>
+                                          {choice.label} {choice.priceDelta > 0 && `(+$${choice.priceDelta.toFixed(2)})`}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      {optionGroup.choices.map(choice => (
+                                        <label key={choice.id} className="flex items-center">
+                                          <input
+                                            type="checkbox"
+                                            checked={(breakfastOptions[item.id]?.[optionGroup.id] as string[] || []).includes(choice.id)}
+                                            onChange={(e) => {
+                                              const currentSelections = (breakfastOptions[item.id]?.[optionGroup.id] as string[]) || [];
+                                              const newSelections = e.target.checked 
+                                                ? [...currentSelections, choice.id]
+                                                : currentSelections.filter(id => id !== choice.id);
+                                              
+                                              setBreakfastOptions(prev => ({
+                                                ...prev,
+                                                [item.id]: {
+                                                  ...prev[item.id],
+                                                  [optionGroup.id]: newSelections
+                                                }
+                                              }));
+                                            }}
+                                            className="rounded border-gray-300 text-red-600 focus:ring-red-500 mr-2"
+                                          />
+                                          <span className="text-sm text-gray-700">
+                                            {choice.label} {choice.priceDelta > 0 && `(+$${choice.priceDelta.toFixed(2)})`}
+                                          </span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            
+                            {/* Special Requests */}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Special Requests</label>
+                              <textarea
+                                value={specialRequests[item.id] || ''}
+                                onChange={(e) => setSpecialRequests(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                placeholder="Any special requests or modifications..."
+                                className="block w-full rounded-md border-gray-300 py-2 px-3 text-base focus:border-red-500 focus:outline-none focus:ring-red-500"
+                                rows={2}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Quantity and Add to Cart */}
+                          <div className="flex items-center justify-between pt-4 mt-auto">
+                            <div className="flex items-center space-x-3">
+                              <button
+                                onClick={() => handleQuantityChange(item.id, -1)}
+                                className="w-10 h-10 rounded-full border-2 border-red-300 text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center font-bold text-lg"
+                                disabled={!orderingAllowed.allowed || (quantities[item.id] || 1) <= 1}
+                              >
+                                −
+                              </button>
+                              <span className="text-xl font-semibold text-gray-900 min-w-[3rem] text-center">
+                                {quantities[item.id] || 1}
+                              </span>
+                              <button
+                                onClick={() => handleQuantityChange(item.id, 1)}
+                                className="w-10 h-10 rounded-full border-2 border-red-300 text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center font-bold text-lg"
+                                disabled={!orderingAllowed.allowed}
+                              >
+                                +
+                              </button>
+                            </div>
+                            
+                            <button
+                              onClick={() => {
+                                if (!selectedLocation) {
+                                  setToastMessage('Please select a location first!');
+                                  setShowToast(true);
+                                  setTimeout(() => setShowToast(false), 3000);
+                                  return;
+                                }
+                                
+                                const quantity = quantities[item.id] || 1;
+                                let finalPrice = item.basePrice;
+                                let optionsText = '';
+                                
+                                // Calculate price with options
+                                if (breakfastOptions[item.id]) {
+                                  Object.entries(breakfastOptions[item.id]).forEach(([optionGroupId, selection]) => {
+                                    const optionGroup = globalOptionLibraries[optionGroupId] || 
+                                      item.optionGroups.find(og => typeof og !== 'string' && og.id === optionGroupId);
+                                    
+                                    if (optionGroup && typeof optionGroup !== 'string') {
+                                      if (Array.isArray(selection)) {
+                                        selection.forEach(choiceId => {
+                                          const choice = optionGroup.choices.find(c => c.id === choiceId);
+                                          if (choice) {
+                                            finalPrice += choice.priceDelta;
+                                            optionsText += `${choice.label}, `;
+                                          }
+                                        });
+                                      } else if (selection) {
+                                        const choice = optionGroup.choices.find(c => c.id === selection);
+                                        if (choice) {
+                                          finalPrice += choice.priceDelta;
+                                          optionsText += `${choice.label}, `;
+                                        }
+                                      }
+                                    }
+                                  });
+                                }
+                                
+                                const cartItem: CartItem = {
+                                  id: `${item.id}-${Date.now()}`,
+                                  name: item.name,
+                                  price: finalPrice,
+                                  quantity: quantity,
+                                  image: '/lacasitalogo.jpg',
+                                  specialRequest: optionsText + (specialRequests[item.id] || ''),
+                                  location: selectedLocation
+                                };
+                                
+                                addItem(cartItem);
+                                setToastMessage(`${quantity} ${quantity > 1 ? 'items' : 'item'} added to cart!`);
+                                setShowToast(true);
+                                setTimeout(() => setShowToast(false), 3000);
+                                
+                                // Reset options
+                                setQuantities(prev => ({ ...prev, [item.id]: 1 }));
+                                setBreakfastOptions(prev => ({ ...prev, [item.id]: {} }));
+                              }}
+                              className={`px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
+                                orderingAllowed.allowed
+                                  ? 'bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
+                                  : 'bg-gray-400 cursor-not-allowed'
+                              }`}
+                              disabled={!orderingAllowed.allowed}
+                            >
+                              Add to Cart
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            // Regular Menu Rendering
+            categories.map((category) => {
             const items = menuItems.filter((item) => {
               // Debug: Log items that don't match any category
               if (!item.category) {
@@ -720,7 +1011,8 @@ export default function OrderPage() {
                 </div>
               </div>
             );
-          })}
+          })
+          )}
         </div>
       </div>
     </div>

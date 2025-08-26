@@ -131,7 +131,7 @@ export default function About() {
                           className="inline-flex items-center text-red-500 hover:text-red-700 font-medium"
                         >
                           <Mail className="h-4 w-4 mr-1" />
-                          orderlacasitaauthenticmexicanrestaurant.com
+                         lacasita.io
                         </Link>
                       </div>
                     </div>
@@ -142,7 +142,7 @@ export default function About() {
               {/* Berthoud Map */}
               <div className="h-80 w-full">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3041.356833950407!2d-105.08272992336351!3d40.30844067153222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876eadbb4c0e7ea1%3A0x8c2b4be564267d53!2s950%20Mountain%20Ave%2C%20Berthoud%2C%20CO%2080513!5e0!3m2!1sen!2sus!4v1687966875305!5m2!1sen!2sus" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3041.3568339504!2d-105.08272992336351!3d40.30844067153222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876eadbb4c0e7ea1%3A0x8c2b4be564267d53!2s405%205th%20St%2C%20Berthoud%2C%20CO%2080513!5e0!3m2!1sen!2sus!4v1687966875305!5m2!1sen!2sus" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
@@ -218,7 +218,7 @@ export default function About() {
               {/* Fort Collins Map */}
               <div className="h-80 w-full">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.990356438717!2d-105.00561792336071!3d40.38899697143048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694a98795eb76d%3A0xc9a618f4c4fd8f79!2s2909%20E%20Harmony%20Rd%2C%20Fort%20Collins%2C%20CO%2080528!5e0!3m2!1sen!2sus!4v1687966990305!5m2!1sen!2sus" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.990356438717!2d-105.08561792336071!3d40.38899697143048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x87694a98795eb76d%3A0xc9a618f4c4fd8f79!2s1720%20W%20Mulberry%20St%2C%20Fort%20Collins%2C%20CO%2080521!5e0!3m2!1sen!2sus!4v1687966990305!5m2!1sen!2sus" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
