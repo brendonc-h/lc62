@@ -327,7 +327,13 @@ export default function OrderPage() {
             </button>
 
             <button
-              onClick={() => setSelectedLocation('Fort Collins')}
+              onClick={() => {
+                setSelectedLocation('Fort Collins');
+                // Switch to regular menu when Fort Collins is selected (no breakfast menu there)
+                if (activeMenu === 'breakfast') {
+                  setActiveMenu('regular');
+                }
+              }}
               className={`p-5 rounded-lg flex items-center ${selectedLocation === 'Fort Collins' 
                 ? 'bg-red-600 text-white border-2 border-red-700 ring-2 ring-red-300' 
                 : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50'}`}
@@ -368,17 +374,27 @@ export default function OrderPage() {
                 >
                   Regular Menu
                 </button>
-                <button
-                  onClick={() => setActiveMenu('breakfast')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeMenu === 'breakfast'
-                      ? 'bg-red-600 text-white'
-                      : 'text-gray-700 hover:text-red-600'
-                  }`}
-                >
-                  🍳 NEW Breakfast Menu
-                </button>
+                {selectedLocation === 'Berthoud' && (
+                  <button
+                    onClick={() => setActiveMenu('breakfast')}
+                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                      activeMenu === 'breakfast'
+                        ? 'bg-red-600 text-white'
+                        : 'text-gray-700 hover:text-red-600'
+                    }`}
+                  >
+                    🍳 NEW Breakfast Menu
+                  </button>
+                )}
               </div>
+              
+              {selectedLocation === 'Berthoud' && activeMenu === 'breakfast' && (
+                <div className="bg-orange-100 border border-orange-300 rounded-lg px-3 py-1">
+                  <span className="text-orange-800 text-sm font-medium">
+                    🍳 Breakfast available at Berthoud location only
+                  </span>
+                </div>
+              )}
               
               <Link 
                 href="/menu" 

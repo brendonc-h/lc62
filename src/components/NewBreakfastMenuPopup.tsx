@@ -98,7 +98,7 @@ export default function NewBreakfastMenuPopup({ isOpen, onClose }: NewBreakfastM
             </p>
             
             <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 border-2 border-dashed border-orange-300 mb-6">
-              <div className="text-2xl font-bold text-orange-800 mb-2">🌟 Grand Opening Special! 🌟</div>
+              <div className="text-2xl font-bold text-orange-800 mb-2">🌟 Berthoud Location Only! 🌟</div>
               <div className="text-lg text-orange-700">Try any breakfast item today!</div>
             </div>
           </div>
