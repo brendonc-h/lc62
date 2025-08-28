@@ -239,12 +239,12 @@ export default function Navbar() {
           <div className="-mr-2 flex items-center sm:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="inline-flex items-center justify-center p-2 rounded-md bg-black/30 backdrop-blur-sm border border-white/20 text-white hover:bg-black/50 hover:border-white/40 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-lg transition-all duration-200"
             >
               {isMobileMenuOpen ? (
-                <XMarkIcon className="block h-6 w-6" />
+                <XMarkIcon className="block h-6 w-6 drop-shadow-lg" />
               ) : (
-                <Bars3Icon className="block h-6 w-6" />
+                <Bars3Icon className="block h-6 w-6 drop-shadow-lg" />
               )}
             </button>
           </div>

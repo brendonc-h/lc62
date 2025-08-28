@@ -58,6 +58,7 @@ export default function OrderPage() {
   const [sauceTypeOptions, setSauceTypeOptions] = useState<{[key: string]: string}>({});
   const [addChorizoOptions, setAddChorizoOptions] = useState<{[key: string]: boolean}>({});
   const [meatChoiceOptions, setMeatChoiceOptions] = useState<{[key: string]: string}>({});
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const orderingAllowed = isOrderingAllowed('berthoud');
   const [expandedCategories, setExpandedCategories] = useState<{ [key: string]: boolean }>(() => {
     // Initialize all categories as collapsed by default
@@ -294,6 +295,29 @@ export default function OrderPage() {
     return finalPrice;
   };
 
+  // Search functionality for both menus
+  const filterMenuItems = (items: MenuItem[], query: string) => {
+    if (!query.trim()) return items;
+    
+    const searchTerm = query.toLowerCase();
+    return items.filter(item => 
+      item.name.toLowerCase().includes(searchTerm) ||
+      item.description.toLowerCase().includes(searchTerm) ||
+      (item.category && item.category.toLowerCase().includes(searchTerm))
+    );
+  };
+
+  const filterBreakfastItems = (items: BreakfastMenuItem[], query: string) => {
+    if (!query.trim()) return items;
+    
+    const searchTerm = query.toLowerCase();
+    return items.filter(item => 
+      item.name.toLowerCase().includes(searchTerm) ||
+      item.description.toLowerCase().includes(searchTerm) ||
+      (item.category && item.category.toLowerCase().includes(searchTerm))
+    );
+  };
+
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-16 pb-32 sm:px-6 lg:px-8">
@@ -311,9 +335,9 @@ export default function OrderPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <button
               onClick={() => setSelectedLocation('Berthoud')}
-              className={`p-5 rounded-lg flex items-center ${selectedLocation === 'Berthoud' 
-                ? 'bg-red-600 text-white border-2 border-red-700 ring-2 ring-red-300' 
-                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50'}`}
+              className={`p-5 rounded-lg flex items-center transition-all duration-200 ${selectedLocation === 'Berthoud' 
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-2 border-red-700 ring-2 ring-red-300 shadow-lg transform scale-105' 
+                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:shadow-md hover:scale-102'}`}
             >
               <div className="flex-1">
                 <h3 className="font-bold text-lg">{selectedLocation === 'Berthoud' ? '✓ Berthoud' : 'Berthoud'}</h3>
@@ -334,9 +358,9 @@ export default function OrderPage() {
                   setActiveMenu('regular');
                 }
               }}
-              className={`p-5 rounded-lg flex items-center ${selectedLocation === 'Fort Collins' 
-                ? 'bg-red-600 text-white border-2 border-red-700 ring-2 ring-red-300' 
-                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50'}`}
+              className={`p-5 rounded-lg flex items-center transition-all duration-200 ${selectedLocation === 'Fort Collins' 
+                ? 'bg-gradient-to-r from-red-600 to-red-700 text-white border-2 border-red-700 ring-2 ring-red-300 shadow-lg transform scale-105' 
+                : 'bg-white border border-gray-300 text-gray-700 hover:bg-red-50 hover:shadow-md hover:scale-102'}`}
             >
               <div className="flex-1">
                 <h3 className="font-bold text-lg">{selectedLocation === 'Fort Collins' ? '✓ Fort Collins' : 'Fort Collins'}</h3>
@@ -361,15 +385,41 @@ export default function OrderPage() {
               Browse our menu and place your order for pickup {selectedLocation && `at our ${selectedLocation} location`}
             </p>
             
+            {/* Search Bar */}
+            <div className="mt-4 mb-4">
+              <div className="relative max-w-md">
+                <input
+                  type="text"
+                  placeholder={`Search ${activeMenu === 'breakfast' ? 'breakfast' : 'menu'} items...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                />
+                <svg
+                  className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+
             {/* Menu Toggle */}
             <div className="mt-4 flex items-center gap-4">
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setActiveMenu('regular')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
                     activeMenu === 'regular'
-                      ? 'bg-red-600 text-white'
-                      : 'text-gray-700 hover:text-red-600'
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg transform scale-105'
+                      : 'text-gray-700 hover:text-red-600 hover:bg-red-50'
                   }`}
                 >
                   Regular Menu
@@ -377,10 +427,10 @@ export default function OrderPage() {
                 {selectedLocation === 'Berthoud' && (
                   <button
                     onClick={() => setActiveMenu('breakfast')}
-                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                    className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
                       activeMenu === 'breakfast'
-                        ? 'bg-red-600 text-white'
-                        : 'text-gray-700 hover:text-red-600'
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105'
+                        : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
                     }`}
                   >
                     🍳 NEW Breakfast Menu
@@ -407,34 +457,41 @@ export default function OrderPage() {
               </Link>
             </div>
           </div>
-          <Link
-            href="/checkout"
-            className="flex items-center gap-3 rounded-md bg-red-600 px-6 py-3 text-base font-semibold text-white hover:bg-red-700"
-          >
-            <div className="relative">
-              <ShoppingCartIcon className="h-6 w-6" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium text-red-600">
-                  {cartItemCount}
-                </span>
-              )}
-            </div>
-            <span>View Cart {(cartTotal !== undefined && typeof cartTotal === 'number') ? `- $${cartTotal.toFixed(2)}` : ''}</span>
-          </Link>
         </div>
+
+        {/* Floating Cart Button */}
+        <Link
+          href="/checkout"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-full bg-gradient-to-r from-red-600 to-red-700 px-6 py-4 text-base font-semibold text-white hover:from-red-700 hover:to-red-800 shadow-2xl transform hover:scale-110 transition-all duration-300 border-2 border-white"
+        >
+          <div className="relative">
+            <ShoppingCartIcon className="h-6 w-6" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-medium text-red-600 animate-pulse">
+                {cartItemCount}
+              </span>
+            )}
+          </div>
+          <span className="hidden sm:inline">Cart {(cartTotal !== undefined && typeof cartTotal === 'number') ? `$${cartTotal.toFixed(2)}` : ''}</span>
+        </Link>
 
         {/* Toast notification */}
         {showToast && (
-          <div className={`fixed bottom-4 right-4 ${toastMessage.includes('Please select') ? 'bg-amber-500' : 'bg-green-600'} text-white px-6 py-3 rounded-md shadow-lg z-50`}>
+          <div className={`fixed bottom-24 right-6 ${toastMessage.includes('Please select') ? 'bg-amber-500' : 'bg-green-600'} text-white px-6 py-3 rounded-md shadow-lg z-40`}>
             {toastMessage}
           </div>
         )}
 
         <div className="mt-16 pb-20">
-          {activeMenu === 'breakfast' ? (
+          {activeMenu === 'breakfast' && selectedLocation === 'Berthoud' ? (
             // Breakfast Menu Rendering
             breakfastMenu.map((categoryData) => {
-              const items = categoryData.items;
+              const items = filterBreakfastItems(categoryData.items, searchQuery);
+              
+              // Skip categories with no items after filtering
+              if (items.length === 0) {
+                return null;
+              }
               
               return (
                 <div key={categoryData.category} className="mb-16">
@@ -442,7 +499,7 @@ export default function OrderPage() {
                     <div className="flex-shrink-0">
                       <button
                         onClick={() => toggleCategory(categoryData.category)}
-                        className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 whitespace-nowrap"
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-md font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 whitespace-nowrap shadow-lg transform hover:scale-105 transition-all duration-200"
                         style={{ minWidth: '120px' }}
                       >
                         {categoryData.category}
@@ -654,7 +711,7 @@ export default function OrderPage() {
           ) : (
             // Regular Menu Rendering
             categories.map((category) => {
-            const items = menuItems.filter((item) => {
+            const categoryItems = menuItems.filter((item) => {
               // Debug: Log items that don't match any category
               if (!item.category) {
                 console.warn(`Menu item ${item.name} (${item.id}) has no category`);
@@ -662,10 +719,10 @@ export default function OrderPage() {
               }
               return item.category === category.id;
             });
+            const items = filterMenuItems(categoryItems, searchQuery);
             
-            // Debug: Log categories with no items
+            // Skip categories with no items after filtering
             if (items.length === 0) {
-              console.log(`No items found for category: ${category.name} (${category.id})`);
               return null;
             }
 
